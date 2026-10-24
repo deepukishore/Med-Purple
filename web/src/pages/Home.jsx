@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowUpRight,
@@ -24,6 +25,7 @@ import StudyLaunchpad from "../components/StudyLaunchpad";
 import QuickRecall from "../components/QuickRecall";
 import StoryBar from "../components/StoryBar";
 import s from "./Desk.module.css";
+const AnatomyCanvas = lazy(() => import("../components/AnatomyCanvas"));
 export default function Home() {
   usePageMeta(
     "Study desk",
@@ -142,9 +144,12 @@ export default function Home() {
               {storyOfDay.data?.item ? (
                 <>
                   <p>
-                    {storyOfDay.data.item.title} · {storyOfDay.data.item.subject}
+                    {storyOfDay.data.item.title} ·{" "}
+                    {storyOfDay.data.item.subject}
                   </p>
-                  <Link to={`/community?story=${encodeURIComponent(storyOfDay.data.item.id)}`}>
+                  <Link
+                    to={`/community?story=${encodeURIComponent(storyOfDay.data.item.id)}`}
+                  >
                     Read this story <ArrowRight size={16} />
                   </Link>
                 </>
@@ -155,7 +160,9 @@ export default function Home() {
               )}
             </div>
             {storyOfDay.error && (
-              <button type="button" onClick={storyOfDay.reload}>Retry</button>
+              <button type="button" onClick={storyOfDay.reload}>
+                Retry
+              </button>
             )}
           </section>
           <StudyLaunchpad
@@ -269,6 +276,26 @@ export default function Home() {
               </span>
               <Link to="/progress">View progress</Link>
             </div>
+          </section>
+          <section className={s.atlasPreview}>
+            <div className={s.atlasPreviewCopy}>
+              <p className={s.overline}>LIVE 3D ATLAS</p>
+              <h2>Explore the human heart.</h2>
+              <Link to="/anatomy">
+                Enter anatomy studio <ArrowUpRight size={16} />
+              </Link>
+            </div>
+            <Suspense
+              fallback={
+                <div className={s.atlasLoading} aria-label="Loading 3D heart">
+                  Loading 3D model…
+                </div>
+              }
+            >
+              <div className={s.atlasModel}>
+                <AnatomyCanvas compact modelId="heart" autoRotate />
+              </div>
+            </Suspense>
           </section>
           <section className={s.questPanel}>
             <div className={s.sectionHead}>

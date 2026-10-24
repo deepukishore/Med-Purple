@@ -8,7 +8,7 @@ export const fonts = {
   display: "Manrope_700Bold",
 };
 export const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.canvas },
+  screen: { flex: 1, backgroundColor: "transparent" },
   content: { padding: 18, paddingBottom: 36, gap: 20 },
   title: {
     fontFamily: fonts.display,
@@ -46,14 +46,15 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: spacing.radii.card + 3,
     borderWidth: 1,
-    borderColor: colors.purple[100],
+    borderColor: "#e2d8ed",
+    borderTopColor: "#ffffff",
     padding: 20,
     gap: 14,
     shadowColor: colors.purple[900],
-    shadowOffset: { width: 0, height: 7 },
-    shadowOpacity: 0.07,
-    shadowRadius: 15,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 13 },
+    shadowOpacity: 0.13,
+    shadowRadius: 23,
+    elevation: 6,
   },
   row: { flexDirection: "row", alignItems: "center", gap: 12 },
   between: {

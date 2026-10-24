@@ -1,5 +1,7 @@
 import React from "react";
 import {
+  Animated,
+  Easing,
   ScrollView,
   View,
   Text,
@@ -12,6 +14,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles as s, colors, fonts } from "../theme";
 import HelpBot from "./HelpBot";
+import useReducedMotion from "../hooks/useReducedMotion";
 function CaptureShortcut() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -58,6 +61,34 @@ export default function Screen({
   onRefresh,
   scroll = true,
 }) {
+  const reduced = useReducedMotion();
+  const entrance = React.useRef(new Animated.Value(reduced ? 1 : 0)).current;
+  React.useEffect(() => {
+    if (reduced) {
+      entrance.setValue(1);
+      return;
+    }
+    entrance.setValue(0);
+    const animation = Animated.timing(entrance, {
+      toValue: 1,
+      duration: 380,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [entrance, reduced]);
+  const pageMotion = reduced
+    ? undefined
+    : {
+        opacity: entrance,
+        transform: [
+          { perspective: 1200 },
+          { translateY: entrance.interpolate({ inputRange: [0, 1], outputRange: [15, 0] }) },
+          { rotateX: entrance.interpolate({ inputRange: [0, 1], outputRange: ["1deg", "0deg"] }) },
+          { scale: entrance.interpolate({ inputRange: [0, 1], outputRange: [0.99, 1] }) },
+        ],
+      };
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -78,10 +109,10 @@ export default function Screen({
             ) : undefined
           }
         >
-          {children}
+          <Animated.View style={[{ gap: 20 }, pageMotion]}>{children}</Animated.View>
         </ScrollView>
       ) : (
-        <View style={[s.content, { flex: 1 }]}>{children}</View>
+        <Animated.View style={[s.content, { flex: 1 }, pageMotion]}>{children}</Animated.View>
       )}
       <CaptureShortcut />
       <HelpBot />

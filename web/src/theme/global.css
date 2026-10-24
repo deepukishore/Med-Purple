@@ -261,6 +261,10 @@ summary {
 }
 :is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"]) {
   border-color: var(--brand-card-line, #e5d9ef);
+  box-shadow:
+    0 1px 2px #3823540a,
+    0 12px 28px #3823540b,
+    inset 0 1px 0 #ffffffa6;
 }
 
 @media (max-width: 600px) {
@@ -277,14 +281,27 @@ summary {
   }
 }
 @media (max-width: 760px) {
-  html, body, #root { max-width: 100%; overflow-x: clip; }
-  img, video, canvas { height: auto; }
-  :is([class*="grid"], [class*="Grid"], [class*="columns"], [class*="Columns"]) > * {
+  html,
+  body,
+  #root {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+  img,
+  video,
+  canvas {
+    height: auto;
+  }
+  :is([class*="grid"], [class*="Grid"], [class*="columns"], [class*="Columns"])
+    > * {
     min-width: 0;
   }
   :is([class*="tabs"], [class*="Tabs"], [class*="filter"], [class*="Filter"]) {
     scrollbar-width: thin;
     scrollbar-color: #b99bd3 transparent;
   }
-  button, a { -webkit-tap-highlight-color: #8c50c520; }
+  button,
+  a {
+    -webkit-tap-highlight-color: #8c50c520;
+  }
 }

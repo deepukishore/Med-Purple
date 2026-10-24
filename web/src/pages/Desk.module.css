@@ -576,6 +576,57 @@
 .identityBottom a {
   font-weight: 800;
 }
+.atlasPreview {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 278px;
+  border: 1px solid #594572;
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse at 68% 70%, #986eae66, transparent 52%),
+    linear-gradient(145deg, #38284b, #241b33 72%);
+  color: #fff;
+  box-shadow:
+    0 18px 38px #2b1d3a30,
+    inset 0 1px 0 #ffffff2b,
+    inset 0 -12px 28px #160f201c;
+}
+.atlasPreviewCopy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 7px;
+  padding: 20px 20px 0;
+}
+.atlasPreviewCopy .overline {
+  color: #cdb5e5;
+  font-size: 9px;
+}
+.atlasPreviewCopy h2 {
+  max-width: 230px;
+  font-size: 18px;
+}
+.atlasPreviewCopy a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #e1f0b6;
+  font-size: 11px;
+  font-weight: 800;
+}
+.atlasModel {
+  position: absolute;
+  inset: 68px 0 0;
+}
+.atlasLoading {
+  position: absolute;
+  inset: 68px 0 0;
+  display: grid;
+  place-items: center;
+  color: #e5dcec;
+  font-size: 12px;
+}
 .schedule {
   padding: 23px;
   border: 1px solid var(--line);
@@ -940,7 +991,9 @@
     linear-gradient(115deg, #fffefa 0%, #f7efff 57%, #f2f9df 100%);
   box-shadow: 0 18px 42px #49286d10;
 }
-.welcome h1 span { color: #8750bd; }
+.welcome h1 span {
+  color: #8750bd;
+}
 .streak {
   border-color: #e0d2f0;
   border-radius: 999px;
@@ -957,8 +1010,14 @@
   background: #f0e6ff;
   color: #8150b2;
 }
-.statStrip a:nth-child(2) .statIcon { background: #eaf4cf; color: #5f7927; }
-.statStrip a:nth-child(3) .statIcon { background: #ffe8df; color: #bf6248; }
+.statStrip a:nth-child(2) .statIcon {
+  background: #eaf4cf;
+  color: #5f7927;
+}
+.statStrip a:nth-child(3) .statIcon {
+  background: #ffe8df;
+  color: #bf6248;
+}
 .questPanel,
 .identity,
 .schedule {
@@ -977,7 +1036,10 @@
 }
 .quest {
   border-radius: 16px;
-  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
 }
 .quest:hover {
   transform: translateX(3px);
@@ -986,13 +1048,21 @@
 }
 .shortcut {
   border-radius: 22px;
-  transition: transform 200ms ease, box-shadow 200ms ease;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
 }
 .shortcut:hover {
-  transform: translateY(-4px) rotate(-.3deg);
+  transform: translateY(-4px) rotate(-0.3deg);
   box-shadow: 0 18px 32px #49286d18;
 }
 @media (prefers-reduced-motion: reduce) {
-  .quest, .shortcut { transition: none; }
-  .quest:hover, .shortcut:hover { transform: none; }
+  .quest,
+  .shortcut {
+    transition: none;
+  }
+  .quest:hover,
+  .shortcut:hover {
+    transform: none;
+  }
 }

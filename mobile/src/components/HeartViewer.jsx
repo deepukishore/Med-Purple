@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { View, Text, PanResponder } from "react-native";
 import { GLView } from "expo-gl";
 import * as THREE from "three";
-import { createHeartScene } from "@med-purple/anatomy";
+import { createHeartScene, createReferenceScene } from "@med-purple/anatomy";
 import { useIsFocused } from "@react-navigation/native";
 import { styles as s } from "../theme";
 import useReducedMotion from "../hooks/useReducedMotion";
@@ -14,6 +14,7 @@ export default function HeartViewer({
   vessels = true,
   compact = false,
   height = 350,
+  modelId = "heart",
 }) {
   const engine = useRef(null),
     rendererRef = useRef(null),
@@ -117,7 +118,8 @@ export default function HeartViewer({
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.15;
-      const model = createHeartScene();
+      const model =
+        modelId === "heart" ? createHeartScene() : createReferenceScene(modelId);
       engine.current = model;
       if (controlsRef) controlsRef.current = model;
       model.resize(gl.drawingBufferWidth, gl.drawingBufferHeight);
@@ -129,6 +131,9 @@ export default function HeartViewer({
         raf.current = requestAnimationFrame(render);
         if (!focus.current) return;
         try {
+          // Keep the compact dashboard model alive as a quiet, rotating 3D
+          // object. The full study view remains gesture controlled.
+          if (compact && !reduced.current) model.targets.y += 0.0022;
           model.frame(time, reduced.current);
           renderer.render(model.scene, model.camera);
           gl.endFrameEXP();
@@ -153,7 +158,7 @@ export default function HeartViewer({
       accessibilityLabel={
         compact
           ? "Schematic heart preview"
-          : "Interactive heart. Drag to rotate and pinch to zoom. Structure buttons are available below."
+          : `Interactive ${modelId} model. Drag to rotate and pinch to zoom. Structure buttons are available below.`
       }
       style={{ height, width: "100%", overflow: "hidden" }}
     >

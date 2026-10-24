@@ -109,6 +109,44 @@ export default function AppShell() {
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
   }, []);
+  useEffect(() => {
+    const selector = 'main :is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"])';
+    let active = null;
+    const clear = () => {
+      active?.style.removeProperty("--surface-tilt-x");
+      active?.style.removeProperty("--surface-tilt-y");
+      active = null;
+    };
+    const move = (event) => {
+      if (
+        event.pointerType === "touch" ||
+        document.documentElement.dataset.calm === "true" ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        clear();
+        return;
+      }
+      const card = event.target.closest?.(selector);
+      if (!card) {
+        clear();
+        return;
+      }
+      if (active && active !== card) clear();
+      active = card;
+      const bounds = card.getBoundingClientRect();
+      const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+      const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+      active.style.setProperty("--surface-tilt-x", `${-y * 2.8}deg`);
+      active.style.setProperty("--surface-tilt-y", `${x * 2.8}deg`);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("blur", clear);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("blur", clear);
+      clear();
+    };
+  }, []);
   if (
     pathname === "/" &&
     !loading &&
@@ -241,17 +279,19 @@ export default function AppShell() {
           </div>
         </header>
         <main id="content" className={s.main}>
-          {publicPaths.includes(pathname.replace(/\/$/, "")) ? (
-            <Outlet />
-          ) : loading ? (
-            <PageSkeleton />
-          ) : error ? (
-            <ErrorState message={error} onRetry={initialize} />
-          ) : (
-            <div key={user?.id}>
+          <div key={pathname} className={s.pageTransition}>
+            {publicPaths.includes(pathname.replace(/\/$/, "")) ? (
               <Outlet />
-            </div>
-          )}
+            ) : loading ? (
+              <PageSkeleton />
+            ) : error ? (
+              <ErrorState message={error} onRetry={initialize} />
+            ) : (
+              <div key={user?.id}>
+                <Outlet />
+              </div>
+            )}
+          </div>
           <footer className={s.footer}>
             <span>
               Made for curious minds. © {new Date().getFullYear()} Med Purple

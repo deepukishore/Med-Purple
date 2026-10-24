@@ -80,21 +80,30 @@
   outline-offset: 3px;
 }
 .card {
+  position: relative;
   background: var(--surface);
-  border: 1px solid #e9e4ef;
+  border: 1px solid #e3dbea;
   border-radius: 22px;
   padding: 24px;
-  box-shadow: 0 5px 18px #35226008;
+  box-shadow:
+    0 2px 0 #ffffff,
+    0 5px 10px #35226008,
+    0 16px 34px -22px #34204438,
+    inset 0 1px 0 #ffffffc9;
   transform-style: preserve-3d;
   transition:
-    transform 0.24s var(--ease),
+    transform 0.3s var(--ease),
     border-color 0.24s var(--ease),
     box-shadow 0.24s var(--ease);
 }
 .card:hover {
-  transform: none;
-  border-color: #dcd2f1;
-  box-shadow: 0 13px 26px #35226012;
+  transform: perspective(1200px) translateY(-3px) rotateX(0.35deg);
+  border-color: #d3c5e6;
+  box-shadow:
+    0 2px 0 #ffffff,
+    0 12px 18px #3522600a,
+    0 24px 40px -23px #34204442,
+    inset 0 1px 0 #ffffff;
 }
 .pill {
   display: inline-flex;
@@ -238,4 +247,8 @@
   .card:hover {
     transform: none;
   }
+}
+
+@media (hover: none) {
+  .card:hover { transform: none; }
 }

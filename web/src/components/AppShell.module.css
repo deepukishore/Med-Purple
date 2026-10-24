@@ -1,6 +1,88 @@
 .shell {
   min-height: 100dvh;
-  background: var(--canvas);
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+}
+.shell::before,
+.shell::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+.shell::before {
+  width: 360px;
+  height: 360px;
+  top: 12vh;
+  right: 3vw;
+  opacity: 0.34;
+  background:
+    radial-gradient(
+      circle at 32% 27%,
+      #ffffff 0 2%,
+      #ffffffa8 8%,
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 38% 34%,
+      #f9f5ff 0%,
+      #ded0f2 42%,
+      #bca8d8 70%,
+      #9b83bd 100%
+    );
+  box-shadow:
+    inset -24px -28px 52px #5f467333,
+    inset 16px 18px 38px #ffffff75,
+    22px 36px 70px #3c2c551b;
+  animation: ambient-float 18s ease-in-out infinite alternate;
+}
+.shell::after {
+  width: 210px;
+  height: 210px;
+  left: 31%;
+  bottom: 8vh;
+  opacity: 0.24;
+  background:
+    radial-gradient(circle at 30% 25%, #ffffffd9 0 3%, transparent 30%),
+    radial-gradient(circle at 38% 34%, #f8faef 0%, #dce6c4 48%, #aab987 100%);
+  box-shadow:
+    inset -16px -20px 36px #5b65402e,
+    inset 12px 14px 28px #ffffff85,
+    16px 24px 48px #3c2c551a;
+  animation: ambient-float 22s ease-in-out infinite alternate-reverse;
+}
+@keyframes ambient-float {
+  from {
+    transform: translate3d(0, 0, 0) rotate(-5deg);
+  }
+  to {
+    transform: translate3d(-18px, 22px, 0) rotate(7deg);
+  }
+}
+@media (max-width: 760px) {
+  .shell::before {
+    width: 240px;
+    height: 240px;
+    top: 15vh;
+    right: -95px;
+    opacity: 0.22;
+  }
+  .shell::after {
+    width: 140px;
+    height: 140px;
+    left: 5%;
+    bottom: 12vh;
+    opacity: 0.16;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shell::before,
+  .shell::after {
+    animation: none;
+  }
 }
 .sidebar {
   position: fixed;
@@ -8,7 +90,12 @@
   width: 248px;
   background:
     radial-gradient(ellipse at 10% 0%, #6d4a842e, transparent 48%),
-    linear-gradient(180deg, #2c1f3a 0%, var(--room-dark, #251a33) 48%, #21172e 100%);
+    linear-gradient(
+      180deg,
+      #2c1f3a 0%,
+      var(--room-dark, #251a33) 48%,
+      #21172e 100%
+    );
   color: #f6eefb;
   border-right: 1px solid #362640;
   padding: 30px 20px 20px;
@@ -159,7 +246,11 @@
   background: white;
   font-size: 11px;
   font-weight: 700;
-  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
 }
 .preference:hover {
   border-color: #cbb8e1;
@@ -175,6 +266,36 @@
   max-width: 1580px;
   margin: auto;
   padding: 30px 38px 22px;
+}
+.pageTransition {
+  transform-origin: 50% 12%;
+  animation: page-arrive 420ms cubic-bezier(0.2, 0.75, 0.25, 1) backwards;
+}
+@keyframes page-arrive {
+  from {
+    opacity: 0;
+    transform: perspective(1400px) translateY(14px) translateZ(-24px) rotateX(0.7deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.main :is(
+  [class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"],
+  [class*="tile"], [class*="Tile"]
+) {
+  transform-style: preserve-3d;
+  transition:
+    transform 240ms cubic-bezier(0.2, 0.75, 0.25, 1),
+    box-shadow 240ms ease;
+}
+.main :is(
+  [class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"],
+  [class*="tile"], [class*="Tile"]
+):hover {
+  transform: perspective(1400px) translateY(-2px)
+    rotateX(var(--surface-tilt-x, 0deg)) rotateY(var(--surface-tilt-y, 0deg));
 }
 .footer {
   display: flex;
@@ -397,7 +518,9 @@
 .active {
   color: #fff;
   background: linear-gradient(110deg, #7642aa, #5e3589 78%);
-  box-shadow: 0 5px 16px #160c2260, inset 0 1px 0 #ffffff24;
+  box-shadow:
+    0 5px 16px #160c2260,
+    inset 0 1px 0 #ffffff24;
 }
 .active::after {
   background: #e0ff91;
@@ -458,7 +581,10 @@
     border-radius: 15px;
     color: #806c91;
     font-size: 9px;
-    transition: color 160ms ease, background 160ms ease, transform 160ms ease;
+    transition:
+      color 160ms ease,
+      background 160ms ease,
+      transform 160ms ease;
   }
   .bottomNav .tabActive {
     color: #663696;
@@ -469,11 +595,52 @@
   }
 }
 @media (max-width: 420px) {
-  .topbar { padding-inline: 9px; }
-  .topRight { gap: 4px; }
-  .main { padding-inline: 11px; }
-  .bottomNav a, .bottomNav button { min-width: 51px; padding-inline: 5px; }
+  .topbar {
+    padding-inline: 9px;
+  }
+  .topRight {
+    gap: 4px;
+  }
+  .main {
+    padding-inline: 11px;
+  }
+  .bottomNav a,
+  .bottomNav button {
+    min-width: 51px;
+    padding-inline: 5px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .bottomNav a, .bottomNav button { transition: none; }
+  .pageTransition {
+    animation: none;
+  }
+  .main :is(
+    [class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"],
+    [class*="tile"], [class*="Tile"]
+  ),
+  .main :is(
+    [class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"],
+    [class*="tile"], [class*="Tile"]
+  ):hover {
+    transform: none;
+    transition: none;
+  }
+  .bottomNav a,
+  .bottomNav button {
+    transition: none;
+  }
+}
+html[data-calm="true"] .main :is(
+  [class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"],
+  [class*="tile"], [class*="Tile"]
+):hover {
+  transform: none;
+}
+@media (hover: none) {
+  .main :is(
+    [class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"],
+    [class*="tile"], [class*="Tile"]
+  ):hover {
+    transform: none;
+  }
 }

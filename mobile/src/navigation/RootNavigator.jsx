@@ -139,7 +139,7 @@ export default function RootNavigator() {
         ...DefaultTheme,
         colors: {
           ...DefaultTheme.colors,
-          background: colors.canvas,
+          background: "transparent",
           card: colors.surface,
           text: colors.ink,
           primary: colors.purple[600],
@@ -154,8 +154,8 @@ export default function RootNavigator() {
           headerTintColor: colors.purple[700],
           headerTitleStyle: { fontFamily: fonts.bold },
           headerShadowVisible: false,
-          contentStyle: { backgroundColor: colors.canvas },
-          animation: "slide_from_right",
+          contentStyle: { backgroundColor: "transparent" },
+          animation: "fade_from_bottom",
         }}
       >
         <Stack.Screen

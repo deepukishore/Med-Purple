@@ -9,10 +9,12 @@ import useData from "../hooks/useData";
 import useReducedMotion from "../hooks/useReducedMotion";
 import Screen from "../components/Screen";
 import HeartViewer from "../components/HeartViewer";
+import { referenceModels } from "@med-purple/anatomy";
 import Button from "../components/Button";
 import { Skeleton, ErrorState } from "../components/States";
 export default function AnatomyScreen({ navigation }) {
   const { data, loading, error, reload } = useData("/anatomy");
+  const [modelId, setModelId] = useState("heart");
   const [selected, setSelected] = useState("lv"),
     [exploded, setExploded] = useState(false),
     [vessels, setVessels] = useState(true),
@@ -103,8 +105,19 @@ export default function AnatomyScreen({ navigation }) {
     <Screen>
       <View>
         <Text style={s.title}>Get a feel for anatomy.</Text>
-        <Text style={s.subtitle}>The human heart / Schematic study model</Text>
+        <Text style={s.subtitle}>Rotate the model, then tap a structure to study it.</Text>
       </View>
+      <View style={{ gap: 8 }}>
+        <Text style={s.pillText}>CHOOSE A 3D STUDY MODEL</Text>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+          {[{ id: "heart", name: "Heart" }, ...referenceModels].map((model) => (
+            <Pressable key={model.id} accessibilityRole="button" accessibilityState={{ selected: modelId === model.id }} onPress={() => { setModelId(model.id); setSelected(model.id === "heart" ? "lv" : model.structures[0].id); }} style={{ paddingVertical: 10, paddingHorizontal: 13, borderRadius: 99, backgroundColor: modelId === model.id ? colors.purple[800] : colors.surface, borderWidth: 1, borderColor: modelId === model.id ? colors.purple[800] : colors.line }}>
+              <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: modelId === model.id ? "white" : colors.ink }}>{model.name}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+      {modelId === "heart" ? <>
       <View
         style={{
           borderRadius: 22,
@@ -275,6 +288,36 @@ export default function AnatomyScreen({ navigation }) {
           }
         />
       </View>
+      </> : (() => {
+        const model = referenceModels.find((entry) => entry.id === modelId);
+        const structure = model.structures.find((entry) => entry.id === selected) || model.structures[0];
+        return <>
+          <View style={{ borderRadius: 22, overflow: "hidden", backgroundColor: colors.anatomy }}>
+            <HeartViewer key={modelId} modelId={modelId} selected={selected} onSelect={setSelected} height={360} />
+            <Text style={[s.small, { textAlign: "center", padding: 12 }]}>Drag to rotate / Pinch to zoom</Text>
+          </View>
+          <View style={{ gap: 10 }}>
+            <Text style={s.heading}>Explore the structures</Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+              {model.structures.map((part) => (
+                <Pressable key={part.id} accessibilityRole="button" accessibilityState={{ selected: selected === part.id }} onPress={() => setSelected(part.id)} style={{ flexDirection: "row", alignItems: "center", gap: 8, minHeight: 44, paddingVertical: 9, paddingHorizontal: 12, borderRadius: 12, borderWidth: 1, borderColor: selected === part.id ? colors.purple[500] : colors.line, backgroundColor: colors.surface }}>
+                  <View style={{ width: 9, height: 9, borderRadius: 5, backgroundColor: part.color }} />
+                  <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: colors.ink }}>{part.name}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+          <View style={s.card}>
+            <Text style={s.pillText}>{model.system}</Text>
+            <Text style={s.heading}>{structure.name}</Text>
+            <Text style={s.body}>{structure.description}</Text>
+            <Text style={s.label}>Clinical connection</Text>
+            <Text style={s.small}>{structure.clinical_note}</Text>
+            <Button title="Read in OpenStax" variant="secondary" onPress={() => Linking.openURL(model.source_url)} />
+          </View>
+          <Text style={s.small}>Colour coded reference models. Shapes are schematic and intended for study.</Text>
+        </>;
+      })()}
     </Screen>
   );
 }
