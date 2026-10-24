@@ -1,0 +1,10 @@
+.backdrop { position: fixed; inset: 0; z-index: 70; display: grid; place-items: end center; padding: 24px; pointer-events: none; }
+.card { pointer-events: auto; width: min(100%, 470px); padding: 24px; border: 1px solid #dfd4ea; border-radius: 20px; background: var(--surface); box-shadow: 0 22px 70px #23142d33; position: relative; }
+.close { position: absolute; top: 14px; right: 14px; display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 9px; color: var(--muted); background: transparent; }
+.eyebrow { color: var(--purple-700); font-size: 0.63rem; font-weight: 800; letter-spacing: 0.12em; }
+.card h2 { margin: 10px 0 7px; }
+.card p { color: var(--muted); font-size: 0.8rem; line-height: 1.7; }
+.actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 18px; }
+.skip, .next { min-height: 42px; padding: 8px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; }
+.skip { border: 0; color: var(--muted); background: transparent; }
+.next { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--purple-700); color: #fff; background: var(--purple-700); }

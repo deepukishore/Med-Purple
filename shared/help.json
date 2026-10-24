@@ -1,0 +1,65 @@
+[
+  {
+    "question": "Where should I start?",
+    "answer": "Start with the Revision toolkit (Learn on mobile). Choose question practice, anatomy, notes, flashcards, or video lessons to match what you want to study today.",
+    "path": "/learn",
+    "screen": "Learn",
+    "label": "Explore learning tools"
+  },
+  {
+    "question": "How do I practise questions?",
+    "answer": "Open Question sprints from the Revision toolkit, or MCQ bank on mobile. Answer a question, read the explanation, and use it to identify concepts to revisit.",
+    "path": "/mcqs",
+    "screen": "MCQs",
+    "label": "Open question practice"
+  },
+  {
+    "question": "Where can I save notes and make flashcards?",
+    "answer": "The Revision toolkit includes My clinical notebook for your notes and Viva & recall cards for flashcards. Create your own study material and return to it for revision.",
+    "path": "/notes",
+    "screen": "Notes",
+    "label": "Open my notes"
+  },
+  {
+    "question": "How do I organise my study week?",
+    "answer": "Use the Study planner to add study sessions to your week. Give each session a clear focus, leave room for breaks, and return to the planner to keep track of your schedule.",
+    "path": "/planner",
+    "screen": "Planner",
+    "label": "Open study planner"
+  },
+  {
+    "question": "How can I check my progress?",
+    "answer": "Open Progress & rewards to review your learning activity and rewards. Use it to reflect on your study habits and decide what to work on next.",
+    "path": "/progress",
+    "screen": "Progress",
+    "label": "View my progress"
+  },
+  {
+    "question": "Where can I ask other students a question?",
+    "answer": "Open Doubts to ask a medical learning question or contribute an explanation. Use Community to connect and share study ideas. Keep posts respectful and avoid sharing private patient information.",
+    "path": "/doubts",
+    "screen": "Doubts",
+    "label": "Open Doubts"
+  },
+  {
+    "question": "What are MedBytes?",
+    "answer": "MedBytes are short lessons for revisiting medical concepts. Open MedBytes and choose a topic to fit a quick revision session.",
+    "path": "/medbytes",
+    "screen": "MedBytes",
+    "label": "Explore MedBytes"
+  },
+  {
+    "question": "How do I change my profile or delete my account?",
+    "answer": "Open My profile (Profile on mobile) to manage your details. The account deletion option is also there; read its confirmation carefully because deletion permanently removes your account and study records.",
+    "path": "/profile",
+    "screen": "Profile",
+    "label": "Open my profile"
+  },
+  {
+    "question": "Who created Med Purple?",
+    "answer": "Deepthi, a second-year MBBS student, is Med Purple's founder and designer and the person behind its original idea. Deepu Kishore is its co-founder and developer, bringing her vision to life through technical development. Visit the About page to meet the team.",
+    "path": "/about",
+    "screen": "About",
+    "label": "Meet the team"
+  }
+]

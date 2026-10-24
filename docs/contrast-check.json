@@ -1,0 +1,51 @@
+[
+  {
+    "pair": "Body on canvas",
+    "foreground": "#22283D",
+    "background": "#F4F5F8",
+    "contrast_ratio": 13.39,
+    "normal_text_AA": true
+  },
+  {
+    "pair": "Secondary on canvas",
+    "foreground": "#62697B",
+    "background": "#F4F5F8",
+    "contrast_ratio": 5.03,
+    "normal_text_AA": true
+  },
+  {
+    "pair": "Primary button",
+    "foreground": "#FFFFFF",
+    "background": "#7040B8",
+    "contrast_ratio": 6.74,
+    "normal_text_AA": true
+  },
+  {
+    "pair": "Purple label",
+    "foreground": "#5F319F",
+    "background": "#F1EDFC",
+    "contrast_ratio": 7.52,
+    "normal_text_AA": true
+  },
+  {
+    "pair": "Amber label",
+    "foreground": "#624205",
+    "background": "#EDBA57",
+    "contrast_ratio": 5.11,
+    "normal_text_AA": true
+  },
+  {
+    "pair": "Success feedback",
+    "foreground": "#24715E",
+    "background": "#E8F3EE",
+    "contrast_ratio": 5.14,
+    "normal_text_AA": true
+  },
+  {
+    "pair": "Danger feedback",
+    "foreground": "#B53B54",
+    "background": "#FBECEF",
+    "contrast_ratio": 4.93,
+    "normal_text_AA": true
+  }
+]

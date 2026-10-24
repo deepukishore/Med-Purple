@@ -1,0 +1,19 @@
+{
+  "spring": {
+    "stiffness": 230,
+    "damping": 24,
+    "mass": 0.8
+  },
+  "gentleSpring": {
+    "stiffness": 110,
+    "damping": 19,
+    "mass": 1
+  },
+  "duration": {
+    "fast": 160,
+    "normal": 280,
+    "slow": 600
+  },
+  "ease": [0.22, 1, 0.36, 1],
+  "tiltDegrees": 4
+}

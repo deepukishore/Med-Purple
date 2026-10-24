@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "Med Purple",
+    "slug": "med-purple",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#7040B8"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.medpurple.mobile",
+      "infoPlist": {
+        "NSMotionUsageDescription": "Tilt the anatomy model while studying.",
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        }
+      }
+    },
+    "android": {
+      "package": "app.medpurple.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#7040B8"
+      }
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-font",
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Tilt the anatomy model while studying."
+        }
+      ],
+      "expo-video"
+    ],
+    "scheme": "medpurple"
+  }
+}

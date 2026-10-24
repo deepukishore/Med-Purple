@@ -1,0 +1,271 @@
+.panel {
+  background: #eaf0dd;
+  border: 1px solid #d4ddbd;
+  border-radius: 22px;
+  padding: 22px;
+  background-image:
+    linear-gradient(#bccbad20 1px, transparent 1px),
+    linear-gradient(90deg, #bccbad20 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.heading > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #586745;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.heading > button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  background: #ffffff70;
+  color: #4d5c3a;
+  border: 1px solid #cfd9bb;
+  border-radius: 10px;
+}
+.panel h2 {
+  font-size: 26px;
+  letter-spacing: -0.05em;
+  line-height: 1.2;
+  margin: 12px 0 8px;
+  color: #34422e;
+}
+.clock {
+  width: 200px;
+  height: 200px;
+  margin: 22px auto;
+  border-radius: 50%;
+  background: conic-gradient(#92a760 var(--progress), #d4dfc0 0);
+  padding: 6px;
+  transform: rotate(-90deg);
+}
+.clock > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  background: #edf2e2;
+  border: 5px solid #e5ecd7;
+  border-radius: 50%;
+  transform: rotate(90deg);
+}
+.clock span {
+  font-size: 45px;
+  font-weight: 800;
+  letter-spacing: -0.07em;
+  color: #36472a;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+.clock small {
+  font-size: 10px;
+  color: #64714d;
+}
+.buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.presets {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+.presets button {
+  border: 1px solid #c7d3b0;
+  background: #f4f7ed;
+  border-radius: 8px;
+  padding: 8px 11px;
+  min-height: 40px;
+  font-size: 11px;
+  color: #4f6038;
+  font-weight: 700;
+}
+.presets button[aria-pressed="true"] {
+  background: #d4e5ae;
+  border-color: #91a667;
+}
+.enter {
+  background: transparent;
+  padding: 14px 0 0;
+  color: #4e6337;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 12px;
+  border-top: 1px dashed #c2cfac;
+}
+.room {
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  inset: 0;
+  margin: 0;
+  padding: 28px 40px;
+  border: 0;
+  background:
+    radial-gradient(ellipse at 50% 40%, #494258 0, transparent 65%), #211b2b;
+  color: #f7f4ea;
+  overflow-y: auto;
+}
+.room::backdrop {
+  background: #211b2b;
+}
+.room > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.room > header > span {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #cdc0dc;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+.room > header > button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #ffffff35;
+  color: #f2e8fc;
+  background: #ffffff0b;
+  border-radius: 50%;
+}
+.roomBody {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  max-width: 660px;
+  margin: 40px auto 20px;
+}
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: #e4efb9;
+  border: 1px solid #9aa97a55;
+  background: #cbeb9610;
+  border-radius: 99px;
+  padding: 9px 13px;
+}
+.status > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d4eaa3;
+}
+.roomBody h2 {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 5vw, 57px);
+  font-weight: 400;
+  color: #f7f2e6;
+  letter-spacing: -0.03em;
+  margin: 25px 0;
+}
+.roomBody > label {
+  color: #c3b5d1;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.roomBody > input {
+  width: min(100%, 470px);
+  text-align: center;
+  background: #ffffff09;
+  border-color: #ffffff25;
+  color: #f6eefd;
+  font-size: 14px;
+}
+.roomBody > input::placeholder {
+  color: #b6a9c1;
+}
+.room .clock {
+  width: 260px;
+  height: 260px;
+  margin: 30px auto;
+  background: conic-gradient(#d7eca5 var(--progress), #645572 0);
+}
+.room .clock > div {
+  background: #31283d;
+  border-color: #403449;
+}
+.room .clock span {
+  color: #eef8d1;
+  font-size: 68px;
+}
+.room .clock small {
+  color: #c2b4cf;
+  font-size: 12px;
+}
+.room .buttons > a,
+.room .buttons > button {
+  min-width: 125px;
+}
+.room .presets {
+  margin-top: 20px;
+}
+.room .presets button {
+  background: #ffffff10;
+  color: #d8cee1;
+  border-color: #ffffff20;
+  min-height: 44px;
+}
+.room .presets button[aria-pressed="true"] {
+  background: #d4e5ae;
+  color: #3e4e2f;
+  border-color: #d4e5ae;
+}
+.roomNote {
+  color: #b9aac9;
+  font-size: 12px;
+  line-height: 1.8;
+  max-width: 370px;
+  margin-top: 28px;
+}
+@media (max-width: 600px) {
+  .room {
+    padding: 18px;
+  }
+  .room > header > span {
+    font-size: 9px;
+    letter-spacing: 0.06em;
+  }
+  .roomBody {
+    margin: 30px auto 20px;
+  }
+  .room .clock {
+    width: 230px;
+    height: 230px;
+  }
+  .room .clock span {
+    font-size: 60px;
+  }
+}

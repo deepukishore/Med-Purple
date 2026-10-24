@@ -1,0 +1,50 @@
+.vibes {
+  border: 1px solid #ffffff1c;
+  border-radius: 17px;
+  padding: 17px;
+  background: #ffffff08;
+}
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #e5dcec;
+}
+.options {
+  display: flex;
+  gap: 10px;
+  margin: 14px 0 12px;
+}
+.options button {
+  width: 44px;
+  height: 44px;
+  background: var(--swatch);
+  border: 3px solid transparent;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  color: #322537;
+  transition: transform 0.2s;
+}
+.options button:hover {
+  transform: translateY(-3px) rotate(-5deg);
+}
+.options button[aria-pressed="true"] {
+  outline: 1px solid #ffffffb0;
+  outline-offset: 3px;
+}
+.vibes p {
+  display: grid;
+  gap: 4px;
+  color: #f5eafa;
+  font-size: 12px;
+  font-weight: 700;
+}
+.vibes p span {
+  color: #c0afc8;
+  font-size: 10px;
+  font-weight: 400;
+}

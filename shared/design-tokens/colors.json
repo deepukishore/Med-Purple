@@ -1,0 +1,25 @@
+{
+  "purple": {
+    "50": "#F1E8FC",
+    "100": "#E7D8F7",
+    "200": "#D1B9EC",
+    "400": "#A878D7",
+    "500": "#8C50C5",
+    "600": "#7139AB",
+    "700": "#592A8D",
+    "800": "#432166",
+    "900": "#29183E"
+  },
+  "ink": "#2A2035",
+  "muted": "#766B80",
+  "canvas": "#F6F2FA",
+  "surface": "#FFFDFF",
+  "line": "#E6DDEE",
+  "accent": "#DDF48E",
+  "accentInk": "#455421",
+  "success": "#287A65",
+  "successTint": "#E9F5EF",
+  "danger": "#B53B54",
+  "dangerTint": "#FBECEF",
+  "anatomy": "#EEE9F3"
+}

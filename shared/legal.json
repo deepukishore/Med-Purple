@@ -1,0 +1,292 @@
+{
+  "privacy": [
+    {
+      "heading": "Information we store",
+      "body": "When the app initialises, it attempts to create or restore a guest session. Registration stores your email address and a password hash, rather than your plain-text password. Profile information can include your name, college, study year, location, timezone, goals, and exam details. We also store question attempts, bookmarks, video completions, saved notes and flashcards, and studied anatomy structures. We also store study planner blocks, flashcard review history, and community discussions and replies you submit."
+    },
+    {
+      "heading": "Why we use it",
+      "body": "We use these records to sign you in, sync your learning across devices, show progress, and retain material you save. This edition does not include advertising, third-party analytics, data sales, or AI processing of your study content. Questions submitted to the study coach are processed by the backend to search the curated library; the coach does not generate AI answers."
+    },
+    {
+      "heading": "Community visibility and service providers",
+      "body": "Discussion titles, subjects, messages, replies, author names, and posting times are visible to other students using the study circle, including guest users. Do not share private information there. Hosting and database providers process information needed to operate the app; their identities and processing locations still need confirmation. Information may also be disclosed where required by applicable law."
+    },
+    {
+      "heading": "Sessions and device storage",
+      "body": "The website uses an essential HTTP-only refresh cookie and keeps its short-lived access token in memory. The mobile app keeps the refresh token in the operating system’s secure store. Sessions expire after 30 days by default unless refreshed; deployment settings can change this period. Network addresses may be processed for security and by your hosting operator. Browser local storage also remembers display preferences, room appearance, and focus timer state, including task text. The Cookie & Storage Policy explains these entries."
+    },
+    {
+      "heading": "Storage, retention, and deletion",
+      "body": "Your deployment operator controls the database and any infrastructure logs or backups. Study records remain until you delete your account in Profile. That action removes the account and associated study records from the active database. Backups, if the operator maintains them, follow that operator’s retention policy. Signing out revokes the refresh session; an already issued access token expires within 15 minutes by default. No automatic inactivity deletion schedule is implemented. Browser preferences and focus timer data remain until you clear stored site data. Hosting locations, providers, log retention, and backup retention must be confirmed before public release."
+    },
+    {
+      "heading": "External links and your choices",
+      "body": "OpenStax links open an external service with its own policies. Selecting an atlas structure requests a related reference from Wikipedia; that service receives the search term and ordinary browser network information. Anatomy model assets, other media, and fonts are bundled locally. You can update your profile or delete your data from Profile. For access, correction, export, retention questions, or other rights under applicable law, contact the person or organization operating your installation. A public deployment must identify that operator and provide its contact details and lawful basis for processing. A privacy request contact and escalation route have not yet been supplied. There is no self-service data export in this version."
+    },
+    {
+      "heading": "Young learners",
+      "body": "Med Purple is intended for adult medical learners aged 18 and over and is not directed to children. Do not submit patient records or sensitive clinical information."
+    },
+    {
+      "heading": "Changes",
+      "body": "Material changes to data handling should be reflected here and communicated before new processing begins. The updated date identifies this draft."
+    }
+  ],
+  "terms": [
+    {
+      "heading": "Using Med Purple",
+      "body": "Med Purple is an educational study application founded by Deepu Kishore and Deepthi. These terms apply to its current website and mobile application. You must be at least 18 and able to enter into an agreement under applicable law. By using it, you agree to use it lawfully and responsibly. If you do not agree, discontinue use. Operator identity and contact details remain to be confirmed before public release."
+    },
+    {
+      "heading": "Educational scope",
+      "body": "Questions, short videos, and the simplified three-dimensional heart model support study. They are not a diagnostic tool, clinical decision system, medical advice, accredited course, or official examination resource. Check current authoritative materials for clinical practice. The model intentionally omits detailed structures and is not to scale."
+    },
+    {
+      "heading": "Accounts and acceptable use",
+      "body": "You are responsible for keeping your password private and for activity on your account. Do not access other people’s accounts, disrupt the service, bypass access controls, upload confidential patient information, infringe others’ rights, or use the service for unlawful conduct. The operator may restrict abusive activity."
+    },
+    {
+      "heading": "Your content and learning records",
+      "body": "You retain any rights you hold in material you provide. You authorise the operator to store and process it as needed to run the service as described in the Privacy Policy, including displaying discussion posts and replies to other students. You may delete your own posts or delete your account and its records. AI-generated tutoring, paid features, and external file uploads are not available in this edition."
+    },
+    {
+      "heading": "Study content and external resources",
+      "body": "The bundled animations and schematic geometry are original Med Purple starter assets. The app links to independent learning sources for further reading; those sources retain their own rights and terms. Do not redistribute third-party material unless its license permits it. Software and dependency licenses are documented with the codebase."
+    },
+    {
+      "heading": "Availability and responsibility",
+      "body": "The service is provided as available. Learning content can contain errors and should be reviewed by qualified educators before use in a formal curriculum. To the extent permitted by law, the operator does not guarantee uninterrupted operation, examination outcomes, or fitness for clinical use. Nothing in these terms excludes rights or liability that applicable law does not allow to be excluded."
+    },
+    {
+      "heading": "Ending use and disputes",
+      "body": "You may stop using the service and delete your account at any time. Contact your deployment operator about access, complaints, or disputes. Applicable mandatory consumer rights continue to apply. Before offering the service publicly, the operator must identify its legal entity, contact address, applicable commercial terms, and jurisdiction."
+    },
+    {
+      "heading": "Payments and subscriptions",
+      "body": "The current app has no checkout, paid subscription, or in-app purchase flow. Any future paid feature must present its pricing, billing, cancellation, and refund terms before purchase. See Refunds & Cancellations for the current position."
+    },
+    {
+      "heading": "Community participation",
+      "body": "Study circle contributions are visible to other students and are not reviewed clinical guidance. Follow the Community Guidelines: be respectful, cite sources for medical claims, and never share confidential or identifiable patient information. A reporting contact must be provided before public release; the app currently has no in-app reporting or moderation queue."
+    }
+  ],
+  "updated": "12 October 2026",
+  "status": "Draft for review",
+  "reviewNote": "These pages describe the current app. Operator identity, contact details, jurisdiction, and hosting retention details are awaiting confirmation before public release.",
+  "founders": ["Deepu Kishore", "Deepthi"],
+  "about": {
+    "title": "Medical learning, organised.",
+    "intro": "Med Purple is a study app for medical students, bringing question practice, anatomy models, video lessons, notes, and revision planning into one place.",
+    "mission": "To support medical students with accessible study tools for understanding concepts, practising recall, and organising daily revision.",
+    "teamHeading": "Meet the team",
+    "founderNote": "Med Purple is Deepthi's idea and vision for a practical medical study app. As founder and designer, she shapes its concept and learning experience. Deepu Kishore brings that vision to life through technical development.",
+    "people": [
+      {
+        "name": "Deepthi",
+        "role": "Founder & Designer",
+        "bio": "Deepthi is a second-year MBBS student and the person behind Med Purple's original idea. She leads the app's concept and design, with the aim of making medical study more organised and accessible to fellow students."
+      },
+      {
+        "name": "Deepu Kishore",
+        "role": "Co-founder & Developer",
+        "bio": "Deepu Kishore is the technical creator behind Med Purple. He develops the app and implements its features, turning Deepthi's idea and design into a working platform and bringing her dream app to life."
+      }
+    ],
+    "features": [
+      {
+        "heading": "Practise with purpose",
+        "body": "Use MCQs and explanations to revisit concepts and understand where to focus next.",
+        "path": "/mcqs"
+      },
+      {
+        "heading": "Make concepts click",
+        "body": "Explore short MedBytes lessons and interactive schematic anatomy models alongside your reading.",
+        "path": "/learn"
+      },
+      {
+        "heading": "Find your study rhythm",
+        "body": "Keep notes and flashcards, follow your progress, and make room for focused revision.",
+        "path": "/notes"
+      }
+    ]
+  },
+  "pages": [
+    {
+      "key": "terms",
+      "path": "/terms",
+      "title": "Terms of Service",
+      "summary": "The ground rules for using Med Purple."
+    },
+    {
+      "key": "privacy",
+      "path": "/privacy",
+      "title": "Privacy Policy",
+      "summary": "What information the app uses and the choices you have."
+    },
+    {
+      "key": "cookies",
+      "path": "/cookies",
+      "title": "Cookie & Storage Policy",
+      "summary": "How sessions, preferences, and device storage work."
+    },
+    {
+      "key": "disclaimer",
+      "path": "/medical-disclaimer",
+      "title": "Medical Disclaimer",
+      "summary": "The educational scope and limits of our learning tools."
+    },
+    {
+      "key": "refunds",
+      "path": "/refund-policy",
+      "title": "Refunds & Cancellations",
+      "summary": "The current position on payments and subscriptions."
+    },
+    {
+      "key": "deletion",
+      "path": "/account-deletion",
+      "title": "Account & Data Deletion",
+      "summary": "How to remove your account and learning records."
+    },
+    {
+      "key": "copyright",
+      "path": "/copyright",
+      "title": "Copyright & Content Policy",
+      "summary": "Content ownership, attribution, and reporting concerns."
+    },
+    {
+      "key": "community",
+      "path": "/community-guidelines",
+      "title": "Community Guidelines",
+      "summary": "Respectful discussion, responsible sharing, and clear boundaries."
+    }
+  ],
+  "cookies": [
+    {
+      "heading": "Session cookies",
+      "body": "The website sets an essential cookie named mp_refresh to maintain your session. It is HTTP-only and restricted to authentication requests. Its default lifetime is 30 days, renewed when a session is refreshed; deployment settings can change this period. Short-lived access tokens are held in memory, with a default lifetime of 15 minutes."
+    },
+    {
+      "heading": "Preferences and focus sessions",
+      "body": "Browser local storage remembers calm mode (mp:calm), larger text (mp:large), room appearance (mp:room-vibe), and focus timer state and task text (mp:focus followed by your user identifier). These entries have no automatic expiry. They remain on that browser until cleared, separately from learning records on the server."
+    },
+    {
+      "heading": "Mobile device storage",
+      "body": "The mobile app stores its refresh token under mp_refresh in the operating system's secure storage. It uses this token to restore sessions."
+    },
+    {
+      "heading": "Advertising and analytics",
+      "body": "The supplied app does not integrate advertising cookies or third-party analytics trackers. External resource websites may use their own cookies under their own policies. If tracking services are added later, this policy and any required choices must be updated before they are used."
+    },
+    {
+      "heading": "Managing storage",
+      "body": "You can block or remove cookies and stored site data in your browser settings. Blocking the session cookie can prevent persistent sign-in. Clearing local storage resets preferences and local focus timer data, but does not delete your server account. Signing out revokes the refresh session; use Profile to delete the account itself."
+    }
+  ],
+  "disclaimer": [
+    {
+      "heading": "For education only",
+      "body": "Med Purple offers study questions, explanations, videos, notes, flashcards, and simplified anatomy visualisations. They support learning and revision, not diagnosis, treatment, prescribing, triage, or clinical decision-making."
+    },
+    {
+      "heading": "No professional relationship",
+      "body": "Using Med Purple does not create a doctor–patient relationship or replace supervision, accredited training, or advice from a qualified healthcare professional. Do not delay seeking professional care because of something you read or view in the app."
+    },
+    {
+      "heading": "Accuracy and clinical decisions",
+      "body": "Medical knowledge and guidelines change. Content may be incomplete, simplified, outdated, or incorrect. Verify clinical information, doses, and procedures against current authoritative references and local protocols. The interactive heart model is schematic, omits detailed structures, and is not to scale."
+    },
+    {
+      "heading": "Examinations and affiliations",
+      "body": "Practice questions and progress indicators do not predict examination performance or certify competence. No affiliation with a university, examination board, professional council, or healthcare organisation is claimed unless expressly stated and verified."
+    },
+    {
+      "heading": "Emergencies and patient information",
+      "body": "Med Purple is not an emergency service and does not monitor symptoms or messages for urgent care. For an emergency, contact local emergency services or an appropriate healthcare professional. Never enter identifiable patient information into study fields."
+    }
+  ],
+  "refunds": [
+    {
+      "heading": "Current app: no payments",
+      "body": "The current app has no checkout, paid subscription, or in-app purchase flow and does not collect payment card information. There is no Med Purple subscription to cancel or in-app payment to refund in this version."
+    },
+    {
+      "heading": "Stopping use",
+      "body": "You may stop using the app at any time. Signing out ends your refresh session. To remove your account and learning records, use the deletion option in Profile. Uninstalling the app does not delete the server account."
+    },
+    {
+      "heading": "Unexpected charges",
+      "body": "If a charge appears under a similar name, check the receipt and merchant details with your payment provider or app store. Do not share full payment card details, security codes, or banking passwords through study fields. A billing support contact has not yet been supplied for this draft."
+    },
+    {
+      "heading": "Future paid features",
+      "body": "Before a paid feature launches, its total price, billing frequency, renewal rules, cancellation steps, and applicable refund terms must be shown before purchase. This draft does not establish a future refund window or remove mandatory consumer rights."
+    }
+  ],
+  "deletion": [
+    {
+      "heading": "Delete from Profile",
+      "body": "Open My profile on the website or Profile in the mobile app. Choose Delete my account (or the guest-data deletion option for a guest session), read the confirmation, and confirm permanent deletion. This removes the current account and associated study records from the active database."
+    },
+    {
+      "heading": "What is removed",
+      "body": "Deletion removes the account, profile, refresh sessions, and related learning records, including question attempts, bookmarks, video progress, saved notes, flashcards, and anatomy progress. This cannot be undone through the app. Copy any study material you wish to keep before confirming. Your study planner blocks, flashcard review history, discussions, and replies are also removed. Deleting a discussion you started removes its replies, including replies by other students. Copies made outside the app by others are beyond this deletion process."
+    },
+    {
+      "heading": "What may remain separately",
+      "body": "Browser preferences and local focus timer data are not removed by server account deletion. Clear the site's stored data in your browser to remove them. Infrastructure logs and backups, if maintained, follow the operator's separate retention process, which still needs to be confirmed for public release."
+    },
+    {
+      "heading": "Signing out and uninstalling",
+      "body": "Signing out, closing a tab, or uninstalling the mobile app does not delete the server account. Continued use after deletion may create a new empty guest session; it does not restore deleted records."
+    },
+    {
+      "heading": "If you cannot access your account",
+      "body": "An alternative verified support route for deletion requests must be supplied before public release. This draft has no working email or request form for that purpose. Do not put passwords or identity documents into study notes. Account ownership may need to be verified before a request can be processed."
+    }
+  ],
+  "copyright": [
+    {
+      "heading": "Med Purple content",
+      "body": "Rights in original Med Purple content remain with their respective owners. Access does not transfer ownership of branding, written content, animations, or schematic models. Obtain permission from the relevant rights holder for uses beyond applicable law or a stated licence."
+    },
+    {
+      "heading": "Your notes and materials",
+      "body": "You retain any rights you hold in material you create or provide. Only save material you are entitled to use. Do not copy confidential patient information, unlicensed question banks, or copyrighted textbooks into the app without the required permission."
+    },
+    {
+      "heading": "Third-party acknowledgements",
+      "body": "Med Purple uses open-source software and fonts, including React, React Native, Expo, Three.js, Phosphor Icons, Ionicons, Manrope, and DM Serif Display. Their respective licences apply. The source distribution includes THIRD_PARTY_NOTICES.md and supplied font licence files. This summary does not replace those notices."
+    },
+    {
+      "heading": "External learning resources",
+      "body": "OpenStax and other external references retain their own rights and licence conditions. A link does not imply endorsement, partnership, or permission to reproduce a source. The web anatomy atlas includes selected Z-Anatomy and BodyParts3D meshes with attribution and share-alike notices accessible from the viewer. No scraped creator videos are bundled."
+    },
+    {
+      "heading": "Reporting a concern",
+      "body": "A content-reporting contact must be confirmed before public release. A useful report identifies the work, the specific app page or item, the concern, and a way to reply. Avoid unnecessary sensitive information. This draft does not claim a statutory takedown-agent registration or fixed response time."
+    }
+  ],
+  "community": [
+    {
+      "heading": "Learn together, respectfully",
+      "body": "Use the study circle for medical learning questions, explanations, and study tips. Treat other learners with respect. Do not harass, threaten, discriminate, impersonate someone else, spam, or post unlawful material."
+    },
+    {
+      "heading": "Protect privacy",
+      "body": "Discussions and replies are visible to other students, including guest users, alongside your author name and posting time. Do not post identifiable patient details, private messages, passwords, contact details belonging to others, or confidential institutional material."
+    },
+    {
+      "heading": "Share responsibly",
+      "body": "Use credible sources for medical claims and distinguish your own interpretation from the source. Community posts are contributions by users, not verified clinical advice. Do not ask others to diagnose, prescribe, or manage urgent health problems. Respect copyright and examination confidentiality."
+    },
+    {
+      "heading": "Removing your contributions",
+      "body": "You can delete your own discussion or reply using its delete control. Removing a discussion also removes replies in that thread. Account deletion removes your discussions and replies from the active database. Other users may already have copied what you shared outside the app."
+    },
+    {
+      "heading": "Concerns and enforcement",
+      "body": "The current app has no in-app reporting or moderation queue. A community reporting contact and operating process must be supplied before public release. The operator may restrict abusive activity subject to applicable law, but this draft does not promise continuous monitoring or an emergency response."
+    }
+  ]
+}

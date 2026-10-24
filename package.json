@@ -1,0 +1,29 @@
+{
+  "name": "med-purple",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "web",
+    "mobile",
+    "shared/design-tokens",
+    "shared/api-client",
+    "shared/anatomy"
+  ],
+  "scripts": {
+    "web": "npm run dev -w web",
+    "build": "npm run build -w web",
+    "mobile": "npm start -w mobile",
+    "check:mobile": "npm run check -w mobile",
+    "dev": "vite web --config web/vite.config.js",
+    "format": "prettier --write web/src mobile/src shared web/vite.config.js"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.9"
+  },
+  "dependencies": {
+    "expo-image-picker": "~17.0.11"
+  }
+}

@@ -1,0 +1,2040 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Med Purple API",
+    "description": "Shared study API for the React web and Expo apps.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/auth/guest": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Guest",
+        "operationId": "guest_api_v1_auth_guest_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Register",
+        "operationId": "register_api_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Refresh",
+        "operationId": "refresh_api_v1_auth_refresh_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Logout",
+        "operationId": "logout_api_v1_auth_logout_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Me",
+        "operationId": "me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Delete Me",
+        "operationId": "delete_me_api_v1_auth_me_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Update Me",
+        "operationId": "update_me_api_v1_auth_me_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dashboard": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Dashboard",
+        "operationId": "dashboard_api_v1_dashboard_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dashboard/goals/{key}": {
+      "put": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Toggle Goal",
+        "operationId": "toggle_goal_api_v1_dashboard_goals__key__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoalIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/mcqs": {
+      "get": {
+        "tags": [
+          "MCQ bank"
+        ],
+        "summary": "List Questions",
+        "operationId": "list_questions_api_v1_mcqs_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "shuffle",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Shuffle"
+            }
+          },
+          {
+            "name": "subject",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Subject"
+            }
+          },
+          {
+            "name": "topic",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Topic"
+            }
+          },
+          {
+            "name": "difficulty",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Difficulty"
+            }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "all",
+                "bookmarked",
+                "mistakes"
+              ],
+              "type": "string",
+              "default": "all",
+              "title": "Mode"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/mcqs/{question_id}/answer": {
+      "post": {
+        "tags": [
+          "MCQ bank"
+        ],
+        "summary": "Answer",
+        "operationId": "answer_api_v1_mcqs__question_id__answer_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "question_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Question Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnswerOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/mcqs/{question_id}/bookmark": {
+      "put": {
+        "tags": [
+          "MCQ bank"
+        ],
+        "summary": "Bookmark",
+        "operationId": "bookmark_api_v1_mcqs__question_id__bookmark_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "question_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Question Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToggleIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/medbytes": {
+      "get": {
+        "tags": [
+          "MedBytes"
+        ],
+        "summary": "Clips",
+        "operationId": "clips_api_v1_medbytes_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "subject",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Subject"
+            }
+          },
+          {
+            "name": "exam",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Exam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClipPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/medbytes/{clip_id}/complete": {
+      "post": {
+        "tags": [
+          "MedBytes"
+        ],
+        "summary": "Complete",
+        "operationId": "complete_api_v1_medbytes__clip_id__complete_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "clip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Clip Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompleteOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/medbytes/{clip_id}/save": {
+      "post": {
+        "tags": [
+          "MedBytes"
+        ],
+        "summary": "Save",
+        "operationId": "save_api_v1_medbytes__clip_id__save_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "clip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Clip Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/anatomy": {
+      "get": {
+        "tags": [
+          "Anatomy"
+        ],
+        "summary": "Anatomy",
+        "operationId": "anatomy_api_v1_anatomy_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnatomyOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/anatomy/{structure_id}/studied": {
+      "put": {
+        "tags": [
+          "Anatomy"
+        ],
+        "summary": "Studied",
+        "operationId": "studied_api_v1_anatomy__structure_id__studied_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "structure_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Structure Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notes": {
+      "get": {
+        "tags": [
+          "Saved study material"
+        ],
+        "summary": "Notes",
+        "operationId": "notes_api_v1_notes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SavedOut"
+                  },
+                  "type": "array",
+                  "title": "Response Notes Api V1 Notes Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/flashcards": {
+      "get": {
+        "tags": [
+          "Saved study material"
+        ],
+        "summary": "Flashcards",
+        "operationId": "flashcards_api_v1_flashcards_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SavedOut"
+                  },
+                  "type": "array",
+                  "title": "Response Flashcards Api V1 Flashcards Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/saved/{item_id}": {
+      "delete": {
+        "tags": [
+          "Saved study material"
+        ],
+        "summary": "Remove",
+        "operationId": "remove_api_v1_saved__item_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/planner": {
+      "get": {
+        "tags": [
+          "Upcoming features"
+        ],
+        "summary": "Feature",
+        "operationId": "feature_api_v1_planner_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeatureOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community": {
+      "get": {
+        "tags": [
+          "Upcoming features"
+        ],
+        "summary": "Feature",
+        "operationId": "feature_api_v1_community_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeatureOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/tutor": {
+      "get": {
+        "tags": [
+          "Upcoming features"
+        ],
+        "summary": "Feature",
+        "operationId": "feature_api_v1_tutor_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeatureOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/lectures": {
+      "get": {
+        "tags": [
+          "Upcoming features"
+        ],
+        "summary": "Feature",
+        "operationId": "feature_api_v1_lectures_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeatureOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/progress": {
+      "get": {
+        "tags": [
+          "Upcoming features"
+        ],
+        "summary": "Feature",
+        "operationId": "feature_api_v1_progress_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeatureOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/resources": {
+      "get": {
+        "tags": [
+          "Upcoming features"
+        ],
+        "summary": "Feature",
+        "operationId": "feature_api_v1_resources_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeatureOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Operations"
+        ],
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnatomyOut": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope"
+          },
+          "structures": {
+            "items": {
+              "$ref": "#/components/schemas/StructureOut"
+            },
+            "type": "array",
+            "title": "Structures"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "scope",
+          "structures"
+        ],
+        "title": "AnatomyOut"
+      },
+      "AnswerIn": {
+        "properties": {
+          "selected_index": {
+            "type": "integer",
+            "maximum": 3.0,
+            "minimum": 0.0,
+            "title": "Selected Index"
+          },
+          "request_id": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9-]{36}$",
+            "title": "Request Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "selected_index",
+          "request_id"
+        ],
+        "title": "AnswerIn"
+      },
+      "AnswerOut": {
+        "properties": {
+          "correct": {
+            "type": "boolean",
+            "title": "Correct"
+          },
+          "correct_index": {
+            "type": "integer",
+            "title": "Correct Index"
+          },
+          "selected_index": {
+            "type": "integer",
+            "title": "Selected Index"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "correct",
+          "correct_index",
+          "selected_index",
+          "explanation",
+          "source_url"
+        ],
+        "title": "AnswerOut"
+      },
+      "ClipOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          },
+          "topic": {
+            "type": "string",
+            "title": "Topic"
+          },
+          "exam": {
+            "type": "string",
+            "title": "Exam"
+          },
+          "creator": {
+            "type": "string",
+            "title": "Creator"
+          },
+          "credentials": {
+            "type": "string",
+            "title": "Credentials"
+          },
+          "duration": {
+            "type": "integer",
+            "title": "Duration"
+          },
+          "video_path": {
+            "type": "string",
+            "title": "Video Path"
+          },
+          "poster_path": {
+            "type": "string",
+            "title": "Poster Path"
+          },
+          "transcript": {
+            "type": "string",
+            "title": "Transcript"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "saved_note": {
+            "type": "boolean",
+            "title": "Saved Note",
+            "default": false
+          },
+          "saved_flashcard": {
+            "type": "boolean",
+            "title": "Saved Flashcard",
+            "default": false
+          },
+          "watched": {
+            "type": "boolean",
+            "title": "Watched",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "subject",
+          "topic",
+          "exam",
+          "creator",
+          "credentials",
+          "duration",
+          "video_path",
+          "poster_path",
+          "transcript",
+          "source_url"
+        ],
+        "title": "ClipOut"
+      },
+      "ClipPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ClipOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "subjects": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Subjects"
+          },
+          "exams": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Exams"
+          },
+          "completed_today": {
+            "type": "integer",
+            "title": "Completed Today"
+          },
+          "session_limit": {
+            "type": "integer",
+            "title": "Session Limit",
+            "default": 3
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "subjects",
+          "exams",
+          "completed_today"
+        ],
+        "title": "ClipPage"
+      },
+      "CompleteOut": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok",
+            "default": true
+          },
+          "completed_today": {
+            "type": "integer",
+            "title": "Completed Today"
+          }
+        },
+        "type": "object",
+        "required": [
+          "completed_today"
+        ],
+        "title": "CompleteOut"
+      },
+      "DashboardOut": {
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserOut"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "progress": {
+            "type": "integer",
+            "title": "Progress"
+          },
+          "streak": {
+            "type": "integer",
+            "title": "Streak"
+          },
+          "days_to_exam": {
+            "type": "integer",
+            "title": "Days To Exam"
+          },
+          "exam_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Exam At"
+          },
+          "answered_today": {
+            "type": "integer",
+            "title": "Answered Today"
+          },
+          "daily_target": {
+            "type": "integer",
+            "title": "Daily Target"
+          },
+          "accuracy": {
+            "type": "integer",
+            "title": "Accuracy"
+          },
+          "total_answered": {
+            "type": "integer",
+            "title": "Total Answered"
+          },
+          "clips_today": {
+            "type": "integer",
+            "title": "Clips Today"
+          },
+          "goals": {
+            "items": {
+              "$ref": "#/components/schemas/GoalOut"
+            },
+            "type": "array",
+            "title": "Goals"
+          },
+          "schedule": {
+            "items": {
+              "$ref": "#/components/schemas/ScheduleOut"
+            },
+            "type": "array",
+            "title": "Schedule"
+          },
+          "topics": {
+            "items": {
+              "$ref": "#/components/schemas/TopicProgress"
+            },
+            "type": "array",
+            "title": "Topics"
+          },
+          "badges": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Badges"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "date",
+          "progress",
+          "streak",
+          "days_to_exam",
+          "exam_at",
+          "answered_today",
+          "daily_target",
+          "accuracy",
+          "total_answered",
+          "clips_today",
+          "goals",
+          "schedule",
+          "topics",
+          "badges"
+        ],
+        "title": "DashboardOut"
+      },
+      "FeatureOut": {
+        "properties": {
+          "slug": {
+            "type": "string",
+            "title": "Slug"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "string",
+            "const": "coming_soon",
+            "title": "Status",
+            "default": "coming_soon"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "slug",
+          "title",
+          "description"
+        ],
+        "title": "FeatureOut"
+      },
+      "GoalIn": {
+        "properties": {
+          "done": {
+            "type": "boolean",
+            "title": "Done"
+          }
+        },
+        "type": "object",
+        "required": [
+          "done"
+        ],
+        "title": "GoalIn"
+      },
+      "GoalOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "done": {
+            "type": "boolean",
+            "title": "Done"
+          },
+          "route": {
+            "type": "string",
+            "title": "Route"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "title",
+          "done",
+          "route"
+        ],
+        "title": "GoalOut"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LoginIn": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginIn"
+      },
+      "ProfileIn": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "year": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Year"
+          },
+          "location": {
+            "type": "string",
+            "maxLength": 80,
+            "title": "Location"
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 80,
+            "title": "Timezone"
+          },
+          "exam_name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Exam Name"
+          },
+          "exam_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Exam Date"
+          },
+          "daily_target": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Daily Target"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "year",
+          "location",
+          "timezone",
+          "exam_name",
+          "exam_date",
+          "daily_target"
+        ],
+        "title": "ProfileIn"
+      },
+      "QuestionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          },
+          "topic": {
+            "type": "string",
+            "title": "Topic"
+          },
+          "difficulty": {
+            "type": "string",
+            "title": "Difficulty"
+          },
+          "stem": {
+            "type": "string",
+            "title": "Stem"
+          },
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Options"
+          },
+          "bookmarked": {
+            "type": "boolean",
+            "title": "Bookmarked",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "subject",
+          "topic",
+          "difficulty",
+          "stem",
+          "options"
+        ],
+        "title": "QuestionOut"
+      },
+      "QuestionPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "subjects": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Subjects"
+          },
+          "topics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Topics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "subjects",
+          "topics"
+        ],
+        "title": "QuestionPage"
+      },
+      "RefreshIn": {
+        "properties": {
+          "refresh_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refresh Token"
+          }
+        },
+        "type": "object",
+        "title": "RefreshIn"
+      },
+      "RegisterIn": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 10,
+            "title": "Password"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password",
+          "name"
+        ],
+        "title": "RegisterIn"
+      },
+      "SaveIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "note",
+              "flashcard"
+            ],
+            "title": "Kind"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "title": "SaveIn"
+      },
+      "SavedOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "content",
+          "subject"
+        ],
+        "title": "SavedOut"
+      },
+      "ScheduleOut": {
+        "properties": {
+          "time": {
+            "type": "string",
+            "title": "Time"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "time",
+          "title",
+          "detail",
+          "type"
+        ],
+        "title": "ScheduleOut"
+      },
+      "StructureOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "clinical_note": {
+            "type": "string",
+            "title": "Clinical Note"
+          },
+          "color": {
+            "type": "string",
+            "title": "Color"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "studied": {
+            "type": "boolean",
+            "title": "Studied",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "category",
+          "description",
+          "clinical_note",
+          "color",
+          "source_url"
+        ],
+        "title": "StructureOut"
+      },
+      "Success": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "Success"
+      },
+      "ToggleIn": {
+        "properties": {
+          "saved": {
+            "type": "boolean",
+            "title": "Saved"
+          }
+        },
+        "type": "object",
+        "required": [
+          "saved"
+        ],
+        "title": "ToggleIn"
+      },
+      "TokenOut": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          },
+          "refresh_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refresh Token"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "user"
+        ],
+        "title": "TokenOut"
+      },
+      "TopicProgress": {
+        "properties": {
+          "topic": {
+            "type": "string",
+            "title": "Topic"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          },
+          "progress": {
+            "type": "integer",
+            "title": "Progress"
+          },
+          "answered": {
+            "type": "integer",
+            "title": "Answered"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "topic",
+          "subject",
+          "progress",
+          "answered",
+          "total"
+        ],
+        "title": "TopicProgress"
+      },
+      "UserOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "year": {
+            "type": "string",
+            "title": "Year"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          },
+          "exam_name": {
+            "type": "string",
+            "title": "Exam Name"
+          },
+          "exam_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Exam Date"
+          },
+          "daily_target": {
+            "type": "integer",
+            "title": "Daily Target"
+          },
+          "is_guest": {
+            "type": "boolean",
+            "title": "Is Guest"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "name",
+          "year",
+          "location",
+          "timezone",
+          "exam_name",
+          "exam_date",
+          "daily_target",
+          "is_guest"
+        ],
+        "title": "UserOut"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

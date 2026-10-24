@@ -1,0 +1,9 @@
+{
+  "name": "@med-purple/anatomy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "peerDependencies": {
+    "three": ">=0.180.0"
+  }
+}
