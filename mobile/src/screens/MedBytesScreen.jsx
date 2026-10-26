@@ -4,10 +4,12 @@ import { useIsFocused } from "@react-navigation/native";
 import { styles as s } from "../theme";
 import { api, useApp } from "../context/AppContext";
 import useData from "../hooks/useData";
+import Screen, { StaggeredItem } from "../components/Screen";
 import Chips from "../components/Chips";
 import Button from "../components/Button";
 import MedByteCard from "../components/MedByteCard";
 import { Skeleton, ErrorState, EmptyState } from "../components/States";
+import useReducedMotion from "../hooks/useReducedMotion";
 export default function MedBytesScreen({ navigation }) {
   const [subject, setSubject] = useState(""),
     [exam, setExam] = useState(""),
@@ -21,6 +23,7 @@ export default function MedBytesScreen({ navigation }) {
   const [moreError, setMoreError] = useState("");
   const pageState = useRef({ cursor: "", cycle: 0, busy: false });
   const focused = useIsFocused();
+  const reduced = useReducedMotion();
   const { height } = useWindowDimensions();
   const [cardHeight, setCardHeight] = useState(Math.max(320, height - 220));
   const { data, loading, error, reload } = useData(
@@ -81,7 +84,7 @@ export default function MedBytesScreen({ navigation }) {
   const watched = Math.max(data.completed_today, dailyWatched);
   if (!started)
     return (
-      <View style={[s.screen, s.content]}>
+      <Screen scroll={false} decorations={false}>
         <Text style={s.title}>Big ideas.{"\n"}Small bytes.</Text>
         <Text style={s.subtitle}>
           Choose a focus, then swipe through medical learning videos.
@@ -117,23 +120,27 @@ export default function MedBytesScreen({ navigation }) {
           variant="secondary"
           onPress={() => navigation.navigate("Flashcards")}
         />
-      </View>
+      </Screen>
     );
   return (
     <View style={s.screen}>
-      <View style={[s.between, { paddingHorizontal: 20, paddingVertical: 13 }]}>
-        <Text style={s.pillText}>{watched} explored today</Text>
-        <Button
-          title="Change focus"
-          variant="secondary"
-          onPress={() => setStarted(false)}
-        />
-      </View>
-      <FlatList
-        key={cardHeight}
-        onLayout={(event) =>
-          setCardHeight(Math.round(event.nativeEvent.layout.height))
-        }
+      <StaggeredItem index={0} reduced={reduced}>
+        <View style={[s.between, { paddingHorizontal: 20, paddingVertical: 13 }]}>
+          <Text style={s.pillText}>{watched} explored today</Text>
+          <Button
+            title="Change focus"
+            variant="secondary"
+            onPress={() => setStarted(false)}
+          />
+        </View>
+      </StaggeredItem>
+      <StaggeredItem index={1} reduced={reduced} style={{ flex: 1 }}>
+        <FlatList
+          key={cardHeight}
+          style={{ flex: 1 }}
+          onLayout={(event) =>
+            setCardHeight(Math.round(event.nativeEvent.layout.height))
+          }
         initialScrollIndex={active}
         getItemLayout={(_, index) => ({
           length: cardHeight,
@@ -167,7 +174,7 @@ export default function MedBytesScreen({ navigation }) {
             onComplete={complete}
           />
         )}
-        ListFooterComponent={
+          ListFooterComponent={
           <View style={[s.card, { marginTop: 10 }]}>
             <Text style={[s.title, { fontSize: 29 }]}>
               {moreLoading ? "Loading videos…" : "Keep exploring"}
@@ -193,8 +200,9 @@ export default function MedBytesScreen({ navigation }) {
               onPress={() => navigation.navigate("Home")}
             />
           </View>
-        }
-      />
+          }
+        />
+      </StaggeredItem>
     </View>
   );
 }

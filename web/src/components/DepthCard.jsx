@@ -1,9 +1,19 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { motion as tokens } from "@med-purple/design-tokens";
 import s from "./DepthCard.module.css";
 export default function DepthCard({ children, className = "" }) {
   const frame = useRef(null);
+  const pointerFrame = useRef(0);
+  const pointerPosition = useRef({ x: 0, y: 0 });
+  useEffect(
+    () => () => {
+      if (pointerFrame.current) cancelAnimationFrame(pointerFrame.current);
+    },
+    [],
+  );
   const reset = () => {
+    if (pointerFrame.current) cancelAnimationFrame(pointerFrame.current);
+    pointerFrame.current = 0;
     frame.current?.style.removeProperty("--tilt-x");
     frame.current?.style.removeProperty("--tilt-y");
     frame.current?.style.removeProperty("--hover-scale");
@@ -13,8 +23,13 @@ export default function DepthCard({ children, className = "" }) {
       ref={frame}
       className={`${s.frame} ${className}`}
       onPointerEnter={(e) => {
-        if (e.pointerType !== "touch")
-          e.currentTarget.style.setProperty("--hover-scale", "1.008");
+        if (
+          e.pointerType === "touch" ||
+          document.documentElement.dataset.calm === "true" ||
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        )
+          return;
+        e.currentTarget.style.setProperty("--hover-scale", "1.008");
       }}
       onPointerMove={(e) => {
         if (
@@ -23,26 +38,23 @@ export default function DepthCard({ children, className = "" }) {
           window.matchMedia("(prefers-reduced-motion: reduce)").matches
         )
           return;
-        const r = e.currentTarget.getBoundingClientRect();
-        const pointerX = e.clientX - r.left;
-        const pointerY = e.clientY - r.top;
-        const tilt = Math.max(tokens.tiltDegrees, 10);
-        e.currentTarget.style.setProperty(
-          "--tilt-x",
-          `${((r.height / 2 - pointerY) / r.height) * tilt}deg`,
-        );
-        e.currentTarget.style.setProperty(
-          "--tilt-y",
-          `${((pointerX - r.width / 2) / r.width) * tilt}deg`,
-        );
-        e.currentTarget.style.setProperty(
-          "--glare-x",
-          `${(pointerX / r.width) * 100}%`,
-        );
-        e.currentTarget.style.setProperty(
-          "--glare-y",
-          `${(pointerY / r.height) * 100}%`,
-        );
+        pointerPosition.current = { x: e.clientX, y: e.clientY };
+        if (pointerFrame.current) return;
+        pointerFrame.current = requestAnimationFrame(() => {
+          pointerFrame.current = 0;
+          const card = frame.current;
+          if (!card) return;
+          const r = card.getBoundingClientRect();
+          const width = card.offsetWidth || r.width;
+          const height = card.offsetHeight || r.height;
+          const pointerX = pointerPosition.current.x - (r.left + r.width / 2);
+          const pointerY = pointerPosition.current.y - (r.top + r.height / 2);
+          const tilt = Math.min(tokens.tiltDegrees, 6);
+          card.style.setProperty("--tilt-x", `${(-pointerY / height) * tilt}deg`);
+          card.style.setProperty("--tilt-y", `${(pointerX / width) * tilt}deg`);
+          card.style.setProperty("--glare-x", `${(pointerX / width + 0.5) * 100}%`);
+          card.style.setProperty("--glare-y", `${(pointerY / height + 0.5) * 100}%`);
+        });
       }}
       onPointerLeave={reset}
     >

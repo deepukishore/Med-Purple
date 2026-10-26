@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { View, Text } from "react-native";
-import { styles as s } from "../theme";
+import { View, Text, Image } from "react-native";
+import { styles as s, colors } from "../theme";
 import useData from "../hooks/useData";
 import Screen from "../components/Screen";
 import Button from "../components/Button";
 import FormField from "../components/FormField";
+import AvatarPortrait from "../components/AvatarPortrait";
+import { mediaUrl } from "../context/AppContext";
 import { Skeleton, ErrorState } from "../components/States";
 
 function ProfileHighlights({ userId, navigation }) {
@@ -69,8 +71,21 @@ export default function StudentsScreen({ navigation, route }) {
       ) : id ? (
         <>
           <View style={s.card}>
-            <Text style={s.heading}>{data.name}</Text>
-            <Text style={s.small}>{data.year}</Text>
+            <View style={[s.row, { alignItems: "center" }]}>
+              {data.avatar_photo_url ? (
+                <Image
+                  source={{ uri: `${mediaUrl}${data.avatar_photo_url}` }}
+                  accessibilityLabel={`${data.name}'s profile photo`}
+                  style={{ width: 68, height: 68, borderRadius: 34, borderWidth: 2, borderColor: colors.line }}
+                />
+              ) : (
+                <AvatarPortrait avatarId={data.avatar_id} name={data.name} size={68} />
+              )}
+              <View style={{ flex: 1 }}>
+                <Text style={s.heading}>{data.name}</Text>
+                <Text style={s.small}>{data.year}</Text>
+              </View>
+            </View>
             <Text style={s.pillText}>
               Level {data.level} · {data.xp} XP
             </Text>
@@ -98,8 +113,12 @@ export default function StudentsScreen({ navigation, route }) {
         <>
           {data.items.map((person) => (
             <View style={s.card} key={person.id}>
-              <Text style={s.heading}>{person.name}</Text>
-              <Text style={s.small}>{person.year}</Text>
+              <View style={[s.row, { alignItems: "center" }]}>
+                <View style={{ flex: 1 }}>
+                  <Text style={s.heading}>{person.name}</Text>
+                  <Text style={s.small}>{person.year}</Text>
+                </View>
+              </View>
               <Text style={s.pillText}>
                 Level {person.level} · {person.xp} XP
               </Text>

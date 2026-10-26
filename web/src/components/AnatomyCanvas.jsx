@@ -10,6 +10,7 @@ export default function AnatomyCanvas({
   showVessels = true,
   modelId = "heart",
   autoRotate = false,
+  resetOnLeave = true,
 }) {
   const host = useRef(),
     engine = useRef(),
@@ -67,7 +68,6 @@ export default function AnatomyCanvas({
     let start = null,
       lastDistance = 0;
     const down = (e) => {
-      if (compact) return;
       el.setPointerCapture(e.pointerId);
       points.set(e.pointerId, [e.clientX, e.clientY]);
       start = [e.clientX, e.clientY];
@@ -78,6 +78,15 @@ export default function AnatomyCanvas({
     };
     const move = (e) => {
       if (compact) {
+        const last = points.get(e.pointerId);
+        if (last) {
+          points.set(e.pointerId, [e.clientX, e.clientY]);
+          model.rotate(
+            (e.clientX - last[0]) * 0.009,
+            (e.clientY - last[1]) * 0.008,
+          );
+          return;
+        }
         if (e.pointerType === "mouse" && !reduced) {
           const b = el.getBoundingClientRect();
           model.targets.y =
@@ -118,7 +127,7 @@ export default function AnatomyCanvas({
       start = null;
     };
     const leave = () => {
-      if (compact) model.reset();
+      if (compact && resetOnLeave && points.size === 0) model.reset();
     };
     const wheel = (e) => {
       if (compact) return;
@@ -149,7 +158,7 @@ export default function AnatomyCanvas({
       renderer.domElement.remove();
       engine.current = null;
     };
-  }, [compact, modelId]);
+  }, [compact, modelId, resetOnLeave]);
   useEffect(() => {
     engine.current?.select(selected);
   }, [selected, modelId]);
@@ -165,13 +174,13 @@ export default function AnatomyCanvas({
   return (
     <div
       ref={host}
-      role={compact ? "img" : "application"}
+      role="application"
       aria-label={
         compact
-          ? "Schematic 3D heart preview"
+          ? "Interactive schematic 3D heart preview. Drag or use arrow keys to rotate; click a chamber to highlight it."
           : `Interactive ${modelId} model. Drag to rotate, pinch or scroll to zoom. Arrow keys rotate; plus and minus zoom; R resets.`
       }
-      tabIndex={compact ? -1 : 0}
+      tabIndex={0}
       onKeyDown={(e) => {
         const m = engine.current;
         if (!m) return;
@@ -193,8 +202,8 @@ export default function AnatomyCanvas({
         width: "100%",
         height: "100%",
         minHeight: compact ? 160 : 340,
-        touchAction: compact ? "auto" : "none",
-        cursor: compact ? "default" : "grab",
+        touchAction: compact ? "pan-y" : "none",
+        cursor: "grab",
         position: "relative",
       }}
     >

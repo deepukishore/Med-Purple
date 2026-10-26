@@ -5,6 +5,8 @@ import usePageMeta from "../hooks/usePageMeta";
 import { SocialTabs } from "./SocialFeed";
 import { PageSkeleton, ErrorState } from "../components/States";
 import Button from "../components/Button";
+import AvatarPortrait from "../components/AvatarPortrait";
+import { profilePhotoSrc } from "../utils/profilePhoto";
 import s from "./Social.module.css";
 
 function ProfileHighlights({ userId }) {
@@ -81,7 +83,11 @@ export default function Students() {
       ) : id ? (
         <>
           <section className={s.profileHero}>
-            <span className={s.bigAvatar}>{data.name[0]}</span>
+            {data.avatar_photo_url ? (
+              <img className={s.profilePhoto} src={profilePhotoSrc(data.avatar_photo_url)} alt={`${data.name}'s profile photo`} />
+            ) : (
+              <AvatarPortrait avatarId={data.avatar_id} name={data.name} size={85} />
+            )}
             <div>
               <span className={s.eyebrow}>STUDENT PROFILE</span>
               <h2>{data.name}</h2>

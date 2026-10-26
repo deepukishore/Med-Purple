@@ -1,22 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Alert, Pressable } from "react-native";
+import { View, Text, Alert, Pressable, Image, Modal, ScrollView, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import { styles as s, colors } from "../theme";
-import { api, useApp } from "../context/AppContext";
+import { api, mediaUrl, useApp } from "../context/AppContext";
 import Screen from "../components/Screen";
 import Button from "../components/Button";
 import FormField from "../components/FormField";
 import StudentDetails from "../components/StudentDetails";
 import Chips from "../components/Chips";
 import XPLevel from "../components/XPLevel";
+import AvatarPicker from "../components/AvatarPicker";
+import AvatarPortrait from "../components/AvatarPortrait";
+import useData from "../hooks/useData";
+import { defaultAvatarId } from "../../../shared/avatar-presets.js";
 export default function ProfileScreen({ navigation }) {
   const { user, setUser, notify, changed, initialize } = useApp();
+  const { data: featureState, reload: reloadFeatures } = useData("/features");
   const [form, setForm] = useState(null),
     [busy, setBusy] = useState(false),
+    [avatarBusy, setAvatarBusy] = useState(false),
+    [avatarId, setAvatarId] = useState(defaultAvatarId(user.id)),
+    [photoUrl, setPhotoUrl] = useState(null),
+    [avatarOpen, setAvatarOpen] = useState(false),
     [error, setError] = useState("");
   useEffect(() => {
     const { id, email, is_guest, ...rest } = user;
     setForm(rest);
   }, [user]);
+  useEffect(() => {
+    if (featureState) {
+      setAvatarId(featureState.preferences?.avatar_id || defaultAvatarId(user.id));
+      setPhotoUrl(featureState.preferences?.avatar_photo_url || null);
+    }
+  }, [featureState, user.id]);
   if (!form) return null;
   const field = (key, value) => setForm((x) => ({ ...x, [key]: value }));
   async function save() {
@@ -40,6 +57,78 @@ export default function ProfileScreen({ navigation }) {
       notify(e.message);
     } finally {
       setBusy(false);
+    }
+  }
+  async function saveAvatar() {
+    setAvatarBusy(true);
+    setError("");
+    try {
+      const current = await api.get("/features");
+      await api.patch("/features", { preferences: { ...(current.preferences || {}), avatar_id: avatarId } });
+      if (photoUrl) {
+        await api.delete("/profiles/me/avatar");
+        setPhotoUrl(null);
+      }
+      reloadFeatures();
+      notify("Your profile avatar is ready.");
+      setAvatarOpen(false);
+    } catch (e) {
+      setError(e.message);
+      notify(e.message);
+    } finally {
+      setAvatarBusy(false);
+    }
+  }
+  async function choosePhoto() {
+    setError("");
+    try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        notify("Allow photo access to choose a profile picture.");
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [1, 1],
+        base64: true,
+        quality: 0.72,
+      });
+      const asset = result.assets?.[0];
+      if (result.canceled || !asset) return;
+      if (!asset.base64) throw new Error("This photo could not be prepared. Choose another image.");
+      const mime = asset.mimeType || "image/jpeg";
+      if (!["image/jpeg", "image/png", "image/webp"].includes(mime))
+        throw new Error("Choose a JPEG, PNG, or WebP photo.");
+      setAvatarBusy(true);
+      const saved = await api.put("/profiles/me/avatar", {
+        data_url: `data:${mime};base64,${asset.base64}`,
+      });
+      setPhotoUrl(saved.avatar_photo_url);
+      reloadFeatures();
+      notify("Profile photo updated.");
+      setAvatarOpen(false);
+    } catch (e) {
+      setError(e.message);
+      notify(e.message);
+    } finally {
+      setAvatarBusy(false);
+    }
+  }
+  async function removePhoto() {
+    setAvatarBusy(true);
+    setError("");
+    try {
+      await api.delete("/profiles/me/avatar");
+      setPhotoUrl(null);
+      reloadFeatures();
+      notify("Profile photo removed.");
+      setAvatarOpen(false);
+    } catch (e) {
+      setError(e.message);
+      notify(e.message);
+    } finally {
+      setAvatarBusy(false);
     }
   }
   async function logout() {
@@ -85,12 +174,78 @@ export default function ProfileScreen({ navigation }) {
           Your goals, your pace, your next chapter.
         </Text>
       </View>
-      {!!error && (
+      {!!error && !avatarOpen && (
         <Text accessibilityLiveRegion="polite" style={s.error}>
           {error}
         </Text>
       )}
       <XPLevel navigation={navigation} />
+      <View style={[s.row, { padding: 14, borderRadius: 16, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line }]}>
+        {photoUrl ? (
+          <Image
+            source={{ uri: `${mediaUrl}${photoUrl}` }}
+            accessibilityLabel={`${user.name}'s profile photo`}
+            style={{ width: 64, height: 64, borderRadius: 32, borderWidth: 2, borderColor: colors.line }}
+          />
+        ) : (
+          <AvatarPortrait avatarId={avatarId} name={user.name} size={64} />
+        )}
+        <View style={{ flex: 1 }}>
+          <Text style={s.heading}>{user.name}</Text>
+          <Text style={s.small}>{user.year}</Text>
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Edit profile avatar"
+          accessibilityHint="Opens photo and avatar choices"
+          onPress={() => setAvatarOpen(true)}
+          style={{ minHeight: 44, paddingHorizontal: 11, borderRadius: 11, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 6 }}
+        >
+          <Ionicons name="pencil-outline" size={15} color={colors.purple[700]} />
+          <Text style={{ fontFamily: "Manrope_700Bold", fontSize: 11, color: colors.purple[700] }}>Edit avatar</Text>
+        </Pressable>
+      </View>
+      <Modal visible={avatarOpen} transparent animationType="fade" onRequestClose={() => setAvatarOpen(false)}>
+        <View style={modalStyles.backdrop}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => setAvatarOpen(false)} accessibilityLabel="Close avatar editor" />
+          <View accessibilityViewIsModal style={modalStyles.panel}>
+            <View style={modalStyles.header}>
+              <Text style={modalStyles.title}>Edit your avatar</Text>
+              <Pressable accessibilityRole="button" accessibilityLabel="Close avatar editor" onPress={() => setAvatarOpen(false)} style={modalStyles.close}>
+                <Ionicons name="close" size={21} color={colors.ink} />
+              </Pressable>
+            </View>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={modalStyles.content}>
+              {!!error && <Text accessibilityRole="alert" style={s.error}>{error}</Text>}
+              <View style={modalStyles.photoCard}>
+                {photoUrl ? (
+                  <Image source={{ uri: `${mediaUrl}${photoUrl}` }} accessibilityLabel="Current profile photo" style={modalStyles.photo} />
+                ) : (
+                  <AvatarPortrait avatarId={avatarId} name={user.name} size={48} interactive={false} />
+                )}
+                <View style={{ flex: 1, gap: 3 }}>
+                  <Text style={modalStyles.photoTitle}>{photoUrl ? "Profile photo" : "Add a profile photo"}</Text>
+                  <Text style={modalStyles.photoHint}>{photoUrl ? "Your photo appears on your profile." : "Choose a photo or an illustrated avatar below."}</Text>
+                </View>
+              </View>
+              <View style={modalStyles.photoActions}>
+                <Button title={photoUrl ? "Change photo" : "Add photo"} variant="secondary" loading={avatarBusy} onPress={choosePhoto} />
+                {photoUrl && <Button title="Remove photo" variant="secondary" disabled={avatarBusy} onPress={removePhoto} />}
+              </View>
+              <View style={modalStyles.picker}>
+                <AvatarPicker
+                  value={avatarId}
+                  onChange={setAvatarId}
+                  saved={photoUrl ? null : featureState?.preferences?.avatar_id || defaultAvatarId(user.id)}
+                  onSave={saveAvatar}
+                  saving={avatarBusy}
+                  compact
+                />
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
       <Button
         title="View your public profile"
         variant="secondary"
@@ -215,3 +370,74 @@ export default function ProfileScreen({ navigation }) {
     </Screen>
   );
 }
+
+const modalStyles = StyleSheet.create({
+  backdrop: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+    backgroundColor: `${colors.purple[900]}99`,
+  },
+  panel: {
+    width: "100%",
+    maxWidth: 460,
+    maxHeight: "92%",
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: 20,
+    backgroundColor: colors.surface,
+    elevation: 18,
+  },
+  header: {
+    minHeight: 54,
+    paddingLeft: 16,
+    paddingRight: 9,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
+  },
+  title: { fontFamily: "Manrope_700Bold", color: colors.ink, fontSize: 15 },
+  close: {
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 11,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.canvas,
+  },
+  content: { padding: 12, gap: 10 },
+  photoCard: {
+    minHeight: 68,
+    padding: 9,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.surface,
+  },
+  photo: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: colors.line,
+  },
+  photoTitle: { fontFamily: "Manrope_700Bold", fontSize: 11, color: colors.ink },
+  photoHint: { fontFamily: "Manrope_400Regular", fontSize: 10, lineHeight: 14, color: colors.muted },
+  photoActions: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  picker: {
+    padding: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.surface,
+  },
+});

@@ -21,6 +21,7 @@ import Button from "../components/Button";
 import XPLevel from "../components/XPLevel";
 import { PageSkeleton, ErrorState } from "../components/States";
 import StoryShelf from "./StoryShelf";
+import { POST_REACTIONS } from "../../../shared/post-reactions.js";
 import s from "./Social.module.css";
 
 export function SocialTabs() {
@@ -43,6 +44,30 @@ export function Author({ item }) {
         </small>
       </span>
     </Link>
+  );
+}
+
+function PostReactions({ item, disabled, onReact }) {
+  return (
+    <div className={s.postReactions} role="group" aria-label="React to this post">
+      {POST_REACTIONS.map(({ id, emoji, label }) => {
+        const count = item.reaction_counts?.[id] || 0;
+        const active = item.my_reactions?.includes(id) || false;
+        return (
+          <button
+            type="button"
+            key={id}
+            disabled={disabled}
+            aria-label={`${label}${count ? `, ${count}` : ""}`}
+            aria-pressed={active}
+            onClick={() => onReact(item, id, !active)}
+          >
+            <span aria-hidden="true">{emoji}</span>
+            {count > 0 && <small>{count}</small>}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -402,6 +427,9 @@ export default function SocialFeed({ doubts = false }) {
       api.put(`${endpoint}/${item.id}/like`, { liked: !item.liked }),
     );
   }
+  function react(item, reaction, active) {
+    action(() => api.put(`${endpoint}/${item.id}/reactions`, { reaction, active }));
+  }
   return (
     <div className={s.page}>
       <header className={s.head}>
@@ -622,6 +650,7 @@ export default function SocialFeed({ doubts = false }) {
                     </Button>
                   )}
                 </div>
+                <PostReactions item={data} disabled={busy} onReact={react} />
               </article>
               <h2>
                 {data.messages.length}{" "}
@@ -807,6 +836,7 @@ export default function SocialFeed({ doubts = false }) {
                       {new Date(item.created_at).toLocaleDateString()}
                     </span>
                   </div>
+                  <PostReactions item={item} disabled={busy} onReact={react} />
                 </article>
               ))}
               {!data.items.length && (

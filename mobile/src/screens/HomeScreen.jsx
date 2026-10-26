@@ -81,8 +81,20 @@ export default function HomeScreen({ navigation }) {
       setPending(false);
     }
   }
+  const chooseSession = (index) => {
+    Haptics.selectionAsync().catch(() => {});
+    setSession(index);
+  };
+  const chooseSprintSize = (size) => {
+    Haptics.selectionAsync().catch(() => {});
+    setSprintSize(size);
+  };
+  const chooseSprintSubject = (subject) => {
+    Haptics.selectionAsync().catch(() => {});
+    setSprintSubject(subject);
+  };
   return (
-    <Screen onRefresh={reload} refreshing={loading}>
+    <Screen onRefresh={reload} refreshing={loading} stagger>
       <View>
         <Text style={s.pillText}>YOUR MED-SCHOOL STUDY DESK</Text>
         <Text style={s.title}>
@@ -132,7 +144,7 @@ export default function HomeScreen({ navigation }) {
               key={item.label}
               accessibilityRole="button"
               accessibilityState={{ selected: session === index }}
-              onPress={() => setSession(index)}
+              onPress={() => chooseSession(index)}
               style={[h.sessionTab, session === index && h.selectedTab]}
             >
               <Text
@@ -163,7 +175,7 @@ export default function HomeScreen({ navigation }) {
                   accessibilityRole="button"
                   accessibilityLabel={`${n} questions`}
                   accessibilityState={{ selected: sprintSize === n }}
-                  onPress={() => setSprintSize(n)}
+                  onPress={() => chooseSprintSize(n)}
                   style={[
                     h.sessionTab,
                     {
@@ -197,7 +209,7 @@ export default function HomeScreen({ navigation }) {
                     key={subject}
                     accessibilityRole="button"
                     accessibilityState={{ selected: sprintSubject === subject }}
-                    onPress={() => setSprintSubject(subject)}
+                    onPress={() => chooseSprintSubject(subject)}
                     style={[
                       h.sessionTab,
                       sprintSubject === subject && h.selectedTab,
@@ -361,7 +373,7 @@ export default function HomeScreen({ navigation }) {
           <Text style={[s.title, { fontSize: 25, lineHeight: 30 }]}>
             See the bigger picture.
           </Text>
-          <Text style={s.small}>Turn it. Explore it. Understand it.</Text>
+          <Text style={s.small}>Swipe the model to turn it. Explore every angle.</Text>
           <Button
             title="Explore the heart"
             variant="secondary"
@@ -369,7 +381,7 @@ export default function HomeScreen({ navigation }) {
           />
         </View>
         <View style={{ width: 130 }}>
-          <HeartViewer compact height={220} />
+          <HeartViewer compact interactiveCompact height={220} />
         </View>
       </View>
       <View style={s.card}>

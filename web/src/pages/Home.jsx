@@ -24,6 +24,7 @@ import FocusTimer from "../components/FocusTimer";
 import StudyLaunchpad from "../components/StudyLaunchpad";
 import QuickRecall from "../components/QuickRecall";
 import StoryBar from "../components/StoryBar";
+import useStudyDeskMotion from "../hooks/useStudyDeskMotion";
 import s from "./Desk.module.css";
 const AnatomyCanvas = lazy(() => import("../components/AnatomyCanvas"));
 export default function Home() {
@@ -34,6 +35,14 @@ export default function Home() {
   const dashboard = useData("/dashboard"),
     progress = useData("/progress"),
     storyOfDay = useData("/stories/featured");
+  const deskReady = Boolean(dashboard.data && progress.data);
+  const {
+    deskRef,
+    atlasCardRef,
+    atlasModelRef,
+    handleAtlasPointerMove,
+    resetAtlasPointer,
+  } = useStudyDeskMotion(s, deskReady);
   if (
     (dashboard.loading && !dashboard.data) ||
     (progress.loading && !progress.data)
@@ -81,7 +90,7 @@ export default function Home() {
     },
   ];
   return (
-    <div className={s.desk}>
+    <div className={s.desk} ref={deskRef}>
       <header className={s.welcome}>
         <div>
           <p className={s.overline}>MED PURPLE / STUDY DESK</p>
@@ -277,7 +286,12 @@ export default function Home() {
               <Link to="/progress">View progress</Link>
             </div>
           </section>
-          <section className={s.atlasPreview}>
+          <section
+            className={s.atlasPreview}
+            ref={atlasCardRef}
+            onPointerMove={handleAtlasPointerMove}
+            onPointerLeave={resetAtlasPointer}
+          >
             <div className={s.atlasPreviewCopy}>
               <p className={s.overline}>LIVE 3D ATLAS</p>
               <h2>Explore the human heart.</h2>
@@ -285,6 +299,9 @@ export default function Home() {
                 Enter anatomy studio <ArrowUpRight size={16} />
               </Link>
             </div>
+            <span className={s.atlasDragHint} aria-hidden="true">
+              DRAG TO ROTATE
+            </span>
             <Suspense
               fallback={
                 <div className={s.atlasLoading} aria-label="Loading 3D heart">
@@ -293,7 +310,12 @@ export default function Home() {
               }
             >
               <div className={s.atlasModel}>
-                <AnatomyCanvas compact modelId="heart" autoRotate />
+              <AnatomyCanvas
+                compact
+                modelId="heart"
+                autoRotate
+                controlsRef={atlasModelRef}
+              />
               </div>
             </Suspense>
           </section>

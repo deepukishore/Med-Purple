@@ -1,0 +1,118 @@
+.portrait {
+  position: relative;
+  display: inline-grid;
+  flex: 0 0 var(--avatar-size, 56px);
+  width: var(--avatar-size, 56px);
+  height: var(--avatar-size, 56px);
+  vertical-align: middle;
+  border-radius: 32%;
+  perspective: 480px;
+  isolation: isolate;
+  outline: none;
+  transform-style: preserve-3d;
+}
+
+.portrait::after {
+  position: absolute;
+  z-index: -1;
+  inset: 9%;
+  border-radius: 35%;
+  content: "";
+  background: var(--purple-400);
+  filter: blur(14px);
+  opacity: 0.2;
+  transition: opacity 260ms var(--ease), transform 260ms var(--ease);
+}
+
+.portrait svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  border-radius: 32%;
+  filter: drop-shadow(0 5px 7px #29183e22);
+  transition: transform 300ms var(--ease), filter 300ms var(--ease);
+  transform: rotateY(-5deg) rotateX(3deg);
+}
+
+.portrait:hover svg,
+.portrait:focus-visible svg,
+.greeting svg {
+  filter: drop-shadow(0 9px 12px #29183e30);
+  transform: rotateY(8deg) rotateX(-4deg) translateY(-2px);
+}
+
+.portrait:hover::after,
+.portrait:focus-visible::after,
+.greeting::after {
+  opacity: 0.36;
+  transform: scale(1.12);
+}
+
+.portrait:focus-visible {
+  outline: 2px solid var(--purple-600);
+  outline-offset: 3px;
+}
+
+.waveArm {
+  transform-box: view-box;
+  transform-origin: 82px 91px;
+}
+
+.portrait:hover .waveArm,
+.portrait:focus-visible .waveArm,
+.greeting .waveArm {
+  animation: wave 720ms cubic-bezier(0.22, 1, 0.36, 1) 1;
+}
+
+.speech {
+  position: absolute;
+  z-index: 2;
+  left: 72%;
+  bottom: 78%;
+  width: max-content;
+  max-width: 180px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px 12px 12px 3px;
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: var(--shadow-raised);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(0, 5px, 18px) scale(0.94);
+  transition: opacity 160ms ease, transform 220ms var(--ease);
+}
+
+.portrait:hover .speech,
+.portrait:focus-visible .speech,
+.greeting .speech {
+  opacity: 1;
+  transform: translate3d(0, 0, 18px) scale(1);
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0); }
+  22% { transform: rotate(20deg); }
+  44% { transform: rotate(-15deg); }
+  66% { transform: rotate(16deg); }
+  84% { transform: rotate(-7deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portrait svg,
+  .portrait::after,
+  .speech { transition: none; }
+  .portrait:hover svg,
+  .portrait:focus-visible svg,
+  .greeting svg { transform: none; }
+  .portrait:hover .speech,
+  .portrait:focus-visible .speech,
+  .greeting .speech { transform: none; }
+  .portrait:hover .waveArm,
+  .portrait:focus-visible .waveArm,
+  .greeting .waveArm { animation: none; }
+}

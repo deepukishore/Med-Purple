@@ -154,7 +154,7 @@ export function createHeartScene() {
     }
   }
   function frame(time = 0, reduced = false) {
-    if (rotating) targets.y += 0.006;
+    if (rotating && !reduced) targets.y += 0.006;
     heart.rotation.x += (targets.x - heart.rotation.x) * 0.12;
     heart.rotation.y += (targets.y - heart.rotation.y) * 0.12;
     camera.position.z += (targets.zoom - camera.position.z) * 0.16;
@@ -165,7 +165,7 @@ export function createHeartScene() {
       m.position.y += (p[1] * factor - m.position.y) * 0.12;
     }
     if (!reduced) {
-      const s = 1 + Math.sin(time * 0.0013) * 0.006;
+      const s = 1 + Math.sin(time * 0.0017) * 0.012;
       heart.scale.setScalar(s);
     }
   }
@@ -203,6 +203,12 @@ export function createHeartScene() {
     rotate: (dx, dy) => {
       targets.y += dx;
       targets.x = THREE.MathUtils.clamp(targets.x + dy, -1.1, 1.1);
+    },
+    pose: (progress) => {
+      const t = THREE.MathUtils.clamp(progress, 0, 1);
+      targets.y = t * Math.PI * 1.5;
+      targets.x = 0.12 + Math.sin(t * Math.PI) * 0.32;
+      targets.zoom = 8.4 - t * 1.35;
     },
     zoom: (delta) => {
       targets.zoom = THREE.MathUtils.clamp(targets.zoom + delta, 4.5, 13);

@@ -14,6 +14,7 @@ import FormField from "../components/FormField";
 import Chips from "../components/Chips";
 import XPLevel from "../components/XPLevel";
 import StoryShelf from "../components/StoryShelf";
+import { POST_REACTIONS } from "../../../shared/post-reactions.js";
 import { Skeleton, ErrorState } from "../components/States";
 
 function Author({ item, navigation }) {
@@ -25,10 +26,33 @@ function Author({ item, navigation }) {
       style={{ minHeight: 44, justifyContent: "center" }}
     >
       <Text style={s.heading}>{item.author}</Text>
-      <Text style={s.pillText}>
-        Level {item.author_level} · {item.author_xp} XP
-      </Text>
+      <Text style={s.pillText}>Level {item.author_level} · {item.author_xp} XP</Text>
     </Pressable>
+  );
+}
+
+function PostReactions({ item, busy, onReact }) {
+  return (
+    <View accessibilityRole="group" accessibilityLabel="React to this post" style={{ flexDirection: "row", flexWrap: "wrap", gap: 7 }}>
+      {POST_REACTIONS.map(({ id, emoji, label }) => {
+        const count = item.reaction_counts?.[id] || 0;
+        const active = item.my_reactions?.includes(id) || false;
+        return (
+          <Pressable
+            key={id}
+            accessibilityRole="button"
+            accessibilityLabel={`${label}${count ? `, ${count}` : ""}`}
+            accessibilityState={{ selected: active, disabled: busy }}
+            disabled={busy}
+            onPress={() => onReact(item, id, !active)}
+            style={{ minWidth: 44, minHeight: 44, paddingHorizontal: 8, borderRadius: 22, borderWidth: 1, borderColor: active ? colors.purple[600] : colors.line, backgroundColor: active ? colors.purple[50] : colors.surface, alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 4, opacity: busy ? 0.65 : 1 }}
+          >
+            <Text style={{ fontSize: 16 }}>{emoji}</Text>
+            {!!count && <Text style={{ color: colors.ink, fontFamily: "Manrope_700Bold", fontSize: 11 }}>{count}</Text>}
+          </Pressable>
+        );
+      })}
+    </View>
   );
 }
 export default function SocialScreen({ navigation, route, doubts = false }) {
@@ -60,6 +84,9 @@ export default function SocialScreen({ navigation, route, doubts = false }) {
     } finally {
       setBusy(false);
     }
+  }
+  function react(item, reaction, active) {
+    run(() => api.put(`${endpoint}/${item.id}/reactions`, { reaction, active }));
   }
   function remove(path, isPost) {
     Alert.alert("Delete this item?", "This cannot be undone.", [
@@ -248,6 +275,7 @@ export default function SocialScreen({ navigation, route, doubts = false }) {
                 )
               }
             />
+            <PostReactions item={data} busy={busy} onReact={react} />
             {data.mine && (
               <Button
                 title="Delete post"
@@ -363,6 +391,7 @@ export default function SocialScreen({ navigation, route, doubts = false }) {
                     ? "reply"
                     : "replies"}
               </Text>
+              <PostReactions item={item} busy={busy} onReact={react} />
               <Button
                 title={doubts ? "View doubt" : "Join conversation"}
                 variant="secondary"

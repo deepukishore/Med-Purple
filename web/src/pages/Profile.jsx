@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { UserCircle, ShieldCheck } from "@phosphor-icons/react";
+import { UserCircle, ShieldCheck, PencilSimple, X } from "@phosphor-icons/react";
 import { api, useApp } from "../context/AppContext";
 import usePageMeta from "../hooks/usePageMeta";
 import Button from "../components/Button";
+import AvatarPortrait from "../components/AvatarPortrait";
+import AvatarPicker from "../components/AvatarPicker";
 import StudentProfileFields from "../components/StudentProfileFields";
 import XPLevel from "../components/XPLevel";
 import { profileValues } from "../utils/studentProfile";
+import { defaultAvatarId } from "../../../shared/avatar-presets.js";
+import { cropProfilePhoto, profilePhotoSrc } from "../utils/profilePhoto";
+import useData from "../hooks/useData";
 import a from "./Account.module.css";
 import s from "./Library.module.css";
 import u from "../components/ui.module.css";
@@ -14,13 +19,24 @@ export default function Profile() {
   usePageMeta("Profile");
   const [params] = useSearchParams();
   const { user, setUser, notify, changed, initialize } = useApp();
+  const { data: featureState, reload: reloadFeatures } = useData("/features");
+  const photoInput = useRef(null);
+  const avatarDialog = useRef(null);
   const [form, setForm] = useState(null),
     [busy, setBusy] = useState(false),
+    [avatarBusy, setAvatarBusy] = useState(false),
+    [avatarId, setAvatarId] = useState(defaultAvatarId(user.id)),
+    [photoUrl, setPhotoUrl] = useState(null),
     [error, setError] = useState(""),
     [confirm, setConfirm] = useState(false);
   useEffect(() => {
     setForm(profileValues(user));
   }, [user]);
+  useEffect(() => {
+    if (!featureState) return;
+    setAvatarId(featureState.preferences?.avatar_id || defaultAvatarId(user.id));
+    setPhotoUrl(featureState.preferences?.avatar_photo_url || null);
+  }, [featureState, user.id]);
   if (!form) return null;
   const field = (key, value) => setForm((f) => ({ ...f, [key]: value }));
   async function save(e) {
@@ -36,6 +52,61 @@ export default function Profile() {
       setError(e.message);
     } finally {
       setBusy(false);
+    }
+  }
+  async function saveAvatar() {
+    setAvatarBusy(true);
+    setError("");
+    try {
+      const current = await api.get("/features");
+      await api.patch("/features", {
+        preferences: { ...(current.preferences || {}), avatar_id: avatarId },
+      });
+      if (photoUrl) {
+        await api.delete("/profiles/me/avatar");
+        setPhotoUrl(null);
+      }
+      reloadFeatures();
+      notify("Your profile avatar is ready.");
+      avatarDialog.current?.close();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setAvatarBusy(false);
+    }
+  }
+  async function uploadPhoto(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setAvatarBusy(true);
+    setError("");
+    try {
+      const data_url = await cropProfilePhoto(file);
+      const result = await api.put("/profiles/me/avatar", { data_url });
+      setPhotoUrl(result.avatar_photo_url);
+      reloadFeatures();
+      notify("Profile photo updated.");
+      avatarDialog.current?.close();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setAvatarBusy(false);
+    }
+  }
+  async function removePhoto() {
+    setAvatarBusy(true);
+    setError("");
+    try {
+      await api.delete("/profiles/me/avatar");
+      setPhotoUrl(null);
+      reloadFeatures();
+      notify("Profile photo removed.");
+      avatarDialog.current?.close();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setAvatarBusy(false);
     }
   }
   async function logout() {
@@ -88,14 +159,11 @@ export default function Profile() {
         </p>
       )}
       <section className={a.profileHero} aria-label="Student profile summary">
-        <span className={a.avatar}>
-          {user.name
-            .split(" ")
-            .filter(Boolean)
-            .slice(0, 2)
-            .map((part) => part[0])
-            .join("")}
-        </span>
+        {photoUrl ? (
+          <img className={a.profilePhoto} src={profilePhotoSrc(photoUrl)} alt={`${user.name}'s profile photo`} />
+        ) : (
+          <AvatarPortrait avatarId={avatarId} name={user.name} size={76} />
+        )}
         <div>
           <h2>{user.name}</h2>
           <p>
@@ -107,7 +175,71 @@ export default function Profile() {
             {user.graduation_year ? ` / Class of ${user.graduation_year}` : ""}
           </small>
         </div>
+        <button
+          type="button"
+          className={a.editAvatarButton}
+          aria-haspopup="dialog"
+          aria-label="Edit your profile avatar"
+          onClick={() => avatarDialog.current?.showModal()}
+        >
+          <PencilSimple size={16} aria-hidden="true" />
+          Edit avatar
+        </button>
       </section>
+      <dialog
+        ref={avatarDialog}
+        className={a.avatarDialog}
+        aria-labelledby="edit-avatar-title"
+        onClick={(event) => {
+          if (event.target === avatarDialog.current) avatarDialog.current.close();
+        }}
+      >
+        <header className={a.avatarDialogHeader}>
+          <h2 id="edit-avatar-title">Edit your avatar</h2>
+          <button type="button" aria-label="Close avatar editor" onClick={() => avatarDialog.current?.close()}>
+            <X size={21} />
+          </button>
+        </header>
+        <div className={a.avatarDialogBody}>
+          <section className={a.photoEditor} aria-label="Profile photo">
+            {photoUrl ? (
+              <img className={a.photoPreview} src={profilePhotoSrc(photoUrl)} alt="Current profile photo" />
+            ) : (
+              <AvatarPortrait avatarId={avatarId} name={user.name} size={52} interactive={false} />
+            )}
+            <div className={a.photoEditorCopy}>
+              <strong>{photoUrl ? "Profile photo" : "Add a profile photo"}</strong>
+              <span>{photoUrl ? "Your photo appears on your profile." : "Choose a photo or pick an illustrated avatar below."}</span>
+            </div>
+            <input
+              ref={photoInput}
+              className={a.photoInput}
+              tabIndex={-1}
+              aria-hidden="true"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={uploadPhoto}
+            />
+            <Button small variant="secondary" disabled={avatarBusy} onClick={() => photoInput.current?.click()}>
+              {photoUrl ? "Change photo" : "Add photo"}
+            </Button>
+            {photoUrl && (
+              <Button small variant="ghost" disabled={avatarBusy} onClick={removePhoto}>
+                Remove
+              </Button>
+            )}
+          </section>
+          {error && <p role="alert" className={s.error}>{error}</p>}
+          <AvatarPicker
+            value={avatarId}
+            onChange={setAvatarId}
+            saved={photoUrl ? null : featureState?.preferences?.avatar_id || defaultAvatarId(user.id)}
+            onSave={saveAvatar}
+            saving={avatarBusy}
+            compact
+          />
+        </div>
+      </dialog>
       <div style={{ marginBottom: 24 }}>
         <XPLevel />
         <p style={{ marginTop: 12 }}>

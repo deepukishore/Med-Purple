@@ -149,16 +149,24 @@ def update_me(
 def delete_me(
     response: Response, user=Depends(current_user), db: Session = Depends(get_db)
 ):
-    from app.models import CardReview, StudyBlock, Discussion, DiscussionReply, MCQCompletion, MCQExamSession, DiscussionLike, DiscussionReplyLike, XPEvent, FocusSession, FeatureState, QuickCapture, StudySet, StudyHistory, StudyRoomMessage, CollaborativeNote
+    from app.models import CardReview, StudyBlock, Discussion, DiscussionReply, MCQCompletion, MCQExamSession, DiscussionLike, DiscussionReaction, DiscussionReplyLike, XPEvent, FocusSession, FeatureState, QuickCapture, StudySet, StudyHistory, StudyRoomMessage, CollaborativeNote
     from sqlalchemy import update
     owned_threads = select(Discussion.id).where(Discussion.user_id == user.id)
     owned_replies = select(DiscussionReply.id).where(DiscussionReply.user_id == user.id)
     db.execute(update(Discussion).where(Discussion.accepted_reply_id.in_(owned_replies)).values(accepted_reply_id=None))
     db.execute(delete(DiscussionLike).where(DiscussionLike.discussion_id.in_(owned_threads)))
+    db.execute(delete(DiscussionReaction).where(DiscussionReaction.discussion_id.in_(owned_threads)))
     db.execute(delete(DiscussionReply).where(DiscussionReply.discussion_id.in_(owned_threads)))
     db.execute(delete(CollaborativeNote).where(CollaborativeNote.owner_id == user.id))
+    feature_state = db.get(FeatureState, user.id)
+    from app.services.profile_avatar import remove_profile_avatar_file
+    avatar_photo_url = (
+        (feature_state.preferences or {}).get("avatar_photo_url")
+        if feature_state else None
+    )
     for model in (
         DiscussionLike,
+        DiscussionReaction,
         DiscussionReplyLike,
         FeatureState,
         QuickCapture,
@@ -184,4 +192,5 @@ def delete_me(
         db.execute(delete(model).where(model.user_id == user.id))
     db.delete(user)
     db.commit()
+    remove_profile_avatar_file(user.id, avatar_photo_url)
     response.delete_cookie("mp_refresh", path="/api/v1/auth")

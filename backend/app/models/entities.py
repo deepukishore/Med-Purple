@@ -233,6 +233,13 @@ class DiscussionLike(Base):
     discussion_id: Mapped[str] = mapped_column(ForeignKey("discussions.id", ondelete="CASCADE"), primary_key=True)
 
 
+class DiscussionReaction(Base):
+    __tablename__ = "discussion_reactions"
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    discussion_id: Mapped[str] = mapped_column(ForeignKey("discussions.id", ondelete="CASCADE"), primary_key=True, index=True)
+    reaction: Mapped[str] = mapped_column(String(20), primary_key=True)
+
+
 class XPEvent(Base):
     __tablename__ = "xp_events"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)

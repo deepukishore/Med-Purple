@@ -1,9 +1,10 @@
 import React from "react";
-import { ScrollView, Pressable, Text } from "react-native";
+import { ScrollView, Pressable, Text, View } from "react-native";
+import * as Haptics from "expo-haptics";
 import { styles as s, colors, fonts } from "../theme";
 export default function Chips({ items, value, onChange, label }) {
   return (
-    <ViewWrap>
+    <View>
       <Text style={s.label}>{label}</Text>
       <ScrollView
         horizontal
@@ -16,7 +17,10 @@ export default function Chips({ items, value, onChange, label }) {
           return (
             <Pressable
               key={key}
-              onPress={() => onChange(key)}
+              onPress={() => {
+                Haptics.selectionAsync().catch(() => {});
+                onChange(key);
+              }}
               accessibilityRole="button"
               accessibilityState={{ selected: key === value }}
               style={{
@@ -43,7 +47,6 @@ export default function Chips({ items, value, onChange, label }) {
           );
         })}
       </ScrollView>
-    </ViewWrap>
+    </View>
   );
 }
-import { View as ViewWrap } from "react-native";

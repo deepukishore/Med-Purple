@@ -1,0 +1,50 @@
+.layer {
+  position: fixed;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+  opacity: 1;
+  transform-style: preserve-3d;
+  transition: opacity 320ms var(--ease);
+}
+.layer canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.layer[data-hidden="true"] {
+  visibility: hidden;
+  opacity: 0;
+}
+.layer[data-fallback="true"]::before,
+.layer[data-fallback="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
+}
+.layer[data-fallback="true"]::before {
+  background: radial-gradient(
+    circle at 31% 27%,
+    var(--surface) 0 2%,
+    var(--purple-100) 8%,
+    var(--purple-400) 46%,
+    var(--purple-700) 100%
+  );
+  box-shadow:
+    inset -18px -22px 36px var(--purple-800),
+    0 18px 44px var(--purple-500);
+}
+.layer[data-fallback="true"]::after {
+  inset: 2%;
+  border: 1px solid var(--purple-200);
+  transform: rotateX(66deg) rotateZ(-18deg);
+  box-shadow: 0 0 0 12px var(--purple-50);
+  opacity: 0.58;
+}
+@media (prefers-reduced-motion: reduce) {
+  .layer {
+    transition: none;
+  }
+}

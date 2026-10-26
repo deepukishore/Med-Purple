@@ -157,6 +157,34 @@
   background: var(--purple-50);
   border-color: var(--purple-200);
 }
+.postReactions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+}
+.postReactions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--surface);
+  cursor: pointer;
+  transition: transform 160ms var(--ease), border-color 160ms var(--ease), background 160ms var(--ease);
+}
+.postReactions button:hover { transform: translateY(-2px) scale(1.04); border-color: var(--purple-400); }
+.postReactions button[aria-pressed="true"] { border-color: var(--purple-600); background: var(--purple-50); box-shadow: 0 4px 10px #592a8d16; }
+.postReactions button:focus-visible { outline: 2px solid var(--purple-600); outline-offset: 2px; }
+.postReactions button:disabled { opacity: .58; cursor: wait; }
+.postReactions button > span { font-size: 17px; line-height: 1; }
+.postReactions small { min-width: 9px; font-size: 11px; font-weight: 800; }
 .meta {
   margin-left: auto;
   font-size: 0.7rem;
@@ -1029,6 +1057,16 @@
   border-radius: 22px;
   background: var(--surface);
   border: 1px solid var(--line);
+}
+.profilePhoto {
+  display: block;
+  width: 85px;
+  height: 85px;
+  flex: 0 0 85px;
+  object-fit: cover;
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  box-shadow: var(--shadow-raised);
 }
 .profileHero h2 {
   font-size: 1.8rem;

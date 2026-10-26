@@ -1,0 +1,72 @@
+.screen {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--canvas);
+  color: var(--ink);
+  pointer-events: none;
+  opacity: 1;
+  transition:
+    opacity 420ms var(--ease),
+    visibility 420ms step-end;
+}
+.fade {
+  opacity: 0;
+  visibility: hidden;
+}
+.content {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.content p {
+  margin: 0;
+}
+.mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  border: 1px solid var(--line);
+  border-radius: 27px;
+  background: var(--surface);
+  box-shadow:
+    0 14px 34px var(--purple-100),
+    inset 0 1px 0 var(--surface);
+}
+.mark img {
+  position: relative;
+  z-index: 1;
+  object-fit: contain;
+}
+.mark i {
+  position: absolute;
+  inset: -7px;
+  border: 1px solid var(--purple-200);
+  border-radius: 31px;
+  opacity: 0.55;
+  animation: loader-ring 1.6s ease-in-out infinite alternate;
+}
+@keyframes loader-ring {
+  from {
+    transform: scale(0.97);
+    opacity: 0.32;
+  }
+  to {
+    transform: scale(1.04);
+    opacity: 0.72;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .screen,
+  .mark i {
+    transition: none;
+    animation: none;
+  }
+}

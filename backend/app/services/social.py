@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import current_user, optional_user
-from app.models import Discussion, DiscussionReply, DiscussionLike, DiscussionReplyLike, User
+from app.models import Discussion, DiscussionReply, DiscussionLike, DiscussionReaction, DiscussionReplyLike, FeatureState, User
 from app.services.xp import award, level_summary, lock_rewards
 
 
@@ -25,12 +25,36 @@ class LikeIn(BaseModel):
     liked: bool
 
 
+class ReactionIn(BaseModel):
+    reaction: Literal["love", "laugh", "brain", "clap", "fire", "celebrate"]
+    active: bool
+
+
 class SolutionIn(BaseModel):
     reply_id: str | None = Field(default=None, max_length=36)
 
 
-def public_profile(db, author):
-    return dict(id=author.id, name=author.name, year=author.year, **level_summary(db, author))
+def avatar_id_for_user(db, author):
+    state = db.get(FeatureState, author.id)
+    avatar_id = (state.preferences or {}).get("avatar_id") if state else None
+    valid_avatars = {f"{gender}-{index:02d}" for gender in ("male", "female") for index in range(1, 11)}
+    if avatar_id not in valid_avatars:
+        seed = 0
+        for character in author.id:
+            seed = (seed * 31 + ord(character)) & 0xFFFFFFFF
+        avatar_id = f"{('male', 'female')[seed % 20 >= 10]}-{(seed % 10) + 1:02d}"
+    return avatar_id
+
+
+def public_profile(db, author, include_photo=False):
+    profile = dict(id=author.id, name=author.name, year=author.year, avatar_id=avatar_id_for_user(db, author), **level_summary(db, author))
+    if include_photo:
+        from app.services.profile_avatar import profile_avatar_url
+        state = db.get(FeatureState, author.id)
+        profile["avatar_photo_url"] = profile_avatar_url(
+            author.id, (state.preferences or {}).get("avatar_photo_url") if state else None
+        )
+    return profile
 
 
 def serialize(item, user, db, profiles=None):
@@ -42,11 +66,26 @@ def serialize(item, user, db, profiles=None):
                   author_level=profile["level"], author_xp=profile["xp"], mine=bool(user and item.user_id == user.id),
                   created_at=item.created_at.replace(tzinfo=timezone.utc).isoformat())
     if isinstance(item, Discussion):
+        reaction_rows = db.execute(
+            select(DiscussionReaction.reaction, func.count())
+            .where(DiscussionReaction.discussion_id == item.id)
+            .group_by(DiscussionReaction.reaction)
+        ).all()
+        my_reactions = []
+        if user:
+            my_reactions = db.scalars(
+                select(DiscussionReaction.reaction).where(
+                    DiscussionReaction.discussion_id == item.id,
+                    DiscussionReaction.user_id == user.id,
+                )
+            ).all()
         result.update(title=item.title, subject=item.subject, kind=item.kind,
                       accepted_reply_id=item.accepted_reply_id, solved=bool(item.accepted_reply_id),
                       replies=db.scalar(select(func.count()).select_from(DiscussionReply).where(DiscussionReply.discussion_id == item.id)),
                       likes=db.scalar(select(func.count()).select_from(DiscussionLike).where(DiscussionLike.discussion_id == item.id)),
-                      liked=bool(user and db.get(DiscussionLike, (user.id, item.id))))
+                      liked=bool(user and db.get(DiscussionLike, (user.id, item.id))),
+                      reaction_counts={key: count for key, count in reaction_rows},
+                      my_reactions=my_reactions)
     elif isinstance(item, DiscussionReply):
         result.update(
             upvotes=db.scalar(select(func.count()).select_from(DiscussionReplyLike).where(DiscussionReplyLike.reply_id == item.id)),
@@ -128,6 +167,20 @@ def social_router(kind):
             db.commit()
         return serialize(thread, user, db)
 
+    @router.put("/{thread_id}/reactions")
+    def react(thread_id: str, data: ReactionIn, user=Depends(current_user), db: Session = Depends(get_db)):
+        thread = find(db, thread_id)
+        entry = db.get(DiscussionReaction, (user.id, thread_id, data.reaction))
+        if data.active and not entry:
+            db.add(DiscussionReaction(user_id=user.id, discussion_id=thread_id, reaction=data.reaction))
+        elif not data.active and entry:
+            db.delete(entry)
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+        return serialize(thread, user, db)
+
     @router.put("/{thread_id}/solution")
     def solution(thread_id: str, data: SolutionIn, user=Depends(current_user), db: Session = Depends(get_db)):
         item = find(db, thread_id)
@@ -174,6 +227,7 @@ def social_router(kind):
         if item.user_id != user.id:
             raise HTTPException(404, "Post not found.")
         db.execute(delete(DiscussionLike).where(DiscussionLike.discussion_id == thread_id))
+        db.execute(delete(DiscussionReaction).where(DiscussionReaction.discussion_id == thread_id))
         db.execute(delete(DiscussionReply).where(DiscussionReply.discussion_id == thread_id))
         db.delete(item)
         db.commit()

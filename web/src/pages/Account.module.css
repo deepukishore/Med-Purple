@@ -264,6 +264,106 @@
     inset 0 1px 0 white;
   transform: rotate(-5deg);
 }
+.profilePhoto {
+  width: 76px;
+  height: 76px;
+  flex: 0 0 76px;
+  object-fit: cover;
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  box-shadow: var(--shadow-raised);
+}
+.photoInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+  border: 0;
+}
+.editAvatarButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  gap: 6px;
+  min-height: 44px;
+  margin-left: auto;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  color: var(--purple-700);
+  background: var(--surface);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.editAvatarButton:hover { border-color: var(--purple-400); background: var(--purple-50); }
+.editAvatarButton:focus-visible { outline: 2px solid var(--purple-600); outline-offset: 2px; }
+.avatarDialog {
+  width: min(560px, calc(100vw - 28px));
+  max-width: none;
+  max-height: min(760px, calc(100dvh - 28px));
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: var(--shadow-raised);
+}
+.avatarDialog::backdrop { background: color-mix(in srgb, var(--ink) 52%, transparent); backdrop-filter: blur(3px); }
+.avatarDialogHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 15px;
+  border-bottom: 1px solid var(--line);
+}
+.avatarDialogHeader h2 { margin: 0; font-size: 15px; }
+.avatarDialogHeader button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  background: var(--canvas);
+  cursor: pointer;
+}
+.avatarDialogHeader button:focus-visible { outline: 2px solid var(--purple-600); outline-offset: 2px; }
+.avatarDialogBody {
+  display: grid;
+  gap: 10px;
+  max-height: min(680px, calc(100dvh - 92px));
+  padding: 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--canvas);
+}
+.photoEditor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  min-height: 68px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.photoPreview { width: 48px; height: 48px; flex: 0 0 48px; border: 2px solid var(--line); border-radius: 50%; object-fit: cover; }
+.photoEditorCopy { display: grid; flex: 1 1 140px; gap: 3px; min-width: 0; }
+.photoEditorCopy strong { font-size: 11px; }
+.photoEditorCopy span { color: var(--muted); font-size: 10px; line-height: 1.35; }
+.avatarDialogBody > [role="alert"] { margin: 0; }
 .welcome {
   padding: 16px 20px;
   margin-bottom: 20px;
@@ -306,5 +406,10 @@
     height: 54px;
     font-size: 24px;
     border-radius: 17px;
+  }
+  .profilePhoto {
+    width: 54px;
+    height: 54px;
+    flex-basis: 54px;
   }
 }

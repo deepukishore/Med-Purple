@@ -13,6 +13,8 @@ export default function HeartViewer({
   exploded = false,
   vessels = true,
   compact = false,
+  interactiveCompact = false,
+  scrollDriven = false,
   height = 350,
   modelId = "heart",
 }) {
@@ -43,10 +45,17 @@ export default function HeartViewer({
   useEffect(() => engine.current?.select(selected), [selected]);
   useEffect(() => engine.current?.explode(exploded), [exploded]);
   useEffect(() => engine.current?.vessels(vessels), [vessels]);
+  useEffect(() => {
+    if (scrollDriven) engine.current?.pose?.(0);
+  }, [scrollDriven]);
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => !compact,
-      onMoveShouldSetPanResponder: () => !compact,
+      onMoveShouldSetPanResponder: (_, gesture) =>
+        !compact ||
+        (interactiveCompact &&
+          Math.abs(gesture.dx) > 8 &&
+          Math.abs(gesture.dx) > Math.abs(gesture.dy)),
       onPanResponderGrant: (e) => {
         const t = e.nativeEvent.touches;
         last.current =
@@ -133,7 +142,8 @@ export default function HeartViewer({
         try {
           // Keep the compact dashboard model alive as a quiet, rotating 3D
           // object. The full study view remains gesture controlled.
-          if (compact && !reduced.current) model.targets.y += 0.0022;
+          if (compact && !scrollDriven && !reduced.current)
+            model.targets.y += 0.0022;
           model.frame(time, reduced.current);
           renderer.render(model.scene, model.camera);
           gl.endFrameEXP();
@@ -157,7 +167,9 @@ export default function HeartViewer({
       accessible
       accessibilityLabel={
         compact
-          ? "Schematic heart preview"
+          ? interactiveCompact
+            ? "Interactive 3D heart preview. Drag horizontally to rotate; use the chamber buttons to highlight a structure."
+            : "Schematic heart preview"
           : `Interactive ${modelId} model. Drag to rotate and pinch to zoom. Structure buttons are available below.`
       }
       style={{ height, width: "100%", overflow: "hidden" }}

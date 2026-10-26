@@ -6,6 +6,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts } from "../theme";
 import { useApp } from "../context/AppContext";
+import useReducedMotion from "../hooks/useReducedMotion";
 import { Skeleton, ErrorState } from "../components/States";
 import HomeScreen from "../screens/HomeScreen";
 import LearnScreen from "../screens/LearnScreen";
@@ -47,6 +48,7 @@ const screens = [
 ];
 function Tabs() {
   const { user } = useApp();
+  const reducedMotion = useReducedMotion();
   return (
     <Tab.Navigator
       screenOptions={({ navigation }) => ({
@@ -110,7 +112,7 @@ function Tabs() {
           shadowRadius: 14,
           shadowOffset: { width: 0, height: -5 },
         },
-        animation: "fade",
+        animation: reducedMotion ? "none" : "shift",
         tabBarHideOnKeyboard: true,
       })}
     >
@@ -131,6 +133,7 @@ function Tabs() {
 }
 export default function RootNavigator() {
   const { user, loading, error, initialize } = useApp();
+  const reducedMotion = useReducedMotion();
   if (loading) return <Skeleton />;
   if (error) return <ErrorState message={error} onRetry={initialize} />;
   return (
@@ -155,7 +158,7 @@ export default function RootNavigator() {
           headerTitleStyle: { fontFamily: fonts.bold },
           headerShadowVisible: false,
           contentStyle: { backgroundColor: "transparent" },
-          animation: "fade_from_bottom",
+          animation: reducedMotion ? "none" : "fade_from_bottom",
         }}
       >
         <Stack.Screen

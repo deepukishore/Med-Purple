@@ -619,6 +619,21 @@
   position: absolute;
   inset: 68px 0 0;
 }
+.atlasDragHint {
+  position: absolute;
+  z-index: 2;
+  right: 15px;
+  bottom: 13px;
+  padding: 6px 9px;
+  border: 1px solid #ffffff35;
+  border-radius: 999px;
+  background: #241b33a8;
+  color: #e8dff0;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+}
 .atlasLoading {
   position: absolute;
   inset: 68px 0 0;
@@ -1064,5 +1079,121 @@
   .quest:hover,
   .shortcut:hover {
     transform: none;
+  }
+}
+
+/* A theme-colored orbit gives the existing heart preview a quiet 3D stage. */
+.atlasPreview {
+  transform-style: preserve-3d;
+  transform: perspective(1100px)
+    rotateX(var(--atlas-tilt-x, 0deg))
+    rotateY(var(--atlas-tilt-y, 0deg));
+  transition:
+    transform 320ms var(--ease),
+    box-shadow 320ms var(--ease);
+}
+.atlasPreview::before,
+.atlasPreview::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+.atlasPreview::before {
+  z-index: 0;
+  top: 60%;
+  left: 50%;
+  width: min(74vw, 206px);
+  aspect-ratio: 1;
+  border: 1px solid var(--purple-200);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 13px var(--purple-800),
+    0 0 34px var(--purple-500);
+  opacity: 0.2;
+  transform-style: preserve-3d;
+  transform: translate3d(
+      calc(-50% + var(--atlas-parallax-x, 0px)),
+      calc(-50% + var(--atlas-parallax-y, 0px) + var(--atlas-scroll-depth, 0px)),
+      -8px
+    )
+    rotateX(68deg) rotateZ(var(--atlas-scroll-turn, 0deg));
+}
+.atlasPreview::after {
+  z-index: 0;
+  top: 60%;
+  left: 50%;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    var(--surface),
+    var(--accent) 45%,
+    var(--purple-400)
+  );
+  box-shadow: 0 0 18px var(--accent);
+  opacity: 0.84;
+  transform: translate3d(
+      calc(-50% + var(--atlas-parallax-x, 0px)),
+      calc(-50% + var(--atlas-parallax-y, 0px) + var(--atlas-scroll-depth, 0px)),
+      8px
+    )
+    rotateZ(var(--atlas-scroll-turn, 0deg)) translateX(103px);
+}
+.atlasModel {
+  z-index: 1;
+}
+.desk [data-home-motion] {
+  transition:
+    opacity 520ms var(--ease),
+    translate 520ms var(--ease);
+  transition-delay: var(--home-reveal-delay, 0ms);
+}
+.desk[data-home-motion-ready="true"] [data-home-motion="waiting"] {
+  opacity: 0;
+  translate: 0 14px;
+}
+.desk [data-home-motion="visible"] {
+  opacity: 1;
+  translate: 0 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .atlasPreview::before {
+    animation: atlas-orbit-breathe 5.2s ease-in-out infinite alternate;
+  }
+  .atlasPreview::after {
+    animation: atlas-orbit-glint 2.8s ease-in-out infinite alternate;
+  }
+}
+@keyframes atlas-orbit-breathe {
+  from {
+    opacity: 0.14;
+  }
+  to {
+    opacity: 0.27;
+  }
+}
+@keyframes atlas-orbit-glint {
+  from {
+    opacity: 0.58;
+  }
+  to {
+    opacity: 0.94;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlasPreview {
+    transform: none;
+    transition: none;
+  }
+  .atlasPreview::before,
+  .atlasPreview::after,
+  .desk [data-home-motion] {
+    animation: none;
+    transition: none;
+  }
+  .desk [data-home-motion] {
+    opacity: 1;
+    translate: none;
   }
 }

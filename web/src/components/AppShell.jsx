@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { lazy, Suspense, useEffect, useState, useRef } from "react";
 import { NavLink, Outlet, Link, Navigate, useLocation } from "react-router-dom";
 import {
   House,
@@ -31,6 +31,7 @@ import useData from "../hooks/useData";
 import { PageSkeleton, ErrorState } from "./States";
 import s from "./AppShell.module.css";
 import policies from "../../../shared/legal.json";
+const PageSceneLayer = lazy(() => import("./PageSceneLayer"));
 const publicPaths = [
   "/anatomy",
   "/about",
@@ -64,8 +65,10 @@ export default function AppShell() {
   const { data: featureState } = useData("/features");
   const translate = (label) => translations[featureState?.preferences?.language]?.[label] || label;
   const { pathname } = useLocation();
+  const dedicatedScene = ["/", "/about", "/anatomy"].includes(pathname);
   const [menu, setMenu] = useState(false);
   const closeButton = useRef(null);
+  const pageMotionRef = useRef(null);
   useEffect(() => {
     if (menu) closeButton.current?.focus();
   }, [menu]);
@@ -110,43 +113,57 @@ export default function AppShell() {
     return () => window.removeEventListener("keydown", close);
   }, []);
   useEffect(() => {
-    const selector = 'main :is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"])';
-    let active = null;
-    const clear = () => {
-      active?.style.removeProperty("--surface-tilt-x");
-      active?.style.removeProperty("--surface-tilt-y");
-      active = null;
+    const page = pageMotionRef.current;
+    if (
+      !page ||
+      pathname === "/" ||
+      pathname === "/about" ||
+      pathname === "/anatomy" ||
+      calm ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      !("IntersectionObserver" in window)
+    )
+      return undefined;
+
+    const revealSelector =
+      'header, section, article, [class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"]';
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.dataset.routeMotion = "visible";
+          revealObserver.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.08, rootMargin: "0px 0px -3% 0px" },
+    );
+    const reveal = () => {
+      const targets = page.querySelectorAll(revealSelector);
+      targets.forEach((target, index) => {
+        if (target.dataset.routeMotion) return;
+        target.dataset.routeMotion = "waiting";
+        target.style.setProperty(
+          "--route-reveal-delay",
+          `${(index % 4) * 38}ms`,
+        );
+        revealObserver.observe(target);
+      });
+      page.dataset.routeMotionReady = "true";
     };
-    const move = (event) => {
-      if (
-        event.pointerType === "touch" ||
-        document.documentElement.dataset.calm === "true" ||
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ) {
-        clear();
-        return;
-      }
-      const card = event.target.closest?.(selector);
-      if (!card) {
-        clear();
-        return;
-      }
-      if (active && active !== card) clear();
-      active = card;
-      const bounds = card.getBoundingClientRect();
-      const x = (event.clientX - bounds.left) / bounds.width - 0.5;
-      const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-      active.style.setProperty("--surface-tilt-x", `${-y * 2.8}deg`);
-      active.style.setProperty("--surface-tilt-y", `${x * 2.8}deg`);
-    };
-    window.addEventListener("pointermove", move);
-    window.addEventListener("blur", clear);
+    const mutations = new MutationObserver(reveal);
+    mutations.observe(page, { childList: true, subtree: true });
+    reveal();
+
     return () => {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("blur", clear);
-      clear();
+      mutations.disconnect();
+      revealObserver.disconnect();
+      delete page.dataset.routeMotionReady;
+      page.querySelectorAll("[data-route-motion]").forEach((target) => {
+        delete target.dataset.routeMotion;
+        target.style.removeProperty("--route-reveal-delay");
+      });
     };
-  }, []);
+  }, [pathname, calm]);
   if (
     pathname === "/" &&
     !loading &&
@@ -279,7 +296,20 @@ export default function AppShell() {
           </div>
         </header>
         <main id="content" className={s.main}>
-          <div key={pathname} className={s.pageTransition}>
+          {!dedicatedScene && (
+            <Suspense fallback={null}>
+              <PageSceneLayer
+                pageRef={pageMotionRef}
+                pathname={pathname}
+                calm={calm}
+              />
+            </Suspense>
+          )}
+          <div
+            key={pathname}
+            ref={pageMotionRef}
+            className={s.pageTransition}
+          >
             {publicPaths.includes(pathname.replace(/\/$/, "")) ? (
               <Outlet />
             ) : loading ? (

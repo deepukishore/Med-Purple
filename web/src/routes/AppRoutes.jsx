@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import AppShell from "../components/AppShell";
+import ExperienceLoader from "../components/ExperienceLoader";
 import { PageSkeleton } from "../components/States";
 import policies from "../../../shared/legal.json";
 const Home = lazy(() => import("../pages/Home")),
@@ -87,6 +88,7 @@ export default function AppRoutes() {
   return (
     <>
       <RouteEffects />
+      <ExperienceLoader />
       <Suspense fallback={<PageSkeleton />}>
         <Routes>
           <Route path="login" element={<Account />} />

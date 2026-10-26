@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { Animated, PanResponder } from "react-native";
-import { motion } from "../theme";
+import { colors, motion } from "../theme";
 import useReducedMotion from "../hooks/useReducedMotion";
 export default function DepthCard({ children, style }) {
   const x = useRef(new Animated.Value(0)).current;
@@ -66,7 +66,7 @@ export default function DepthCard({ children, style }) {
         style,
         {
           transform,
-          shadowColor: "#2B2155",
+          shadowColor: colors.purple[900],
           shadowOffset: { width: 0, height: 12 },
           shadowOpacity: 0.18,
           shadowRadius: 18,

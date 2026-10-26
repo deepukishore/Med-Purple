@@ -1,3 +1,4 @@
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, BookOpen, Heart, Sparkle } from "@phosphor-icons/react";
 import usePageMeta from "../hooks/usePageMeta";
@@ -5,26 +6,266 @@ import content from "../../../shared/legal.json";
 import s from "./Information.module.css";
 
 const icons = [BookOpen, Sparkle, Heart];
+const AnatomyCanvas = lazy(() => import("../components/AnatomyCanvas"));
+const introNodes = [
+  {
+    id: "purpose",
+    label: "Med Purple",
+    eyebrow: "OUR PURPOSE",
+    title: content.about.title,
+    body: content.about.mission,
+  },
+  ...content.about.people.map(({ name, role, bio }) => ({
+    id: name,
+    label: name,
+    eyebrow: role,
+    title: name,
+    body: bio,
+  })),
+];
+const chapters = [
+  {
+    number: "01",
+    eyebrow: "PRACTISE",
+    title: "Start with a question.",
+    body: "Active recall helps turn a quick session into a useful one. Work through MCQs, review explanations, and see where to focus next.",
+    path: "/mcqs",
+    action: "Try question practice",
+    structure: "ra",
+  },
+  {
+    number: "02",
+    eyebrow: "EXPLORE",
+    title: "See how the pieces connect.",
+    body: "Turn the heart in 3D and explore schematic anatomy alongside your notes and lessons.",
+    path: "/anatomy",
+    action: "Open the 3D atlas",
+    structure: "rv",
+  },
+  {
+    number: "03",
+    eyebrow: "MAKE IT YOURS",
+    title: "Find a study rhythm that fits.",
+    body: "Bring notes, flashcards, progress, and planning together in a study space you can return to each day.",
+    path: "/planner",
+    action: "Build your study plan",
+    structure: "lv",
+  },
+];
 export default function About() {
   usePageMeta("About Med Purple");
+  const journeyRef = useRef(null);
+  const modelRef = useRef(null);
+  const [activeChapter, setActiveChapter] = useState(0);
+  const [activeIntro, setActiveIntro] = useState(0);
+  const [selectedStructure, setSelectedStructure] = useState(chapters[0].structure);
+  const structureNames = {
+    ra: "Right atrium",
+    rv: "Right ventricle",
+    lv: "Left ventricle",
+    la: "Left atrium",
+  };
+
+  useEffect(() => {
+    let frame = 0;
+    const updateScene = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const journey = journeyRef.current;
+        if (!journey) return;
+        const bounds = journey.getBoundingClientRect();
+        const travel = Math.max(1, bounds.height - window.innerHeight * 0.55);
+        const progress = Math.max(
+          0,
+          Math.min(1, (window.innerHeight * 0.25 - bounds.top) / travel),
+        );
+        modelRef.current?.pose?.(progress);
+
+        const steps = [...journey.querySelectorAll("[data-journey-step]")];
+        const center = window.innerHeight * 0.5;
+        let nearest = 0;
+        let nearestDistance = Infinity;
+        steps.forEach((step, index) => {
+          const rect = step.getBoundingClientRect();
+          const distance = Math.abs(rect.top + rect.height * 0.5 - center);
+          if (distance < nearestDistance) {
+            nearest = index;
+            nearestDistance = distance;
+          }
+        });
+        setActiveChapter((current) => current === nearest ? current : nearest);
+        setSelectedStructure((current) =>
+          current === chapters[nearest].structure
+            ? current
+            : chapters[nearest].structure,
+        );
+      });
+    };
+    updateScene();
+    window.addEventListener("scroll", updateScene, { passive: true });
+    window.addEventListener("resize", updateScene);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateScene);
+      window.removeEventListener("resize", updateScene);
+    };
+  }, []);
+
   return (
     <div className={s.page}>
       <header className={s.hero}>
-        <span className={s.eyebrow}>ABOUT MED PURPLE</span>
-        <h1>{content.about.title}</h1>
-        <p>{content.about.intro}</p>
-        <Link className={s.primaryLink} to="/learn">
-          Explore your revision toolkit <ArrowUpRight size={18} />
-        </Link>
-        <span className={s.heroMark} aria-hidden="true">
-          m<span>+</span>
-        </span>
+        <div className={s.heroCopy}>
+          <span className={s.eyebrow}>ABOUT MED PURPLE</span>
+          <h1>{content.about.title}</h1>
+          <p>{content.about.intro}</p>
+          <Link className={s.primaryLink} to="/learn">
+            Explore your revision toolkit <ArrowUpRight size={18} />
+          </Link>
+        </div>
+        <div
+          className={s.heroIntro}
+          role="group"
+          aria-label="Interactive introduction to Med Purple and its co-founders"
+        >
+          <div
+            className={s.introStage}
+            onPointerMove={(event) => {
+              if (event.pointerType !== "mouse") return;
+              if (
+                document.documentElement.dataset.calm === "true" ||
+                window.matchMedia("(prefers-reduced-motion: reduce)").matches
+              ) {
+                event.currentTarget.style.setProperty("--intro-tilt-x", "0deg");
+                event.currentTarget.style.setProperty("--intro-tilt-y", "0deg");
+                return;
+              }
+              const bounds = event.currentTarget.getBoundingClientRect();
+              const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+              const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+              event.currentTarget.style.setProperty("--intro-tilt-x", `${-y * 12}deg`);
+              event.currentTarget.style.setProperty("--intro-tilt-y", `${x * 14}deg`);
+            }}
+            onPointerLeave={(event) => {
+              event.currentTarget.style.setProperty("--intro-tilt-x", "0deg");
+              event.currentTarget.style.setProperty("--intro-tilt-y", "0deg");
+            }}
+          >
+            <span className={`${s.introOrbit} ${s.introOrbitOne}`} aria-hidden="true" />
+            <span className={`${s.introOrbit} ${s.introOrbitTwo}`} aria-hidden="true" />
+            <button
+              type="button"
+              className={`${s.introNode} ${s.introCore} ${activeIntro === 0 ? s.introNodeActive : ""}`}
+              aria-pressed={activeIntro === 0}
+              onClick={() => setActiveIntro(0)}
+            >
+              <span>Med Purple</span>
+              <small>OUR PURPOSE</small>
+            </button>
+            {introNodes.slice(1).map((node, index) => (
+              <button
+                key={node.id}
+                type="button"
+                className={`${s.introNode} ${s.introFounderNode} ${index === 0 ? s.introFounderLeft : s.introFounderRight} ${activeIntro === index + 1 ? s.introNodeActive : ""}`}
+                aria-pressed={activeIntro === index + 1}
+                onClick={() => setActiveIntro(index + 1)}
+              >
+                <span>{node.label}</span>
+                <small>{node.eyebrow}</small>
+              </button>
+            ))}
+          </div>
+          <div className={s.introDetail} aria-live="polite" key={introNodes[activeIntro].id}>
+            <span>{introNodes[activeIntro].eyebrow}</span>
+            <strong>{introNodes[activeIntro].title}</strong>
+            <p>{introNodes[activeIntro].body}</p>
+          </div>
+        </div>
+        <span className={s.heroMark} aria-hidden="true">m<span>+</span></span>
       </header>
       <section className={s.mission} aria-labelledby="mission-title">
         <span className={s.eyebrow}>OUR PURPOSE</span>
         <div>
           <h2 id="mission-title">Supporting everyday medical study</h2>
           <p>{content.about.mission}</p>
+        </div>
+      </section>
+      <section className={s.journey} ref={journeyRef} aria-label="Explore the Med Purple study journey">
+        <div className={s.journeyStage}>
+          <div
+            className={s.scenePanel}
+            onPointerMove={(event) => {
+              if (event.pointerType !== "mouse") return;
+              const bounds = event.currentTarget.getBoundingClientRect();
+              const x = (event.clientX - bounds.left) / bounds.width;
+              const y = (event.clientY - bounds.top) / bounds.height;
+              event.currentTarget.style.setProperty("--spot-x", `${x * 100}%`);
+              event.currentTarget.style.setProperty("--spot-y", `${y * 100}%`);
+            }}
+            onPointerLeave={(event) => {
+              event.currentTarget.style.setProperty("--spot-x", "50%");
+              event.currentTarget.style.setProperty("--spot-y", "48%");
+            }}
+          >
+            <div className={s.sceneHeading}>
+              <span className={s.eyebrow}>SCROLL TO EXPLORE THE HEART</span>
+              <span className={s.sceneCounter}>0{activeChapter + 1} / 03</span>
+            </div>
+            <div className={s.sceneOrb} aria-hidden="true" />
+            <div className={s.sceneOrbit} aria-hidden="true" />
+            <div className={s.sceneOrbitAlt} aria-hidden="true" />
+            <Suspense fallback={<div className={s.modelFallback}>Preparing the 3D study scene…</div>}>
+              <AnatomyCanvas
+                compact
+                modelId="heart"
+                resetOnLeave={false}
+                controlsRef={modelRef}
+                selected={selectedStructure}
+                onSelect={setSelectedStructure}
+              />
+            </Suspense>
+            <div className={s.sceneCaption}>
+              <span>{chapters[activeChapter].eyebrow}</span>
+              <strong>{chapters[activeChapter].title}</strong>
+              <small>Scroll to travel · drag to turn · click a chamber</small>
+            </div>
+          </div>
+          <div className={s.structurePicker} aria-label="Highlight a heart chamber">
+            {Object.entries(structureNames).map(([id, name]) => (
+              <button
+                type="button"
+                key={id}
+                aria-pressed={selectedStructure === id}
+                onClick={() => setSelectedStructure(id)}
+                title={name}
+              >
+                {id.toUpperCase()}
+              </button>
+            ))}
+            <span>{structureNames[selectedStructure]}</span>
+          </div>
+          <div className={s.sceneProgress} aria-hidden="true">
+            {chapters.map((chapter, index) => (
+              <span className={index <= activeChapter ? s.progressActive : ""} key={chapter.number} />
+            ))}
+          </div>
+        </div>
+        <div className={s.journeySteps}>
+          {chapters.map((chapter, index) => (
+            <article
+              className={`${s.journeyStep} ${index === activeChapter ? s.stepActive : ""}`}
+              data-journey-step
+              key={chapter.number}
+              aria-current={index === activeChapter ? "step" : undefined}
+            >
+              <span className={s.stepNumber}>{chapter.number}</span>
+              <span className={s.eyebrow}>{chapter.eyebrow}</span>
+              <h2>{chapter.title}</h2>
+              <p>{chapter.body}</p>
+              <Link to={chapter.path} className={s.stepLink}>
+                {chapter.action} <ArrowUpRight size={17} />
+              </Link>
+            </article>
+          ))}
         </div>
       </section>
       <section className={s.featureGrid} aria-label="Ways to learn">
@@ -49,20 +290,70 @@ export default function About() {
           <p>{content.about.founderNote}</p>
         </div>
         <div className={s.founderGrid}>
-          {content.about.people.map(({ name, role, bio }) => (
-            <div className={s.founder} key={name}>
-              <span className={s.monogram} aria-hidden="true">
-                {name
-                  .split(" ")
-                  .map((word) => word[0])
-                  .join("")}
-              </span>
-              <div>
+          {content.about.people.map(({ name, role, bio }, index) => (
+            <article
+              className={s.founder}
+              key={name}
+              onPointerMove={(event) => {
+                if (event.pointerType !== "mouse") return;
+                if (
+                  document.documentElement.dataset.calm === "true" ||
+                  window.matchMedia("(prefers-reduced-motion: reduce)").matches
+                ) {
+                  event.currentTarget.style.setProperty("--tilt-x", "0deg");
+                  event.currentTarget.style.setProperty("--tilt-y", "0deg");
+                  return;
+                }
+                const bounds = event.currentTarget.getBoundingClientRect();
+                const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+                const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+                event.currentTarget.style.setProperty("--tilt-x", `${-y * 7}deg`);
+                event.currentTarget.style.setProperty("--tilt-y", `${x * 8}deg`);
+              }}
+              onPointerLeave={(event) => {
+                event.currentTarget.style.setProperty("--tilt-x", "0deg");
+                event.currentTarget.style.setProperty("--tilt-y", "0deg");
+              }}
+            >
+              <div className={`${s.founderArt} ${index === 0 ? s.designArt : s.buildArt}`} aria-hidden="true">
+                {index === 0 ? (
+                  <div className={s.notebook}>
+                    <div className={s.notebookHeader}><span>MED PURPLE</span><i>IDEA BOOK</i></div>
+                    <div className={s.notebookBody}>
+                      <span className={s.notebookTag}>STUDY, YOUR WAY</span>
+                      <div className={s.notebookSketch}>
+                        <Heart size={34} weight="duotone" />
+                        <span><i /><i /><i /></span>
+                      </div>
+                      <div className={s.notebookLines}><i /><i /><i /><i /></div>
+                    </div>
+                    <span className={s.notebookSpine} />
+                  </div>
+                ) : (
+                  <div className={s.devDesk}>
+                    <div className={s.codeWindow}>
+                      <div className={s.codeTopbar}><span /><span /><span /><b>study-desk.jsx</b></div>
+                      <div className={s.codeBody}>
+                        <code><i>const</i> study = <em>learn</em>();</code>
+                        <code>study.<em>practice</em>("MCQs");</code>
+                        <code>study.<em>explore</em>("anatomy");</code>
+                        <code><i>return</i> progress;</code>
+                      </div>
+                    </div>
+                    <div className={s.deskBase} />
+                    <span className={s.deskGlow} />
+                  </div>
+                )}
+              </div>
+              <div className={s.founderInfo}>
+                <span className={s.founderFocus}>
+                  {index === 0 ? "VISION & DESIGN" : "PRODUCT & DEVELOPMENT"}
+                </span>
                 <h3>{name}</h3>
                 <p className={s.founderRole}>{role}</p>
                 <p>{bio}</p>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </section>
