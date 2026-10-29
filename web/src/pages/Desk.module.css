@@ -1450,9 +1450,9 @@
   position: relative;
   display: grid;
   align-content: center;
-  min-height: min(100svh, 1120px);
+  min-height: min(94svh, 1040px);
   margin: -30px -38px 0;
-  padding: 24px clamp(26px, 4.3vw, 68px) 58px;
+  padding: 18px clamp(26px, 4.3vw, 68px) 46px;
   overflow: hidden;
   color: #fff;
   background:
@@ -1488,11 +1488,11 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(290px, .74fr) minmax(440px, 1.26fr);
+  grid-template-columns: minmax(360px, .84fr) minmax(520px, 1.16fr);
   align-items: center;
-  gap: clamp(24px, 4vw, 58px);
+  gap: clamp(22px, 3.4vw, 48px);
   width: min(100%, 1480px);
-  min-height: min(83svh, 890px);
+  min-height: min(80svh, 820px);
   margin: 0 auto;
 }
 .openingCopy {
@@ -1521,10 +1521,10 @@
 }
 .opening h1 {
   max-width: 700px;
-  margin: 25px 0 20px;
+  margin: 19px 0 15px;
   color: #fff;
   font-family: var(--font-display), serif;
-  font-size: clamp(48px, 6.25vw, 90px);
+  font-size: clamp(46px, 5.15vw, 72px);
   font-weight: 400;
   letter-spacing: -.055em;
   line-height: .97;
@@ -1538,17 +1538,17 @@
   font-weight: 400;
 }
 .openingCopy > p {
-  max-width: 470px;
+  max-width: 445px;
   color: #cbc0d5;
-  font-size: clamp(13px, 1.2vw, 16px);
-  line-height: 1.8;
+  font-size: clamp(12px, 1.05vw, 14px);
+  line-height: 1.7;
 }
 .openingActions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 28px;
+  margin-top: 21px;
 }
 .actionPrimary,
 .actionSecondary {
@@ -1626,7 +1626,7 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.openingStage { min-width: 0; }
+.openingStage { min-width: 0; min-height: min(72svh, 740px); }
 .scrollCue {
   position: absolute;
   z-index: 2;
@@ -1862,8 +1862,9 @@
 .homeWorld .actionSecondary,
 .homeWorld .continueNode { text-decoration: none; }
 @media (max-width: 1120px) {
-  .openingLayout { grid-template-columns: minmax(255px, .72fr) minmax(370px, 1.28fr); gap: 20px; }
-  .opening h1 { font-size: clamp(46px, 6.3vw, 70px); }
+  .openingLayout { grid-template-columns: minmax(270px, .72fr) minmax(390px, 1.28fr); gap: 20px; }
+  .opening h1 { font-size: clamp(44px, 5.5vw, 64px); }
+  .openingStage { min-height: min(68svh, 650px); }
   .practiceScene { grid-template-columns: minmax(190px, .62fr) minmax(0, 1.38fr); gap: 25px; }
   .continueLine { grid-template-columns: minmax(230px, 1.1fr) repeat(2, minmax(125px, .62fr)) 62px; }
 }
@@ -1871,8 +1872,8 @@
   .opening { min-height: 0; margin: -18px -14px 0; padding: 24px 17px 54px; }
   .openingLayout { display: flex; flex-direction: column; align-items: stretch; gap: 15px; min-height: 0; }
   .openingCopy { order: 1; padding: 8px 3px 0; }
-  .openingStage { order: 2; width: 100%; }
-  .opening h1 { max-width: 570px; margin: 14px 0 10px; font-size: clamp(42px, 10vw, 61px); }
+  .openingStage { order: 2; width: 100%; min-height: 520px; }
+  .opening h1 { max-width: 570px; margin: 14px 0 10px; font-size: clamp(42px, 9vw, 58px); }
   .openingCopy > p { max-width: 540px; font-size: 12px; }
   .openingActions { margin-top: 18px; }
   .heroProof { margin-top: 20px; }
@@ -1921,6 +1922,7 @@
   .opening { padding-inline: 12px; }
   .openingKicker { font-size: 7px; letter-spacing: .12em; }
   .opening h1 { font-size: 41px; }
+  .openingStage { min-height: 320px; }
   .openingActions { align-items: stretch; flex-direction: column; }
   .actionPrimary,
   .actionSecondary { width: 100%; min-height: 48px; }

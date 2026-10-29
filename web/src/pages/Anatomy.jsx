@@ -26,7 +26,7 @@ export default function Anatomy() {
   const [tab, setTab] = useState("atlas");
   return (
     <>
-      <div className={s.modelPicker} aria-label="Anatomy study mode">
+      <div className={s.studyModePicker} role="group" aria-label="Anatomy study mode">
         <button aria-pressed={tab === "atlas"} onClick={() => setTab("atlas")}>
           Human body atlas
         </button>

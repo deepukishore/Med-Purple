@@ -160,8 +160,8 @@
 }
 @media (max-width: 760px) {
   .launcher {
-    right: 16px;
-    bottom: calc(150px + env(safe-area-inset-bottom));
+    right: 78px;
+    bottom: calc(90px + env(safe-area-inset-bottom));
     width: 52px;
     height: 52px;
   }

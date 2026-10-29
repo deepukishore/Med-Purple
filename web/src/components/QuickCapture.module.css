@@ -20,4 +20,4 @@
 .file, .draft { color: var(--muted); font-size: 0.7rem; }
 .draft { display: flex; justify-content: space-between; gap: 8px; margin: 0; }
 .draft button { border: 0; padding: 0; color: var(--purple-700); background: transparent; font-size: inherit; font-weight: 800; }
-@media (max-width: 600px) { .fab { right: 16px; bottom: calc(90px + env(safe-area-inset-bottom)); } .fab span { display: none; } .modal { padding: 20px; } }
+@media (max-width: 600px) { .fab { right: 16px; bottom: calc(90px + env(safe-area-inset-bottom)); width: 52px; height: 52px; min-height: 52px; padding: 0; justify-content: center; } .fab span { display: none; } .modal { padding: 20px; } }

@@ -85,7 +85,7 @@ export default function Learn() {
       <section className={s.toolkitHero} aria-labelledby="toolkit-title">
         <div className={s.toolkitHeroCopy}>
           <p className={s.eyebrow}>THE REVISION TOOLKIT / YOUR STUDY SPACE</p>
-          <h1 id="toolkit-title">Give your next study move a place.</h1>
+          <h1 id="toolkit-title">Your next study<br /><em>move starts here.</em></h1>
           <p className={s.toolkitIntro}>
             Your questions, anatomy, saved prompts, and lessons meet here. Follow a topic you have practised or choose a different way into the subject.
           </p>

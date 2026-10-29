@@ -350,13 +350,13 @@
 
 /* The atlas viewport is the primary surface; controls live around it. */
 .atlas {
-  gap: 18px;
+  gap: 13px;
 }
 .heading {
   align-items: end;
   margin: 0 auto;
   width: min(100%, 1480px);
-  padding: 12px 2px 0;
+  padding: 5px 2px 0;
 }
 .heading span {
   color: #805d9a;
@@ -365,10 +365,10 @@
 }
 .heading h1 {
   max-width: 840px;
-  margin: 12px 0 8px;
+  margin: 7px 0 6px;
   color: #2f203d;
   font-family: var(--font-display), serif;
-  font-size: clamp(34px, 4.2vw, 58px);
+  font-size: clamp(32px, 3.8vw, 50px);
   font-weight: 400;
   letter-spacing: -.04em;
   line-height: 1;
@@ -391,8 +391,8 @@
   position: relative;
   display: block;
   width: 100%;
-  height: min(83vh, 940px);
-  min-height: 660px;
+  height: min(80svh, 900px);
+  min-height: 600px;
   isolation: isolate;
 }
 .stage {
@@ -401,7 +401,7 @@
   grid-template-rows: minmax(0, 1fr) auto auto;
   width: 100%;
   height: 100%;
-  min-height: 660px;
+  min-height: 600px;
   border: 1px solid #463858;
   border-radius: 29px;
   background:
@@ -422,9 +422,9 @@
 .inspector {
   position: absolute;
   z-index: 3;
-  top: 64px;
-  bottom: 108px;
-  width: 228px;
+  top: 58px;
+  bottom: 98px;
+  width: 208px;
   max-height: none;
   overflow: auto;
   border: 1px solid #ffffff26;
@@ -436,15 +436,15 @@
   scrollbar-color: #7d668e #1d1725;
   scrollbar-width: thin;
 }
-.layers { left: 18px; }
-.inspector { right: 18px; width: 276px; padding: 17px; }
+.layers { left: 16px; }
+.inspector { right: 16px; width: 244px; padding: 15px; }
 .layers h2,
 .inspector h2 { color: #faf6ff; font-family: var(--font-display), serif; font-size: 19px; font-weight: 400; }
 .layer { border-bottom-color: #ffffff17; }
 .layer label { min-height: 34px; color: #e4daec; font-size: 10px; }
 .layer span { flex: 0 0 auto; }
 .layer small,
-.small { color: #bbafc6; font-size: 8px; }
+.small { color: #c4b8ce; font-size: 9px; }
 .layer button,
 .layers > button,
 .atlas button {
@@ -464,20 +464,20 @@
 .opacity { color: #d4c8df; font-size: 9px; }
 .opacity input { width: 100%; }
 .search {
-  min-height: 43px;
+  min-height: 44px;
   border-color: #ffffff25;
   color: #fff;
   background: #ffffff0a;
-  font-size: 10px;
+  font-size: 11px;
 }
 .search::placeholder { color: #aa9cb6; }
 .results { max-height: 220px; gap: 4px; padding-right: 2px; }
-.results button { min-height: 34px; padding: 8px 9px; text-align: left; font-size: 8px; }
+.results button { min-height: 36px; padding: 8px 9px; text-align: left; font-size: 9px; line-height: 1.4; }
 .detail { margin-top: 15px; border-top-color: #ffffff1a; }
 .detail span { color: #d8c1ee; font-size: 8px; }
 .detail h2 { margin: 7px 0; font-size: 20px; line-height: 1.2; }
 .detail p,
-.scope p { color: #c2b7cc; font-size: 9px; line-height: 1.65; }
+.scope p { color: #c2b7cc; font-size: 10px; line-height: 1.65; }
 .detail h3 { color: #f3eef7; font-size: 10px; }
 .detail a,
 .atlas a { color: #a9e8df; font-size: 8px; }
@@ -496,13 +496,13 @@
   padding: 8px 12px 5px;
 }
 .toolbar button {
-  min-height: 38px;
+  min-height: 40px;
   padding: 8px 10px;
   border-color: #ffffff2d;
   color: #f0e8f7;
   background: #ffffff0c;
   box-shadow: none;
-  font-size: 8px;
+  font-size: 9px;
 }
 .toolbar button:hover { border-color: #a78cc3; background: #ffffff18; }
 .toolbar button[aria-pressed="true"] { color: #eff8cd; background: #795c916b; border-color: #c9addc75; }
@@ -566,11 +566,12 @@
 @media (max-width: 430px) {
   .stage { min-height: 440px; height: 58vh; }
   .layout { grid-template-rows: minmax(440px, 58vh) auto auto; }
-  .layers { grid-template-columns: 1fr; }
+  .layers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .layers h2,
   .opacity,
   .layers > p,
-  .layers > button { grid-column: 1; }
+  .layers > button { grid-column: 1 / -1; }
+  .layer label { min-height: 40px; padding: 5px 6px; }
   .results { grid-template-columns: 1fr 1fr; }
   .toolbar button { min-width: 44px; }
 }

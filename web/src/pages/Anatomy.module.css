@@ -9,6 +9,48 @@
   gap: 12px;
   margin-bottom: 24px;
 }
+.studyModePicker {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 8px;
+  padding: 4px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: 1px solid #e5dce9;
+  border-radius: 999px;
+  background: #f3eef6;
+  scrollbar-width: none;
+}
+.studyModePicker::-webkit-scrollbar { display: none; }
+.studyModePicker button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: #665a70;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+.studyModePicker button[aria-pressed="true"] {
+  border-color: #e6d9ef;
+  color: #5a3677;
+  background: #fff;
+  box-shadow: 0 3px 10px #38234412, inset 0 1px #fff;
+}
+.studyModePicker button:focus-visible {
+  outline: 3px solid #8a67ac;
+  outline-offset: 2px;
+}
 .modelPicker button {
   display: flex;
   align-items: center;
@@ -45,6 +87,8 @@
   }
 }
 @media (max-width: 420px) {
+  .studyModePicker { width: 100%; }
+  .studyModePicker button { min-height: 42px; padding-inline: 12px; font-size: 11px; }
   .modelPicker button {
     padding: 12px;
     gap: 8px;

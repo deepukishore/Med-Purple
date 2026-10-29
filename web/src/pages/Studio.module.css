@@ -906,10 +906,10 @@
 }
 .toolkitHero {
   position: relative;
-  grid-template-columns: minmax(280px, .72fr) minmax(440px, 1.28fr);
+  grid-template-columns: minmax(320px, .88fr) minmax(460px, 1.12fr);
   align-items: center;
   gap: clamp(20px, 4vw, 56px);
-  min-height: 620px;
+  min-height: 580px;
   padding: clamp(28px, 4vw, 58px);
   overflow: hidden;
   border: 1px solid #4f3d63;
@@ -932,11 +932,12 @@
   margin: 15px 0 15px;
   color: white;
   font-family: var(--font-display), serif;
-  font-size: clamp(42px, 5.2vw, 72px);
+  font-size: clamp(42px, 4.4vw, 60px);
   font-weight: 400;
   letter-spacing: -.05em;
   line-height: .98;
 }
+.toolkitHero h1 em { color: #d4b7ed; font-weight: 400; }
 .toolkitIntro { max-width: 430px; color: #c9bfd2; font-size: 12px; line-height: 1.8; }
 .toolkitHeroActions { margin-top: 24px; }
 .toolkitPrimary,
@@ -1126,7 +1127,8 @@
 .directoryCopy > span { font-size: 8px; }
 .toolkitNoResults { border-radius: 12px; }
 @media (max-width: 1080px) {
-  .toolkitHero { grid-template-columns: minmax(0, .75fr) minmax(350px, 1.25fr); padding: 32px 26px; }
+  .toolkitHero { grid-template-columns: minmax(290px, .82fr) minmax(410px, 1.18fr); padding: 32px 26px; }
+  .toolkitHero h1 { font-size: clamp(40px, 5.1vw, 58px); }
   .studyOrbit { height: 350px; }
   .toolkitWorkspace { grid-template-columns: 1fr; }
   .toolkitRail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1135,7 +1137,7 @@
 @media (max-width: 760px) {
   .toolkitPage { gap: 22px; }
   .toolkitHero { display: grid; grid-template-columns: 1fr; gap: 10px; min-height: 0; padding: 27px 19px 18px; border-radius: 23px; }
-  .toolkitHero h1 { max-width: 540px; font-size: 46px; }
+  .toolkitHero h1 { max-width: 540px; font-size: 43px; }
   .toolkitHeroActions { margin-top: 18px; }
   .studyOrbitPanel { padding-inline: 0; }
   .orbitPanelTop { font-size: 6px; }
@@ -1169,7 +1171,7 @@
 }
 @media (max-width: 430px) {
   .toolkitHero { padding-inline: 15px; }
-  .toolkitHero h1 { font-size: 41px; }
+  .toolkitHero h1 { font-size: 38px; }
   .toolkitHeroActions { flex-direction: column; align-items: stretch; }
   .toolkitPrimary,
   .toolkitSecondary { width: 100%; }

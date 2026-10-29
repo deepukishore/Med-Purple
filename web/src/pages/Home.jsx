@@ -47,7 +47,7 @@ export default function Home() {
         <div className={s.openingLayout}>
           <div className={s.openingCopy}>
             <span className={s.openingKicker}><i /> MED PURPLE / ANATOMY IN MOTION</span>
-            <h1>See the body.<br /><em>Understand the why.</em></h1>
+            <h1>See the body.<br /><em>Know why.</em></h1>
             <p>
               Step into a medical study space made for looking closer, testing what you know, and keeping the ideas that matter.
             </p>
