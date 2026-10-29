@@ -32,7 +32,9 @@
   opacity: 1;
 }
 .frame:hover {
-  filter: drop-shadow(0 16px 20px #3c24551a);
+  filter:
+    drop-shadow(0 16px 20px var(--depth-shadow-color, #7139ab24))
+    drop-shadow(0 3px 8px var(--depth-shadow-soft, #ae7cdb12));
 }
 .frame:hover .content {
   transform: translateZ(34px);

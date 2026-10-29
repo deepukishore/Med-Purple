@@ -1,8 +1,24 @@
 ﻿.page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   min-height: 100dvh;
   background:
     radial-gradient(ellipse at 10% 20%, #e7dbf7, transparent 55%), #faf7fc;
   padding: 28px clamp(20px, 5vw, 90px);
+}
+.page > :global(.login-scene) {
+  position: absolute;
+  z-index: 1;
+  inset: 56px 0 64px;
+  opacity: 0.78;
+  pointer-events: auto;
+}
+.header,
+.layout,
+.footer {
+  position: relative;
+  z-index: 2;
 }
 .header {
   display: flex;
@@ -20,6 +36,7 @@
   color: var(--muted);
 }
 .layout {
+  position: relative;
   max-width: 1160px;
   margin: auto;
   display: grid;
@@ -115,13 +132,17 @@
   color: var(--purple-600);
 }
 .formPanel {
-  background: #fffdfa;
+  position: relative;
+  z-index: 2;
+  background: #fffdfaAD;
   padding: clamp(22px, 3vw, 40px);
   border-radius: 28px;
-  border: 1px solid #e4d9ec;
+  border: 1px solid #ffffffc9;
   box-shadow:
-    0 8px 0 #3821480a,
-    0 22px 55px #3821480c;
+    0 8px 0 #693b8d0b,
+    0 22px 55px #5b2b861e,
+    inset 0 1px 0 #fff;
+  backdrop-filter: blur(4px) saturate(1.15);
 }
 .switcher {
   display: flex;
@@ -372,9 +393,18 @@
   color: #3d522d;
 }
 @media (max-width: 850px) {
+  .page > :global(.login-scene) {
+    inset: 105px -24% 100px 5%;
+    opacity: 0.36;
+  }
   .layout {
     grid-template-columns: 1fr;
     max-width: 560px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .page > :global(.login-scene) {
+      opacity: 0.2;
+    }
   }
   .story {
     display: none;

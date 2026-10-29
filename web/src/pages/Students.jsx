@@ -6,6 +6,7 @@ import { SocialTabs } from "./SocialFeed";
 import { PageSkeleton, ErrorState } from "../components/States";
 import Button from "../components/Button";
 import AvatarPortrait from "../components/AvatarPortrait";
+import EvolutionAvatar from "../components/EvolutionAvatar";
 import { profilePhotoSrc } from "../utils/profilePhoto";
 import s from "./Social.module.css";
 
@@ -96,6 +97,10 @@ export default function Students() {
                 Level {data.level} · {data.xp} XP
               </strong>
             </div>
+            <EvolutionAvatar
+              level={data.level}
+              className={s.profileEvolution}
+            />
             <div className={s.profileProgress}>
               <div className={s.bar}>
                 <span style={{ width: `${data.level_progress}%` }} />

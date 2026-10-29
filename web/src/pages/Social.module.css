@@ -984,6 +984,19 @@
 .xpPanel .eyebrow {
   color: #d4c0e6;
 }
+.xpVisual {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 15px;
+}
+.xpDetails {
+  flex: 1;
+  min-width: 0;
+}
+.xpDetails .xpTitle {
+  margin-top: 0;
+}
 .xpTitle {
   display: flex;
   align-items: center;
@@ -1026,6 +1039,9 @@
 }
 .xpPanel .bar span {
   background: #d5ed9e;
+}
+.profileEvolution {
+  margin-left: auto;
 }
 .xpBadge {
   display: inline-flex;
@@ -1377,6 +1393,9 @@
   .card,
   .xpPanel {
     padding: 20px;
+  }
+  .xpVisual {
+    gap: 12px;
   }
   .tabs a {
     padding: 12px;

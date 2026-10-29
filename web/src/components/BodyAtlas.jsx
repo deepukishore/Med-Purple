@@ -25,7 +25,9 @@ function displayName(name) {
 
 export default function BodyAtlas() {
   const host = useRef(null),
-    engine = useRef(null);
+    engine = useRef(null),
+    label = useRef(null),
+    selectedRef = useRef(null);
   const [layers, setLayers] = useState({ skeletal: true });
   const [catalog, setCatalog] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -35,10 +37,13 @@ export default function BodyAtlas() {
   const [status, setStatus] = useState({});
   const [failure, setFailure] = useState("");
   const [rotation, setRotation] = useState(false);
+  const [exploded, setExploded] = useState(false);
+  const [xray, setXray] = useState(false);
   const [opacity, setOpacity] = useState(1);
   const [reference, setReference] = useState(null);
   const referenceCache = useRef(new Map());
   const selectRef = useRef(setSelected);
+  selectedRef.current = selected;
   useEffect(() => {
     const el = host.current;
     let renderer;
@@ -52,15 +57,28 @@ export default function BodyAtlas() {
     }
     renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     el.appendChild(renderer.domElement);
     const scene = new THREE.Scene();
     scene.add(new THREE.HemisphereLight(0xffffff, 0x6d5a81, 2.5));
     const key = new THREE.DirectionalLight(0xffffff, 3);
     key.position.set(3, 4, 5);
+    key.castShadow = true;
+    key.shadow.mapSize.set(512, 512);
+    key.shadow.bias = -0.00015;
     scene.add(key);
     const back = new THREE.DirectionalLight(0xb9c3ff, 2);
     back.position.set(-3, 1, -3);
     scene.add(back);
+    const floor = new THREE.Mesh(
+      new THREE.PlaneGeometry(20, 20),
+      new THREE.ShadowMaterial({ opacity: 0.16 }),
+    );
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = -0.85;
+    floor.receiveShadow = true;
+    scene.add(floor);
     const camera = new THREE.PerspectiveCamera(35, 1, 0.001, 100);
     camera.position.set(0, 0.9, 3.6);
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -105,6 +123,7 @@ export default function BodyAtlas() {
           geometry,
           new THREE.MeshStandardMaterial(),
         );
+        object.castShadow = true;
         object.name = part.name;
         object.userData.za_name = part.name;
         object.userData.sourceId = part.sourceId;
@@ -116,7 +135,12 @@ export default function BodyAtlas() {
       roots = new Map(),
       requests = new Map();
     let disposed = false,
-      raf;
+      raf,
+      animationUntil = 0,
+      focusMotion = null,
+      explodeProgress = 0,
+      explodeTarget = 0,
+      xray = false;
     const disposeRoot = (root) =>
       root.traverse((object) => {
         if (object.isMesh) {
@@ -160,6 +184,22 @@ export default function BodyAtlas() {
                 roughness: 0.65,
                 side: THREE.DoubleSide,
               });
+              object.castShadow = true;
+              object.material.onBeforeCompile = (shader) => {
+                shader.uniforms.uXray = { value: xray ? 1 : 0 };
+                shader.fragmentShader = shader.fragmentShader.replace(
+                  "#include <color_fragment>",
+                  `#include <color_fragment>
+                  float edgeGlow = pow(1.0 - abs(dot(normalize(vNormal), normalize(vViewPosition))), 2.0);
+                  diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.65, 0.43, 0.96), edgeGlow * uXray);
+                  diffuseColor.a *= mix(1.0, 0.22 + edgeGlow * 0.62, uXray);`,
+                );
+                shader.fragmentShader = shader.fragmentShader.replace(
+                  "void main() {",
+                  "uniform float uXray;\nvoid main() {",
+                );
+                object.material.userData.xrayShader = shader;
+              };
               for (const mat of Array.isArray(upstream) ? upstream : [upstream])
                 mat.dispose();
               meshes.set(uid, object);
@@ -174,6 +214,13 @@ export default function BodyAtlas() {
               });
             });
             roots.set(id, gltf.scene);
+            const layerIndex = systems.findIndex((system) => system.id === id);
+            gltf.scene.userData.explodeOrigin = gltf.scene.position.clone();
+            gltf.scene.userData.explodeOffset = new THREE.Vector3(
+              Math.sin(layerIndex * 1.7) * 0.42,
+              (layerIndex - 3.5) * 0.12,
+              Math.cos(layerIndex * 1.7) * 0.42,
+            );
             scene.add(gltf.scene);
             setCatalog((previous) =>
               [...previous, ...entries].sort((a, b) =>
@@ -181,6 +228,7 @@ export default function BodyAtlas() {
               ),
             );
             setStatus((previous) => ({ ...previous, [id]: "ready" }));
+            invalidate(300);
           })
           .catch(() => {
             if (!disposed)
@@ -191,9 +239,11 @@ export default function BodyAtlas() {
         return promise;
       },
       reset() {
+        focusMotion = null;
         camera.position.set(0, 0.9, 3.6);
         controls.target.set(0, 0.9, 0);
         controls.update();
+        invalidate(500);
       },
       focus(id) {
         const object = meshes.get(id);
@@ -206,13 +256,16 @@ export default function BodyAtlas() {
           .clone()
           .sub(controls.target)
           .normalize();
-        controls.target.copy(center);
-        camera.position
-          .copy(center)
-          .addScaledVector(direction, Math.max(size * 2, 0.14));
-        controls.update();
+        focusMotion = {
+          target: center,
+          position: center
+            .clone()
+            .addScaledVector(direction, Math.max(size * 2, 0.14)),
+        };
+        invalidate(1200);
       },
       view(angle) {
+        focusMotion = null;
         const distance = camera.position.distanceTo(controls.target);
         camera.position
           .copy(controls.target)
@@ -224,13 +277,45 @@ export default function BodyAtlas() {
             ),
           );
         controls.update();
+        invalidate(500);
+      },
+      explode(value) {
+        explodeTarget = value ? 1 : 0;
+        invalidate(900);
+      },
+      setXray(value) {
+        xray = value;
+        invalidate();
+      },
+      invalidate,
+      updateLabel() {
+        const node = label.current;
+        const object = meshes.get(selectedRef.current);
+        if (!node || !object || !object.visible) {
+          if (node) node.hidden = true;
+          return;
+        }
+        scene.updateMatrixWorld(true);
+        const center = new THREE.Box3()
+          .setFromObject(object)
+          .getCenter(new THREE.Vector3())
+          .project(camera);
+        if (center.z < -1 || center.z > 1) {
+          node.hidden = true;
+          return;
+        }
+        node.hidden = false;
+        node.style.left = `${THREE.MathUtils.clamp((center.x * 0.5 + 0.5) * el.clientWidth, 8, Math.max(8, el.clientWidth - 150))}px`;
+        node.style.top = `${THREE.MathUtils.clamp((-center.y * 0.5 + 0.5) * el.clientHeight, 8, Math.max(8, el.clientHeight - 36))}px`;
       },
     };
     engine.current = atlas;
+    let readyToRender = false;
     const resize = () => {
       renderer.setSize(el.clientWidth, el.clientHeight);
       camera.aspect = el.clientWidth / Math.max(el.clientHeight, 1);
       camera.updateProjectionMatrix();
+      if (readyToRender) invalidate(150);
     };
     const observer = new ResizeObserver(resize);
     observer.observe(el);
@@ -266,20 +351,66 @@ export default function BodyAtlas() {
     };
     el.addEventListener("pointerdown", down);
     el.addEventListener("pointerup", up);
-    const animate = () => {
-      raf = requestAnimationFrame(animate);
-      if (document.hidden) return;
-      controls.update();
-      renderer.render(scene, camera);
+    const requestFrame = () => {
+      if (!raf && !disposed && !document.hidden)
+        raf = requestAnimationFrame(animate);
     };
-    animate();
+    function animate() {
+      raf = 0;
+      if (disposed || document.hidden) return;
+      const controlsMoving = controls.update();
+      if (focusMotion) {
+        camera.position.lerp(focusMotion.position, 0.12);
+        controls.target.lerp(focusMotion.target, 0.12);
+        if (
+          camera.position.distanceTo(focusMotion.position) < 0.002 &&
+          controls.target.distanceTo(focusMotion.target) < 0.002
+        ) {
+          camera.position.copy(focusMotion.position);
+          controls.target.copy(focusMotion.target);
+          focusMotion = null;
+        }
+      }
+      explodeProgress += (explodeTarget - explodeProgress) * 0.1;
+      for (const root of roots.values()) {
+        root.position
+          .copy(root.userData.explodeOrigin)
+          .addScaledVector(root.userData.explodeOffset, explodeProgress);
+      }
+      renderer.render(scene, camera);
+      atlas.updateLabel();
+      if (
+        controls.autoRotate ||
+        controlsMoving ||
+        focusMotion ||
+        Math.abs(explodeProgress - explodeTarget) > 0.002 ||
+        performance.now() < animationUntil
+      )
+        requestFrame();
+    }
+    function invalidate(duration = 400) {
+      animationUntil = Math.max(animationUntil, performance.now() + duration);
+      requestFrame();
+    }
+    readyToRender = true;
+    const onControlChange = () => invalidate();
+    controls.addEventListener("change", onControlChange);
+    const visibility = () => {
+      if (!document.hidden) invalidate(200);
+    };
+    document.addEventListener("visibilitychange", visibility);
     atlas.load("skeletal");
+    invalidate(500);
     return () => {
       disposed = true;
       cancelAnimationFrame(raf);
+      controls.removeEventListener("change", onControlChange);
+      document.removeEventListener("visibilitychange", visibility);
       observer.disconnect();
       controls.dispose();
       draco.dispose();
+      floor.geometry.dispose();
+      floor.material.dispose();
       el.removeEventListener("pointerdown", down);
       el.removeEventListener("pointerup", up);
       roots.forEach(disposeRoot);
@@ -295,18 +426,37 @@ export default function BodyAtlas() {
   useEffect(() => {
     const atlas = engine.current;
     if (!atlas) return;
-    for (const [id, root] of atlas.roots) root.visible = !!layers[id];
+    atlas.setXray(xray);
+    for (const [id, root] of atlas.roots)
+      root.visible = xray || !!layers[id];
     for (const [id, object] of atlas.meshes) {
-      object.visible = !hidden.has(id) && (!isolated || id === selected);
+      object.visible =
+        xray || (!hidden.has(id) && (!isolated || id === selected));
       object.material.emissive.set(id === selected ? 0x633b80 : 0);
-      object.material.emissiveIntensity = id === selected ? 0.5 : 0;
-      object.material.opacity = id === selected ? 1 : opacity;
-      object.material.transparent = opacity < 1 && id !== selected;
+      object.material.emissiveIntensity =
+        id === selected ? 0.5 : xray ? 0.25 : 0;
+      object.material.opacity = xray && id !== selected
+        ? 0.34
+        : id === selected
+          ? 1
+          : opacity;
+      object.material.transparent = xray || (opacity < 1 && id !== selected);
       object.material.depthWrite = !object.material.transparent;
+      const shader = object.material.userData.xrayShader;
+      if (shader) shader.uniforms.uXray.value = xray ? 1 : 0;
     }
-  }, [layers, selected, isolated, hidden, opacity, catalog]);
+    atlas.invalidate();
+  }, [layers, selected, isolated, hidden, opacity, catalog, xray]);
+  useEffect(() => {
+    engine.current?.explode(exploded);
+  }, [exploded]);
+  useEffect(() => {
+    if (selected) engine.current?.focus(selected);
+    else engine.current?.invalidate();
+  }, [selected]);
   useEffect(() => {
     if (engine.current) engine.current.controls.autoRotate = rotation;
+    engine.current?.invalidate(500);
   }, [rotation]);
   const item = catalog.find((entry) => entry.id === selected);
   useEffect(() => {
@@ -387,6 +537,12 @@ export default function BodyAtlas() {
                     setIsolated(false);
                   }}
                 />
+                <div ref={label} className={s.leaderLabel} hidden={!item}>
+                  <svg viewBox="0 0 130 28" aria-hidden="true">
+                    <path d="M2 26 20 8h106" />
+                  </svg>
+                  <span>{item?.name}</span>
+                </div>
                 <span style={{ background: system.color }} />
                 {system.name}
               </label>
@@ -463,6 +619,18 @@ export default function BodyAtlas() {
               onClick={() => setRotation((value) => !value)}
             >
               {rotation ? "Pause rotation" : "Rotate 360°"}
+            </button>
+            <button
+              aria-pressed={exploded}
+              onClick={() => setExploded((value) => !value)}
+            >
+              {exploded ? "Restore layers" : "Exploded layers"}
+            </button>
+            <button
+              aria-pressed={xray}
+              onClick={() => setXray((value) => !value)}
+            >
+              {xray ? "Solid view" : "X-ray ghost"}
             </button>
             <button
               onClick={() => {

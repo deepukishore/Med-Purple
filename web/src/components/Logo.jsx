@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-export default function Logo({ inverse = false }) {
+export default function Logo({ inverse = false, onClick }) {
   return (
     <Link
       to="/"
       aria-label="Med Purple home"
+      onClick={onClick}
       style={{
         display: "inline-flex",
         alignItems: "center",

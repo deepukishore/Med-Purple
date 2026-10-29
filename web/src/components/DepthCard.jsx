@@ -22,6 +22,10 @@ export default function DepthCard({ children, className = "" }) {
     <div
       ref={frame}
       className={`${s.frame} ${className}`}
+      style={{
+        "--depth-shadow-color": tokens.depth.shadow,
+        "--depth-shadow-soft": tokens.depth.shadowSoft,
+      }}
       onPointerEnter={(e) => {
         if (
           e.pointerType === "touch" ||

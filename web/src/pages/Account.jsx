@@ -15,6 +15,7 @@ import usePageMeta from "../hooks/usePageMeta";
 import Logo from "../components/Logo";
 import Button from "../components/Button";
 import DepthCard from "../components/DepthCard";
+import LoginScene from "../components/LoginScene";
 import StudentProfileFields from "../components/StudentProfileFields";
 import { PageSkeleton, ErrorState } from "../components/States";
 import { profileValues } from "../utils/studentProfile";
@@ -250,14 +251,9 @@ export default function Account({ register = false }) {
   const { user, loading, error, initialize, setGuestAccess } = useApp();
   return (
     <main className={s.page}>
+      <LoginScene />
       <header className={s.header}>
-        <Link
-          to="/"
-          onClick={() => setGuestAccess(true)}
-          aria-label="Med Purple home"
-        >
-          <Logo />
-        </Link>
+        <Logo onClick={() => setGuestAccess(true)} />
         <Link to="/" onClick={() => setGuestAccess(true)}>
           Back to study desk <ArrowRight size={17} />
         </Link>

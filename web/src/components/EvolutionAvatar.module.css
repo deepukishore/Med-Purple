@@ -1,0 +1,45 @@
+.avatar {
+  position: relative;
+  width: 116px;
+  height: 116px;
+  flex: 0 0 116px;
+  overflow: hidden;
+  border: 1px solid #d6c3e8;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 50% 43%, #fff 0, #f3eafd 46%, #e8dcf5 100%);
+  box-shadow:
+    0 15px 26px #67408b20,
+    0 4px 10px #9e6fcb17,
+    inset 0 1px 0 #fff;
+}
+.avatar canvas {
+  position: absolute;
+  inset: 0;
+}
+.avatar > span {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  padding: 3px 7px;
+  border: 1px solid #ffffffb8;
+  border-radius: 999px;
+  background: #fffaf0d9;
+  color: #543275;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+.goalComplete {
+  border-color: #bca0df;
+  box-shadow:
+    0 0 0 3px #a76ad622,
+    0 18px 32px #6a3c922b,
+    inset 0 1px 0 #fff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .avatar {
+    transition: none;
+  }
+}
