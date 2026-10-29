@@ -19,29 +19,34 @@ export default function AnatomyCanvas({
   const [failed, setFailed] = useState(false);
   useEffect(() => {
     const el = host.current;
-    let renderer, raf;
+    let renderer, raf, model;
     setFailed(false);
-    const model =
-      modelId === "heart" ? createHeartScene() : createReferenceScene(modelId);
-    engine.current = model;
-    if (controlsRef) controlsRef.current = model;
     try {
+      model =
+        modelId === "heart"
+          ? createHeartScene()
+          : createReferenceScene(modelId);
+      engine.current = model;
+      if (controlsRef) controlsRef.current = model;
       renderer = new THREE.WebGLRenderer({
         antialias: true,
         alpha: true,
         powerPreference: "low-power",
       });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+      renderer.setClearColor(0x000000, 0);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
+      el.appendChild(renderer.domElement);
     } catch {
       setFailed(true);
-      model.dispose();
+      renderer?.dispose();
+      model?.dispose();
+      engine.current = null;
+      if (controlsRef?.current === model) controlsRef.current = null;
       return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
-    renderer.setClearColor(0x000000, 0);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
-    el.appendChild(renderer.domElement);
     const resize = () => {
       const w = el.clientWidth,
         h = el.clientHeight;
@@ -56,11 +61,21 @@ export default function AnatomyCanvas({
       visible = entries[0].isIntersecting;
     });
     intersection.observe(el);
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
+    let reduced = motionPreference.matches;
+    const updateMotion = (event) => {
+      reduced = event.matches;
+    };
+    motionPreference.addEventListener("change", updateMotion);
+    let previousTime = 0;
     const animate = (time) => {
       raf = requestAnimationFrame(animate);
       if (!visible || document.hidden) return;
-      model.frame(time, reduced);
+      const delta = previousTime
+        ? Math.min((time - previousTime) / 1000, 0.05)
+        : 0;
+      previousTime = time;
+      model.frame(time, reduced, delta);
       renderer.render(model.scene, model.camera);
     };
     raf = requestAnimationFrame(animate);
@@ -77,8 +92,19 @@ export default function AnatomyCanvas({
       }
     };
     const move = (e) => {
+      const last = points.get(e.pointerId);
+      if (compact && points.size > 1) {
+        if (last) points.set(e.pointerId, [e.clientX, e.clientY]);
+        const current = [...points.values()];
+        const distance = Math.hypot(
+          current[0][0] - current[1][0],
+          current[0][1] - current[1][1],
+        );
+        if (lastDistance) model.zoom((lastDistance - distance) * 0.018);
+        lastDistance = distance;
+        return;
+      }
       if (compact) {
-        const last = points.get(e.pointerId);
         if (last) {
           points.set(e.pointerId, [e.clientX, e.clientY]);
           model.rotate(
@@ -96,7 +122,6 @@ export default function AnatomyCanvas({
         }
         return;
       }
-      const last = points.get(e.pointerId);
       if (!last) return;
       points.set(e.pointerId, [e.clientX, e.clientY]);
       if (points.size === 2) {
@@ -124,6 +149,7 @@ export default function AnatomyCanvas({
         if (id) selectCallback.current?.(id);
       }
       points.delete(e.pointerId);
+      if (points.size < 2) lastDistance = 0;
       start = null;
     };
     const leave = () => {
@@ -134,6 +160,16 @@ export default function AnatomyCanvas({
       e.preventDefault();
       model.zoom(e.deltaY * 0.005);
     };
+    const contextLost = (event) => {
+      event.preventDefault();
+      cancelAnimationFrame(raf);
+      setFailed(true);
+    };
+    renderer.domElement.addEventListener(
+      "webglcontextlost",
+      contextLost,
+      false,
+    );
     el.addEventListener("pointerdown", down);
     el.addEventListener("pointermove", move);
     el.addEventListener("pointerup", up);
@@ -144,6 +180,7 @@ export default function AnatomyCanvas({
       cancelAnimationFrame(raf);
       observer.disconnect();
       intersection.disconnect();
+      motionPreference.removeEventListener("change", updateMotion);
       for (const [type, handler] of [
         ["pointerdown", down],
         ["pointermove", move],
@@ -153,6 +190,7 @@ export default function AnatomyCanvas({
         ["wheel", wheel],
       ])
         el.removeEventListener(type, handler);
+      renderer.domElement.removeEventListener("webglcontextlost", contextLost);
       renderer.dispose();
       model.dispose();
       renderer.domElement.remove();
@@ -177,7 +215,7 @@ export default function AnatomyCanvas({
       role="application"
       aria-label={
         compact
-          ? "Interactive schematic 3D heart preview. Drag or use arrow keys to rotate; click a chamber to highlight it."
+          ? "Interactive schematic 3D heart preview. Drag to rotate, pinch to zoom, or focus this model and use arrow keys. Press R to reset."
           : `Interactive ${modelId} model. Drag to rotate, pinch or scroll to zoom. Arrow keys rotate; plus and minus zoom; R resets.`
       }
       tabIndex={0}

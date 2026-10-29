@@ -10,9 +10,10 @@ import useData from "../hooks/useData";
 import { api } from "../context/AppContext";
 import { createRequestId } from "../utils/requestId";
 import Button from "./Button";
+import StudyBuddy from "./StudyBuddy";
 import s from "./QuickRecall.module.css";
 
-export default function QuickRecall({ onCompleted }) {
+export default function QuickRecall({ onCompleted, tone = "focused" }) {
   const { data, loading, error, reload } = useData(
     "/mcqs?limit=1&shuffle=true",
   );
@@ -40,6 +41,7 @@ export default function QuickRecall({ onCompleted }) {
         <RecallQuestion
           key={data.items[0].id}
           question={data.items[0]}
+          tone={tone}
           onCompleted={onCompleted}
           onNext={reload}
         />
@@ -53,7 +55,7 @@ export default function QuickRecall({ onCompleted }) {
   );
 }
 
-function RecallQuestion({ question: q, onCompleted, onNext }) {
+function RecallQuestion({ question: q, tone, onCompleted, onNext }) {
   const [selected, setSelected] = useState(null),
     [result, setResult] = useState(null),
     [pending, setPending] = useState(false),
@@ -122,11 +124,20 @@ function RecallQuestion({ question: q, onCompleted, onNext }) {
           className={`${s.feedback} ${result.correct ? s.celebrate : ""}`}
           role="status"
         >
-          <strong>
-            {result.correct
-              ? "Brain: 1. Self-doubt: 0."
-              : "A plot twist worth remembering."}
-          </strong>
+          <div className={s.feedbackHeading}>
+            <strong>
+              {result.correct
+                ? tone === "playful"
+                  ? "Brain: 1. Self-doubt: 0."
+                  : "Correct. Review the explanation to lock in the concept."
+                : tone === "playful"
+                  ? "Wrong answer. Character development."
+                  : "Review the key idea, then try another question."}
+            </strong>
+            {tone === "playful" && (
+              <StudyBuddy expression={result.correct ? "happy" : "oops"} />
+            )}
+          </div>
           <p>{result.explanation}</p>
           <a href={result.source_url} target="_blank" rel="noreferrer">
             Check the source <ArrowUpRight size={15} />

@@ -576,22 +576,6 @@
 .identityBottom a {
   font-weight: 800;
 }
-.atlasPreview {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  min-height: 278px;
-  border: 1px solid #594572;
-  border-radius: 22px;
-  background:
-    radial-gradient(ellipse at 68% 70%, #986eae66, transparent 52%),
-    linear-gradient(145deg, #38284b, #241b33 72%);
-  color: #fff;
-  box-shadow:
-    0 18px 38px #2b1d3a30,
-    inset 0 1px 0 #ffffff2b,
-    inset 0 -12px 28px #160f201c;
-}
 .atlasPreviewCopy {
   position: relative;
   z-index: 2;
@@ -997,18 +981,307 @@
   }
 }
 
-/* Give progress and study missions a lively, collectible-game polish. */
-.welcome {
-  border-color: #e2d3f1;
+.welcome h1 { max-width: 650px; }
+.heroTertiary {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 44px;
+  padding: 0 5px;
+  color: #e6ddf1;
+  font-size: 11px;
+  font-weight: 800;
+  transition: color 160ms ease, translate 160ms ease;
+}
+.heroTertiary:hover { color: #d5f09a; translate: 2px 0; }
+.medbyteFeature {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 17px;
+  padding: 21px 23px;
+  border: 1px solid #dce7e2;
+  border-radius: 22px;
   background:
-    radial-gradient(circle at 88% 5%, #d8c2fb 0 4.7rem, transparent 4.8rem),
-    radial-gradient(circle at 100% 100%, #e4f79c 0 7.5rem, transparent 7.6rem),
-    linear-gradient(115deg, #fffefa 0%, #f7efff 57%, #f2f9df 100%);
-  box-shadow: 0 18px 42px #49286d10;
+    radial-gradient(ellipse at 98% 0%, #c9e9e146, transparent 31%),
+    linear-gradient(105deg, #f3fbf7, #fffdfa 63%, #f7f4fb);
+  box-shadow: 0 12px 27px #34204008;
+}
+.medbyteFeatureMark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: 1px solid #d7e8dd;
+  border-radius: 18px 18px 18px 6px;
+  background: #e5f3e5;
+  color: #577856;
+}
+.medbyteFeatureMark span {
+  position: absolute;
+  right: -7px;
+  bottom: -5px;
+  padding: 2px 4px;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  background: #fffdfa;
+  color: #718268;
+  font-size: 7px;
+  font-weight: 800;
+}
+.medbyteFeatureCopy { min-width: 0; }
+.medbyteFeatureCopy .overline { color: #648470; font-size: 9px; }
+.medbyteFeatureCopy h2 { margin: 6px 0 3px; color: #332540; font-size: 17px; letter-spacing: -.03em; }
+.medbyteFeatureCopy > p:not(.overline) { color: #746d78; font-size: 11px; line-height: 1.55; }
+.medbyteFeatureCopy small { display: block; margin-top: 6px; color: #8e8490; font-size: 9px; }
+.medbyteFeatureLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 13px;
+  border: 1px solid #cbded1;
+  border-radius: 11px;
+  background: #fff;
+  color: #496e50;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.medbyteFeatureLink:hover { border-color: #8eaf91; background: #f7fbf5; }
+.medbyteFeatureLink:focus-visible,
+.heroTertiary:focus-visible { outline: 3px solid #65e7ff; outline-offset: 3px; }
+@media (max-width: 760px) {
+  .heroActions { gap: 8px 12px; }
+  .heroTertiary { min-height: 38px; }
+  .medbyteFeature { grid-template-columns: 46px minmax(0, 1fr); gap: 12px; padding: 17px; }
+  .medbyteFeatureMark { width: 44px; height: 44px; border-radius: 15px 15px 15px 5px; }
+  .medbyteFeatureLink { grid-column: 2; width: fit-content; }
+}
+@media (max-width: 480px) {
+  .heroTertiary { justify-content: flex-start; }
+  .medbyteFeature { align-items: start; }
+  .medbyteFeatureCopy h2 { font-size: 15px; }
+  .medbyteFeatureCopy > p:not(.overline) { font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .heroTertiary { transition: none; }
+}
+
+/* The opening study desk combines real progress with its existing 3D heart. */
+.welcome {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 36%);
+  align-items: center;
+  min-height: 310px;
+  padding: 30px 34px;
+  border-color: #7454b6;
+  background:
+    radial-gradient(ellipse at 78% 48%, #7955ff7a, transparent 34%),
+    radial-gradient(ellipse at 100% 0%, #65e7ff35, transparent 30%),
+    linear-gradient(112deg, #211238 0%, #342052 56%, #49317a 100%);
+  box-shadow:
+    0 24px 60px -34px #291344b8,
+    inset 0 1px #ffffff22;
+  transform-style: preserve-3d;
+  transform: perspective(1300px) rotateX(var(--atlas-tilt-x, 0deg))
+    rotateY(var(--atlas-tilt-y, 0deg));
+  transition:
+    transform 320ms var(--ease),
+    box-shadow 320ms var(--ease);
+}
+.welcome::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 400px;
+  aspect-ratio: 1;
+  right: 14%;
+  top: 50%;
+  border: 1px solid #d4c5ff24;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 24px #d4c5ff0b,
+    0 0 0 54px #65e7ff08;
+  transform: translate3d(
+    var(--atlas-parallax-x, 0px),
+    calc(-50% + var(--atlas-parallax-y, 0px)),
+    -12px
+  );
+}
+.welcome::after {
+  z-index: -1;
+  right: 31%;
+  top: 14%;
+  width: 5px;
+  height: 5px;
+  border: 0;
+  background: var(--cyan);
+  box-shadow:
+    0 0 18px 4px #65e7ff90,
+    0 0 0 12px #65e7ff12;
+}
+.welcomeCopy {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+  transform: translateZ(28px);
+}
+.welcome .overline {
+  color: #d4c5ff;
+}
+.welcome h1 {
+  max-width: 570px;
+  margin: 14px 0 10px;
+  color: white;
+  font-family: var(--font-display), serif;
+  font-size: clamp(34px, 4vw, 56px);
+  line-height: 1.05;
+  font-weight: 400;
+  letter-spacing: -0.035em;
 }
 .welcome h1 span {
-  color: #8750bd;
+  color: #c6a7ff;
 }
+.welcome > .welcomeCopy > p:not(.overline) {
+  max-width: 390px;
+  color: #e1d8f2;
+  font-size: 14px;
+}
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 11px;
+  margin-top: 22px;
+}
+.heroPrimary,
+.heroSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  transition:
+    transform 180ms var(--ease),
+    background 180ms var(--ease);
+}
+.heroPrimary {
+  background: #c6a7ff;
+  color: #281443;
+  box-shadow:
+    0 9px 24px #12092366,
+    inset 0 1px #ffffffa0;
+}
+.heroSecondary {
+  border: 1px solid #ffffff38;
+  color: white;
+  background: #ffffff0d;
+}
+.heroPrimary:hover,
+.heroSecondary:hover {
+  transform: translateY(-2px);
+}
+.welcome .streak {
+  display: inline-flex;
+  margin-top: 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: white;
+  box-shadow: none;
+}
+.welcome .streak svg {
+  color: #65e7ff;
+}
+.welcome .streak small {
+  color: #d4c5ff;
+}
+.heroAtlas {
+  position: relative;
+  z-index: 1;
+  align-self: stretch;
+  min-height: 250px;
+  overflow: hidden;
+  border: 1px solid #ffffff20;
+  border-radius: 22px;
+  background: radial-gradient(ellipse at 50% 60%, #a58aff35, transparent 60%);
+  box-shadow: inset 0 1px #ffffff15;
+  transform: translateZ(16px);
+}
+.heroAtlas .atlasPreviewCopy {
+  padding: 15px 17px 0;
+}
+.heroAtlas .atlasPreviewCopy .overline {
+  color: #d4c5ff;
+  font-size: 9px;
+}
+.heroAtlas .atlasPreviewCopy h2 {
+  color: white;
+  font-size: 17px;
+}
+.heroAtlas .atlasModel {
+  inset: 48px 0 0;
+}
+.heroAtlas .atlasDragHint {
+  bottom: 10px;
+}
+.heroAtlas .atlasLoading {
+  inset: 48px 0 0;
+}
+@media (max-width: 1280px) {
+  .welcome {
+    align-items: center;
+  }
+}
+@media (max-width: 760px) {
+  .welcome {
+    grid-template-columns: minmax(0, 1fr) minmax(210px, 34%);
+    padding: 25px;
+  }
+}
+@media (max-width: 600px) {
+  .welcome {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding: 22px;
+  }
+  .welcome h1 {
+    font-size: 36px;
+  }
+  .welcome .streak {
+    width: auto;
+    margin-top: 16px;
+    border: 0;
+  }
+  .heroAtlas {
+    min-height: 230px;
+  }
+  .heroActions {
+    gap: 8px;
+  }
+  .heroPrimary,
+  .heroSecondary {
+    min-height: 44px;
+    padding-inline: 12px;
+    font-size: 11px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .welcome,
+  .heroPrimary,
+  .heroSecondary {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Give progress and study missions a lively, collectible-game polish. */
 .streak {
   border-color: #e0d2f0;
   border-radius: 999px;
@@ -1082,64 +1355,57 @@
   }
 }
 
-/* A theme-colored orbit gives the existing heart preview a quiet 3D stage. */
-.atlasPreview {
-  transform-style: preserve-3d;
-  transform: perspective(1100px)
-    rotateX(var(--atlas-tilt-x, 0deg))
-    rotateY(var(--atlas-tilt-y, 0deg));
-  transition:
-    transform 320ms var(--ease),
-    box-shadow 320ms var(--ease);
-}
-.atlasPreview::before,
-.atlasPreview::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-}
-.atlasPreview::before {
-  z-index: 0;
-  top: 60%;
-  left: 50%;
-  width: min(74vw, 206px);
-  aspect-ratio: 1;
-  border: 1px solid var(--purple-200);
-  border-radius: 50%;
+/* Keep the hero treatment above the dashboard's earlier card skin rules. */
+.welcome {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 36%);
+  align-items: center;
+  min-height: 310px;
+  padding: 30px 34px;
+  border-color: #7454b6;
+  background:
+    radial-gradient(ellipse at 78% 48%, #7955ff7a, transparent 34%),
+    radial-gradient(ellipse at 100% 0%, #65e7ff35, transparent 30%),
+    linear-gradient(112deg, #211238 0%, #342052 56%, #49317a 100%);
   box-shadow:
-    0 0 0 13px var(--purple-800),
-    0 0 34px var(--purple-500);
-  opacity: 0.2;
-  transform-style: preserve-3d;
-  transform: translate3d(
-      calc(-50% + var(--atlas-parallax-x, 0px)),
-      calc(-50% + var(--atlas-parallax-y, 0px) + var(--atlas-scroll-depth, 0px)),
-      -8px
-    )
-    rotateX(68deg) rotateZ(var(--atlas-scroll-turn, 0deg));
+    0 24px 60px -34px #291344b8,
+    inset 0 1px #ffffff22;
 }
-.atlasPreview::after {
-  z-index: 0;
-  top: 60%;
-  left: 50%;
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 30% 30%,
-    var(--surface),
-    var(--accent) 45%,
-    var(--purple-400)
-  );
-  box-shadow: 0 0 18px var(--accent);
-  opacity: 0.84;
-  transform: translate3d(
-      calc(-50% + var(--atlas-parallax-x, 0px)),
-      calc(-50% + var(--atlas-parallax-y, 0px) + var(--atlas-scroll-depth, 0px)),
-      8px
-    )
-    rotateZ(var(--atlas-scroll-turn, 0deg)) translateX(103px);
+.welcome h1 span {
+  color: #c6a7ff;
 }
+.welcome .streak {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: white;
+  box-shadow: none;
+}
+.welcome .streak svg {
+  color: #65e7ff;
+}
+.welcome .streak small {
+  color: #d4c5ff;
+}
+@media (max-width: 760px) {
+  .welcome {
+    grid-template-columns: minmax(0, 1fr) minmax(210px, 34%);
+    padding: 25px;
+  }
+}
+@media (max-width: 600px) {
+  .welcome {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding: 22px;
+  }
+  .welcome .streak {
+    width: auto;
+    margin-top: 16px;
+    border: 0;
+  }
+}
+
 .atlasModel {
   z-index: 1;
 }
@@ -1157,37 +1423,7 @@
   opacity: 1;
   translate: 0 0;
 }
-@media (prefers-reduced-motion: no-preference) {
-  .atlasPreview::before {
-    animation: atlas-orbit-breathe 5.2s ease-in-out infinite alternate;
-  }
-  .atlasPreview::after {
-    animation: atlas-orbit-glint 2.8s ease-in-out infinite alternate;
-  }
-}
-@keyframes atlas-orbit-breathe {
-  from {
-    opacity: 0.14;
-  }
-  to {
-    opacity: 0.27;
-  }
-}
-@keyframes atlas-orbit-glint {
-  from {
-    opacity: 0.58;
-  }
-  to {
-    opacity: 0.94;
-  }
-}
 @media (prefers-reduced-motion: reduce) {
-  .atlasPreview {
-    transform: none;
-    transition: none;
-  }
-  .atlasPreview::before,
-  .atlasPreview::after,
   .desk [data-home-motion] {
     animation: none;
     transition: none;
@@ -1196,4 +1432,38 @@
     opacity: 1;
     translate: none;
   }
+}
+
+/* Give the anatomical preview enough room to read as the home hero. */
+.welcome {
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+  min-height: 400px;
+  padding: clamp(28px, 3.5vw, 46px);
+  border-radius: 30px;
+}
+.welcome h1 {
+  max-width: 610px;
+  font-size: clamp(38px, 4.2vw, 59px);
+  line-height: 1.03;
+}
+.heroAtlas {
+  min-height: 340px;
+  border-radius: 26px;
+  background:
+    radial-gradient(ellipse at 50% 56%, #a58aff47, transparent 58%),
+    linear-gradient(145deg, #ffffff0c, #ffffff03);
+}
+.heroAtlas .atlasModel { inset: 50px 0 0; }
+@media (max-width: 760px) {
+  .welcome {
+    grid-template-columns: minmax(0, 1fr) minmax(210px, 38%);
+    min-height: 350px;
+    padding: 24px;
+  }
+  .heroAtlas { min-height: 270px; }
+}
+@media (max-width: 600px) {
+  .welcome { grid-template-columns: minmax(0, 1fr); min-height: 0; padding: 22px; }
+  .welcome h1 { font-size: 37px; }
+  .heroAtlas { min-height: 250px; }
 }

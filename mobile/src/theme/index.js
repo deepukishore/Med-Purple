@@ -5,7 +5,7 @@ export const fonts = {
   body: "Manrope_400Regular",
   medium: "Manrope_500Medium",
   bold: "Manrope_700Bold",
-  display: "Manrope_700Bold",
+  display: "DMSerifDisplay_400Regular",
 };
 export const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: "transparent" },

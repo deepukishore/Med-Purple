@@ -45,6 +45,8 @@ export default function HomeScreen({ navigation }) {
   const { data, loading, error, reload } = useData("/dashboard");
   const rewards = useData("/progress");
   const storyOfDay = useData("/stories/featured");
+  const featureState = useData("/features");
+  const playfulCopy = featureState.data?.preferences?.copyTone === "playful";
   const { notify, changed } = useApp();
   const [pending, setPending] = useState(false),
     [now, setNow] = useState(Date.now());
@@ -126,7 +128,9 @@ export default function HomeScreen({ navigation }) {
         <Pressable
           accessibilityRole="button"
           onPress={() =>
-            navigation.navigate("Community", { storyId: storyOfDay.data.item.id })
+            navigation.navigate("Community", {
+              storyId: storyOfDay.data.item.id,
+            })
           }
           style={[
             s.card,
@@ -145,7 +149,11 @@ export default function HomeScreen({ navigation }) {
       ) : storyOfDay.error ? (
         <View style={s.card}>
           <Text style={s.small}>The featured story could not be loaded.</Text>
-          <Button title="Retry" variant="secondary" onPress={storyOfDay.reload} />
+          <Button
+            title="Retry"
+            variant="secondary"
+            onPress={storyOfDay.reload}
+          />
         </View>
       ) : null}
       <DepthCard style={h.hero}>
@@ -173,7 +181,11 @@ export default function HomeScreen({ navigation }) {
           <View style={{ flex: 1, gap: 10 }}>
             <Text style={h.eyebrow}>TODAY’S QUICK WIN</Text>
             <Text style={h.heroTitle}>{choice.title}</Text>
-            <Text style={h.heroCopy}>{choice.copy}</Text>
+            <Text style={h.heroCopy}>
+              {playfulCopy && session === 0
+                ? "Five questions. Neurons on overtime. Let's see what sticks."
+                : choice.copy}
+            </Text>
           </View>
         </View>
         {session === 0 && (
@@ -384,7 +396,9 @@ export default function HomeScreen({ navigation }) {
           <Text style={[s.title, { fontSize: 25, lineHeight: 30 }]}>
             See the bigger picture.
           </Text>
-          <Text style={s.small}>Swipe the model to turn it. Explore every angle.</Text>
+          <Text style={s.small}>
+            Swipe the model to turn it. Explore every angle.
+          </Text>
           <Button
             title="Explore the heart"
             variant="secondary"

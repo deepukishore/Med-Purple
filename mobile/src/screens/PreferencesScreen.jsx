@@ -28,6 +28,7 @@ const defaultPrefs = {
   ],
   readingMode: false,
   nightMode: false,
+  copyTone: "focused",
 };
 const Choice = ({ values, value, onChange }) => (
   <View style={[s.row, { flexWrap: "wrap" }]}>
@@ -173,6 +174,42 @@ export default function PreferencesScreen({ navigation }) {
             />
           </Pressable>
         ))}
+      </View>
+      <View style={s.card}>
+        <Text style={s.heading}>Study voice</Text>
+        <Text style={s.small}>
+          Keep encouragement focused or add a little internet-native energy.
+        </Text>
+        <View style={[s.row, { flexWrap: "wrap" }]}>
+          {["focused", "playful"].map((copyTone) => (
+            <Pressable
+              key={copyTone}
+              accessibilityRole="button"
+              accessibilityState={{ selected: prefs.copyTone === copyTone }}
+              onPress={() => save({ ...prefs, copyTone })}
+              style={[
+                s.pill,
+                {
+                  minHeight: 44,
+                  justifyContent: "center",
+                  backgroundColor:
+                    prefs.copyTone === copyTone
+                      ? colors.purple[700]
+                      : colors.purple[50],
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  s.pillText,
+                  prefs.copyTone === copyTone && { color: "white" },
+                ]}
+              >
+                {copyTone === "focused" ? "Focused" : "Playful"}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
       </View>
       <View style={s.card}>
         <Text style={s.heading}>Arrange your home</Text>

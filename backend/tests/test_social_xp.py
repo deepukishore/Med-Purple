@@ -79,7 +79,7 @@ def test_open_community_profiles_and_reaction_idempotency(authenticated):
     assert xp(c,h) == 10
     profile = c.get(API + "/profiles/" + helper_id).json()
     assert profile["xp"] == 7
-    assert set(profile) == {"id","name","year","xp","level","level_progress","next_level_xp","posts","doubts","solutions"}
+    assert set(profile) == {"id","name","year","xp","level","level_progress","next_level_xp","avatar_id","avatar_photo_url","posts","doubts","solutions"}
     assert c.get(API + "/profiles?search=Helper").json()["items"][0]["id"] == helper_id
     assert c.post(API + "/community",json={"title":"x","subject":"x","content":"x"}).status_code == 401
     assert c.get(API + "/doubts/" + thread["id"]).status_code == 404

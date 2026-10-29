@@ -26,7 +26,7 @@ try:
             client.post("/api/v1/saved", headers=headers, json=dict(kind=kind, title="Recall a concept", content="A source-linked study idea.", subject="General"))
         client.post("/api/v1/community", headers=headers, json=dict(title="Study question",content="A discussion in an isolated test database.",subject="General"))
         fixtures = {"user": session["user"]}
-        for path in ("dashboard", "progress", "notes", "flashcards", "flashcards/reviews", "planner", "tutor", "community", "lectures", "resources", "anatomy", "mcqs", "medbytes"):
+        for path in ("dashboard", "progress", "features", "notes", "flashcards", "flashcards/reviews", "planner", "tutor", "community", "lectures", "resources", "anatomy", "mcqs", "medbytes"):
             response = client.get("/api/v1/" + path, headers=headers)
             assert response.status_code == 200, response.text
             fixtures["/" + path] = response.json()

@@ -28,6 +28,13 @@ def test_development_allows_private_lan_frontend_origin(monkeypatch):
     assert is_development_origin("http://192.168.1.12:4173")
 
 
+def test_development_allows_vites_next_private_lan_port(monkeypatch):
+    monkeypatch.setattr(settings, "environment", "development")
+
+    check_origin(request_with_origin("http://192.168.1.12:4174"))
+    assert is_development_origin("http://192.168.1.12:4174")
+
+
 def test_development_cors_allows_private_lan_frontend_origin(client, monkeypatch):
     monkeypatch.setattr(settings, "environment", "development")
 
@@ -43,7 +50,6 @@ def test_development_cors_allows_private_lan_frontend_origin(client, monkeypatch
 @pytest.mark.parametrize(
     "origin",
     [
-        "http://192.168.1.12:4174",
         "http://8.8.8.8:4173",
         "http://example.com:4173",
         "http://192.168.1.12:4173/path",

@@ -33,7 +33,11 @@ body {
     radial-gradient(ellipse at 100% 45%, #f0e6fb85, transparent 40rem),
     linear-gradient(#77639a08 1px, transparent 1px),
     linear-gradient(90deg, #77639a08 1px, transparent 1px);
-  background-size: auto, auto, 34px 34px, 34px 34px;
+  background-size:
+    auto,
+    auto,
+    34px 34px,
+    34px 34px;
   background-attachment: fixed;
 }
 body,
@@ -274,7 +278,14 @@ summary {
 
 /* Cards read like little study objects, with a soft top highlight and a
    restrained lift when the pointer gets near. */
-:is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"]) {
+:is(
+  [class*="card"],
+  [class*="Card"],
+  [class*="panel"],
+  [class*="Panel"],
+  [class*="tile"],
+  [class*="Tile"]
+) {
   transform-style: preserve-3d;
   transition:
     transform 240ms var(--ease),
@@ -282,12 +293,30 @@ summary {
     border-color 240ms var(--ease);
 }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  :is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"]):hover {
-    transform: perspective(1100px) rotateX(var(--depth-tilt-x, 0deg)) rotateY(var(--depth-tilt-y, 0deg)) translateY(-3px);
-    box-shadow: 0 18px 34px #38235418, inset 0 1px 0 #ffffffc2;
+  :is(
+    [class*="card"],
+    [class*="Card"],
+    [class*="panel"],
+    [class*="Panel"],
+    [class*="tile"],
+    [class*="Tile"]
+  ):hover {
+    transform: perspective(1100px) rotateX(var(--depth-tilt-x, 0deg))
+      rotateY(var(--depth-tilt-y, 0deg)) translateY(-3px);
+    box-shadow:
+      0 18px 34px #38235418,
+      inset 0 1px 0 #ffffffc2;
   }
 }
-:is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"]) > :is(h1,h2,h3,svg,[class*="icon"],[class*="Icon"]) {
+:is(
+    [class*="card"],
+    [class*="Card"],
+    [class*="panel"],
+    [class*="Panel"],
+    [class*="tile"],
+    [class*="Tile"]
+  )
+  > :is(h1, h2, h3, svg, [class*="icon"], [class*="Icon"]) {
   transform: translateZ(8px);
 }
 
@@ -301,7 +330,9 @@ a[class*="Button"]:hover {
 }
 .topbar {
   background: #fffdf9d9;
-  box-shadow: 0 8px 28px #3323460b, inset 0 -1px 0 #ffffffb8;
+  box-shadow:
+    0 8px 28px #3323460b,
+    inset 0 -1px 0 #ffffffb8;
 }
 :is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"]) {
   border-color: var(--brand-card-line, #e5d9ef);
@@ -326,8 +357,22 @@ a[class*="Button"]:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"]),
-  :is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"]):hover {
+  :is(
+    [class*="card"],
+    [class*="Card"],
+    [class*="panel"],
+    [class*="Panel"],
+    [class*="tile"],
+    [class*="Tile"]
+  ),
+  :is(
+    [class*="card"],
+    [class*="Card"],
+    [class*="panel"],
+    [class*="Panel"],
+    [class*="tile"],
+    [class*="Tile"]
+  ):hover {
     transform: none;
   }
 }
@@ -353,6 +398,6 @@ a[class*="Button"]:hover {
   }
   button,
   a {
-    -webkit-tap-highlight-color: #8c50c520;
+    -webkit-tap-highlight-color: #7955ff20;
   }
 }

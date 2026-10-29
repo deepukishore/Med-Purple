@@ -3,6 +3,7 @@ import { View, Text, Pressable, Linking } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles as s, colors, fonts } from "../theme";
 import Button from "./Button";
+import PipBuddy from "./PipBuddy";
 export default function QuestionCard({
   q,
   index,
@@ -15,6 +16,7 @@ export default function QuestionCard({
   onBookmark,
   pending,
   bookmarkPending,
+  tone = "focused",
 }) {
   return (
     <View style={s.card}>
@@ -127,9 +129,27 @@ export default function QuestionCard({
             marginTop: 6,
           }}
         >
-          <Text style={s.heading}>
-            {result.correct ? "That’s right." : "A useful one to remember."}
-          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+            }}
+          >
+            <Text style={[s.heading, { flex: 1 }]}>
+              {result.correct
+                ? tone === "playful"
+                  ? "That explanation actually ate."
+                  : "That’s right."
+                : tone === "playful"
+                  ? "Wrong answer. Character development."
+                  : "A useful one to remember."}
+            </Text>
+            {tone === "playful" && (
+              <PipBuddy expression={result.correct ? "happy" : "oops"} />
+            )}
+          </View>
           <Text style={s.pillText}>
             Answer key: {String.fromCharCode(65 + result.correct_index)}.{" "}
             {q.options[result.correct_index]}

@@ -3,6 +3,11 @@
   grid-template-columns: minmax(0, 1fr) 300px;
   gap: 28px;
 }
+.question :global(svg[role="img"]) {
+  width: 74px;
+  height: 72px;
+  flex: 0 0 auto;
+}
 .levelSection {
   margin-bottom: 26px;
 }
@@ -187,14 +192,30 @@
   animation: confettiLift 1.8s ease-out both;
 }
 @keyframes levelUpArrive {
-  0% { opacity: 0; transform: translateY(10px) scale(0.92); }
-  65% { opacity: 1; transform: translateY(-2px) scale(1.03); }
-  100% { transform: translateY(0) scale(1); }
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.03);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
 }
 @keyframes confettiLift {
-  0% { opacity: 0; transform: translateY(8px) scale(0.7); }
-  25% { opacity: 1; }
-  100% { opacity: 0.82; transform: translateY(-5px) scale(1); }
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.7);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.82;
+    transform: translateY(-5px) scale(1);
+  }
 }
 .answerKey {
   margin-top: 28px;

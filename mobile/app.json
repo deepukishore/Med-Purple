@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#7040B8"
+      "backgroundColor": "#402080"
     },
     "ios": {
       "supportsTablet": true,
@@ -26,7 +26,7 @@
       "package": "app.medpurple.mobile",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#7040B8"
+        "backgroundColor": "#402080"
       }
     },
     "plugins": [

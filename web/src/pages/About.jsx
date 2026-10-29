@@ -189,6 +189,24 @@ export default function About() {
           <p>{content.about.mission}</p>
         </div>
       </section>
+      <section className={s.challenge} aria-labelledby="challenge-title">
+        <div className={s.challengeIntro}>
+          <span className={s.eyebrow}>THE LEARNING REALITY</span>
+          <h2 id="challenge-title">One subject can ask you to think in several ways.</h2>
+        </div>
+        <div className={s.challengeStory}>
+          <p>
+            Medical study moves between structures, mechanisms, questions, and the details you want to remember later. Finding the next useful step can take time when those activities are scattered.
+          </p>
+          <div className={s.challengeThreads}>
+            <span><b>01</b><strong>See it</strong><small>Explore a structure or concept.</small></span>
+            <i aria-hidden="true" />
+            <span><b>02</b><strong>Test it</strong><small>Try a question and read its explanation.</small></span>
+            <i aria-hidden="true" />
+            <span><b>03</b><strong>Keep it</strong><small>Save a note or a recall card.</small></span>
+          </div>
+        </div>
+      </section>
       <section className={s.journey} ref={journeyRef} aria-label="Explore the Med Purple study journey">
         <div className={s.journeyStage}>
           <div
@@ -268,7 +286,15 @@ export default function About() {
           ))}
         </div>
       </section>
-      <section className={s.featureGrid} aria-label="Ways to learn">
+      <section className={s.platformApproach} aria-labelledby="platform-approach-title">
+        <div className={s.platformApproachHead}>
+          <div>
+            <span className={s.eyebrow}>THE MED PURPLE APPROACH</span>
+            <h2 id="platform-approach-title">A connected set of tools for your next study move.</h2>
+          </div>
+          <p>Choose one way in, then follow the links that help you continue. Each part opens a working area of the app.</p>
+        </div>
+        <div className={s.featureGrid} aria-label="Ways to learn">
         {content.about.features.map((feature, index) => {
           const Icon = icons[index];
           return (
@@ -282,6 +308,7 @@ export default function About() {
             </Link>
           );
         })}
+        </div>
       </section>
       <section className={s.founders} aria-labelledby="founders-title">
         <div>
@@ -370,6 +397,17 @@ export default function About() {
           Visit our legal centre <ArrowUpRight size={18} />
         </Link>
       </aside>
+      <section className={s.closing} aria-labelledby="about-closing-title">
+        <div>
+          <span className={s.eyebrow}>READY WHEN YOU ARE</span>
+          <h2 id="about-closing-title">Start with one useful next step.</h2>
+          <p>Open a study tool or take a closer look at the interactive atlas.</p>
+        </div>
+        <div className={s.closingActions}>
+          <Link to="/learn" className={s.closingPrimary}>Explore the toolkit <ArrowUpRight size={17} /></Link>
+          <Link to="/anatomy" className={s.closingSecondary}>Open anatomy <ArrowUpRight size={16} /></Link>
+        </div>
+      </section>
     </div>
   );
 }

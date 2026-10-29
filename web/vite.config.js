@@ -20,14 +20,24 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
-      // The lazily loaded Three.js anatomy chunk is ~145 kB after gzip.
-      // Raise the warning threshold to avoid flagging that expected 3D feature bundle.
+      // Keep the warning visible: the measured core Three.js chunk is 704 kB
+      // minified (182 kB gzip) and is only fetched with the lazy 3D experience.
       chunkSizeWarningLimit: 600,
       rollupOptions: {
         output: {
-          manualChunks: {
-            three: ["three"],
-            react: ["react", "react-dom", "react-router-dom"],
+          manualChunks(id) {
+            const path = id.replaceAll("\\", "/");
+            // Keep full-atlas loaders and controls out of the heart preview's
+            // core Three.js download. The atlas route requests these on demand.
+            if (path.includes("/node_modules/three/examples/jsm/"))
+              return "three-extras";
+            if (path.includes("/node_modules/three/")) return "three";
+            if (
+              /\/node_modules\/(react|react-dom|react-router|react-router-dom)\//.test(
+                path,
+              )
+            )
+              return "react";
           },
         },
       },

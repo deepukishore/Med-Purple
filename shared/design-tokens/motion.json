@@ -15,8 +15,8 @@
     "slow": 600
   },
   "depth": {
-    "shadow": "#7139ab24",
-    "shadowSoft": "#ae7cdb12"
+    "shadow": "#6742e824",
+    "shadowSoft": "#7955ff18"
   },
   "ease": [0.22, 1, 0.36, 1],
   "tiltDegrees": 4

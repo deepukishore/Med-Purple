@@ -1,5 +1,6 @@
 import { BookmarkSimple, CheckCircle, XCircle } from "@phosphor-icons/react";
 import Button from "./Button";
+import StudyBuddy from "./StudyBuddy";
 import u from "./ui.module.css";
 import s from "../pages/MCQs.module.css";
 export default function QuestionCard({
@@ -15,6 +16,7 @@ export default function QuestionCard({
   pending,
   bookmarkPending,
   requestError,
+  tone = "focused",
 }) {
   const q = question;
   return (
@@ -70,8 +72,15 @@ export default function QuestionCard({
               <XCircle color="var(--danger)" size={21} />
             )}{" "}
             {result.correct
-              ? "That’s right. Keep it with you."
-              : "A useful one to remember."}
+              ? tone === "playful"
+                ? "That explanation actually ate."
+                : "That’s right. Keep it with you."
+              : tone === "playful"
+                ? "Wrong answer. Character development."
+                : "A useful one to remember."}
+            {tone === "playful" && (
+              <StudyBuddy expression={result.correct ? "happy" : "oops"} />
+            )}
           </h3>
           <p>
             <strong>

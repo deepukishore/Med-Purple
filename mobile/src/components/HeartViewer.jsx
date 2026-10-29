@@ -128,7 +128,9 @@ export default function HeartViewer({
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.15;
       const model =
-        modelId === "heart" ? createHeartScene() : createReferenceScene(modelId);
+        modelId === "heart"
+          ? createHeartScene()
+          : createReferenceScene(modelId);
       engine.current = model;
       if (controlsRef) controlsRef.current = model;
       model.resize(gl.drawingBufferWidth, gl.drawingBufferHeight);
@@ -140,10 +142,7 @@ export default function HeartViewer({
         raf.current = requestAnimationFrame(render);
         if (!focus.current) return;
         try {
-          // Keep the compact dashboard model alive as a quiet, rotating 3D
-          // object. The full study view remains gesture controlled.
-          if (compact && !scrollDriven && !reduced.current)
-            model.targets.y += 0.0022;
+          model.autoRotate(compact && !scrollDriven && !reduced.current);
           model.frame(time, reduced.current);
           renderer.render(model.scene, model.camera);
           gl.endFrameEXP();

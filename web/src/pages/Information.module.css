@@ -1199,3 +1199,63 @@
 :global(html[data-calm="true"]) .founder {
   transform: none !important;
 }
+
+.challenge {
+  display: grid;
+  grid-template-columns: minmax(220px, .8fr) minmax(0, 1.2fr);
+  gap: clamp(24px, 5vw, 70px);
+  align-items: center;
+  padding: clamp(24px, 4vw, 42px);
+  border: 1px solid #53416a;
+  border-radius: 25px;
+  background:
+    radial-gradient(ellipse at 100% 0%, #65e7ff1b, transparent 36%),
+    linear-gradient(120deg, #251833, #38244e 70%, #293b50);
+  color: #fff;
+  box-shadow: 0 23px 48px #2f1c451a;
+}
+.challenge .eyebrow { color: #d5c0ef; }
+.challengeIntro h2 { max-width: 390px; margin: 12px 0 0; color: white; font-family: var(--font-display), serif; font-size: clamp(25px, 3vw, 36px); font-weight: 400; line-height: 1.16; }
+.challengeStory > p { max-width: 690px; color: #e1d8ec; font-size: 13px; line-height: 1.75; }
+.challengeThreads { display: grid; grid-template-columns: 1fr 28px 1fr 28px 1fr; align-items: center; gap: 8px; margin-top: 25px; }
+.challengeThreads > span { display: grid; gap: 4px; min-width: 0; }
+.challengeThreads b { color: #b9e97d; font-size: 8px; letter-spacing: .13em; }
+.challengeThreads strong { color: #fff; font-family: var(--font-display), serif; font-size: 19px; font-weight: 400; }
+.challengeThreads small { color: #c9bfd4; font-size: 9px; line-height: 1.5; }
+.challengeThreads > i { height: 1px; background: linear-gradient(90deg, #b9e97d88, #65e7ff77); }
+.platformApproach { display: grid; gap: 18px; }
+.platformApproachHead { display: flex; align-items: end; justify-content: space-between; gap: 24px; }
+.platformApproachHead > div { max-width: 620px; }
+.platformApproachHead h2 { margin: 9px 0 0; color: #342443; font-family: var(--font-display), serif; font-size: clamp(27px, 3.5vw, 39px); font-weight: 400; line-height: 1.14; }
+.platformApproachHead > p { max-width: 370px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.platformApproach .featureGrid { margin-top: 2px; }
+.platformApproach .card { min-height: 290px; padding: 28px; }
+.platformApproach .card h2 { font-family: var(--font-display), serif; font-size: 23px; font-weight: 400; }
+.closing { display: flex; align-items: center; justify-content: space-between; gap: 22px; padding: clamp(23px, 4vw, 38px); border: 1px solid #604778; border-radius: 25px; background: radial-gradient(circle at 95% 0%, #65e7ff25, transparent 30%), linear-gradient(112deg, #21152f, #3c2854); color: #fff; box-shadow: 0 20px 46px #3823541b; }
+.closing .eyebrow { color: #c8b0e5; }
+.closing h2 { margin: 10px 0 5px; color: #fff; font-family: var(--font-display), serif; font-size: clamp(25px, 3vw, 34px); font-weight: 400; }
+.closing p { color: #dfd5e8; font-size: 12px; }
+.closingActions { display: flex; flex-wrap: wrap; gap: 9px; justify-content: flex-end; }
+.closingPrimary, .closingSecondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 11px; font-size: 10px; font-weight: 800; white-space: nowrap; transition: transform 160ms ease; }
+.closingPrimary { background: #d4ef98; color: #334326; }
+.closingSecondary { border: 1px solid #ffffff3d; background: #ffffff0b; color: #fff; }
+.closingPrimary:hover, .closingSecondary:hover { transform: translateY(-2px); }
+.closingPrimary:focus-visible, .closingSecondary:focus-visible { outline: 3px solid #65e7ff; outline-offset: 3px; }
+@media (max-width: 850px) {
+  .challenge { grid-template-columns: 1fr; gap: 18px; }
+  .platformApproachHead { align-items: flex-start; flex-direction: column; gap: 10px; }
+}
+@media (max-width: 650px) {
+  .challenge { padding: 22px; border-radius: 20px; }
+  .challengeThreads { grid-template-columns: 1fr; gap: 11px; }
+  .challengeThreads > i { width: 1px; height: 13px; margin-left: 4px; }
+  .challengeThreads > span { grid-template-columns: 26px 90px 1fr; align-items: baseline; }
+  .challengeThreads strong { font-size: 17px; }
+  .platformApproach .card { min-height: 0; }
+  .closing { align-items: flex-start; flex-direction: column; border-radius: 20px; }
+  .closingActions { width: 100%; justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .closingPrimary, .closingSecondary { transition: none; }
+  .closingPrimary:hover, .closingSecondary:hover { transform: none; }
+}

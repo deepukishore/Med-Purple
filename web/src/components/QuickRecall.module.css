@@ -133,6 +133,18 @@
   color: #3d6337;
   font-size: 16px;
 }
+.feedbackHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.feedbackHeading svg {
+  width: 58px;
+  height: 56px;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 7px 8px #51328520);
+}
 .feedback p {
   font-size: 14px;
   line-height: 1.8;
@@ -179,6 +191,11 @@
     opacity: 1;
   }
 }
+@media (prefers-reduced-motion: reduce) {
+  .celebrate {
+    animation: none;
+  }
+}
 @media (max-width: 600px) {
   .header,
   .body {
@@ -195,6 +212,10 @@
   }
   .body h3 {
     font-size: 16px;
+  }
+  .feedbackHeading svg {
+    width: 48px;
+    height: 46px;
   }
   .footer {
     align-items: stretch;

@@ -1,9 +1,27 @@
-export default function StudyBuddy() {
+export default function StudyBuddy({ expression = "happy" }) {
+  const face =
+    expression === "oops"
+      ? {
+          mouth: "M119 140Q131 126 145 140",
+          eye: "M91 110L107 110M155 110L171 110",
+        }
+      : expression === "thinking"
+        ? {
+            mouth: "M120 138Q132 132 145 136",
+            eye: "M91 113Q99 104 107 113M155 113Q163 104 171 113",
+          }
+        : { mouth: "M119 131Q131 145 145 130", eye: "" };
   return (
     <svg
       viewBox="0 0 260 250"
       role="img"
-      aria-label="Pip, your smiling purple study buddy, holding a book"
+      aria-label={
+        expression === "oops"
+          ? "Pip is encouraging you after a missed question"
+          : expression === "thinking"
+            ? "Pip is thinking through the question"
+            : "Pip is celebrating a correct answer"
+      }
     >
       <ellipse cx="137" cy="224" rx="81" ry="13" fill="#d4c3ef" />
       <path
@@ -19,12 +37,24 @@ export default function StudyBuddy() {
         strokeWidth="5"
         strokeLinecap="round"
       />
-      <ellipse cx="99" cy="113" rx="8" ry="12" fill="#302044" />
-      <ellipse cx="163" cy="113" rx="8" ry="12" fill="#302044" />
+      {face.eye ? (
+        <path
+          d={face.eye}
+          fill="none"
+          stroke="#302044"
+          strokeWidth="5"
+          strokeLinecap="round"
+        />
+      ) : (
+        <>
+          <ellipse cx="99" cy="113" rx="8" ry="12" fill="#302044" />
+          <ellipse cx="163" cy="113" rx="8" ry="12" fill="#302044" />
+        </>
+      )}
       <circle cx="77" cy="134" r="10" fill="#e9a6c8" />
       <circle cx="184" cy="134" r="10" fill="#e9a6c8" />
       <path
-        d="M119 131Q131 145 145 130"
+        d={face.mouth}
         fill="none"
         stroke="#302044"
         strokeWidth="4"

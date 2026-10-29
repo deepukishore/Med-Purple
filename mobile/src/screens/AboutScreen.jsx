@@ -144,6 +144,35 @@ export default function AboutScreen({ navigation }) {
         <Text style={s.body}>{content.about.mission}</Text>
       </View>
 
+      <View style={a.challenge}>
+        <Text style={a.sectionLabel}>THE LEARNING REALITY</Text>
+        <Text style={s.heading}>One subject can ask you to think in several ways.</Text>
+        <Text style={s.small}>
+          Move between structures, mechanisms, questions, and the details you want to remember later. Med Purple brings practical study tools into one place so your next step is easier to find.
+        </Text>
+        <View style={a.challengeSteps}>
+          {[
+            ["01", "See it", "Explore anatomy", "Anatomy", "cube-outline"],
+            ["02", "Test it", "Try a question", "MCQs", "checkmark-done-outline"],
+            ["03", "Keep it", "Save a prompt", "Flashcards", "albums-outline"],
+          ].map(([number, title, detail, route, icon]) => (
+            <Pressable
+              key={number}
+              accessibilityRole="button"
+              onPress={() => navigation.navigate(route)}
+              style={a.challengeStep}
+            >
+              <View style={a.challengeStepTop}>
+                <Text style={a.challengeNumber}>{number}</Text>
+                <Ionicons name={icon} size={17} color="#d7f19d" />
+              </View>
+              <Text style={a.challengeTitle}>{title}</Text>
+              <Text style={a.challengeDetail}>{detail}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
       <View
         style={a.scene}
         onLayout={(event) => {
@@ -259,6 +288,13 @@ export default function AboutScreen({ navigation }) {
         <Ionicons name="shield-checkmark-outline" size={22} color={colors.purple[700]} />
         <Text style={a.disclaimerText}>Med Purple supports education and revision. Always verify clinical information with current authoritative sources and qualified guidance.</Text>
       </View>
+      <View style={a.closing}>
+        <Text style={a.sectionLabel}>READY WHEN YOU ARE</Text>
+        <Text style={a.closingTitle}>Start with one useful next step.</Text>
+        <Text style={a.closingCopy}>Open a study tool or explore the interactive anatomy models.</Text>
+        <Button title="Explore the revision toolkit" variant="accent" onPress={() => navigation.navigate("Learn")} />
+        <Button title="Open anatomy" variant="secondary" onPress={() => navigation.navigate("Anatomy")} />
+      </View>
       <Button title="Visit our legal centre" variant="secondary" onPress={() => navigation.navigate("LegalCentre")} />
     </Screen>
   );
@@ -290,6 +326,13 @@ const a = StyleSheet.create({
   introRevealTitle: { color: colors.surface, fontFamily: fonts.display, fontSize: 15, lineHeight: 19 },
   introRevealBody: { color: colors.purple[100], fontFamily: fonts.body, fontSize: 10, lineHeight: 15 },
   mission: { padding: 19, gap: 10, borderRadius: 20, backgroundColor: "#f4eafe", borderWidth: 1, borderColor: "#e4d1f0" },
+  challenge: { padding: 20, gap: 10, borderRadius: 23, borderWidth: 1, borderColor: "#59436f", backgroundColor: "#2a1c3d" },
+  challengeSteps: { gap: 8, marginTop: 5 },
+  challengeStep: { minHeight: 82, padding: 13, borderRadius: 15, borderWidth: 1, borderColor: "#ffffff25", backgroundColor: "#ffffff09" },
+  challengeStepTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  challengeNumber: { color: "#c9b6df", fontFamily: fonts.bold, fontSize: 8, letterSpacing: 1.2 },
+  challengeTitle: { color: "#fff", fontFamily: fonts.display, fontSize: 19, marginTop: 6 },
+  challengeDetail: { color: "#d6c8e2", fontFamily: fonts.body, fontSize: 10, marginTop: 2 },
   sectionLabel: { color: colors.purple[700], fontFamily: fonts.bold, fontSize: 10, letterSpacing: 1.2 },
   scene: { overflow: "hidden", padding: 17, borderRadius: 25, borderWidth: 1, borderColor: "#694b88", backgroundColor: "#291a3c", gap: 11, shadowColor: "#241432", shadowOffset: { width: 0, height: 18 }, shadowOpacity: 0.28, shadowRadius: 24, elevation: 8 },
   sceneTop: { flexDirection: "row", alignItems: "flex-start", gap: 8 },
@@ -349,4 +392,7 @@ const a = StyleSheet.create({
   teamBio: { color: colors.muted, fontFamily: fonts.body, fontSize: 13, lineHeight: 20, marginTop: 4 },
   disclaimer: { flexDirection: "row", gap: 12, padding: 16, borderRadius: 17, backgroundColor: "#eff6f2", borderWidth: 1, borderColor: "#d4e8dc" },
   disclaimerText: { flex: 1, color: colors.muted, fontFamily: fonts.body, fontSize: 12, lineHeight: 18 },
+  closing: { padding: 20, gap: 10, borderRadius: 22, borderWidth: 1, borderColor: "#614879", backgroundColor: "#2c1d40" },
+  closingTitle: { color: "#fff", fontFamily: fonts.display, fontSize: 25, lineHeight: 31 },
+  closingCopy: { color: "#ded3e8", fontFamily: fonts.body, fontSize: 12, lineHeight: 18, marginBottom: 3 },
 });

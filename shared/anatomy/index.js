@@ -7,13 +7,16 @@ export function createHeartScene() {
   const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100);
   camera.position.set(0, 0.35, 8.4);
   camera.lookAt(0, 0.35, 0);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a77ac, 2.3));
-  const key = new THREE.DirectionalLight(0xfff5ed, 3.8);
+  scene.add(new THREE.HemisphereLight(0xf8f4ff, 0x51406f, 2.1));
+  const key = new THREE.DirectionalLight(0xfff2e8, 4.1);
   key.position.set(-4, 6, 7);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xc8bded, 2.5);
+  const fill = new THREE.DirectionalLight(0xc8bded, 2.2);
   fill.position.set(4, 1, -3);
   scene.add(fill);
+  const rim = new THREE.DirectionalLight(0x9a82ff, 1.25);
+  rim.position.set(1, 4, -5);
+  scene.add(rim);
   const heart = new THREE.Group();
   heart.rotation.z = -0.13;
   scene.add(heart);
@@ -21,10 +24,12 @@ export function createHeartScene() {
   const chambers = [];
   const vessels = [];
   function material(color) {
-    return new THREE.MeshStandardMaterial({
+    return new THREE.MeshPhysicalMaterial({
       color,
-      roughness: 0.39,
-      metalness: 0.04,
+      roughness: 0.34,
+      metalness: 0.035,
+      clearcoat: 0.16,
+      clearcoatRoughness: 0.52,
       emissive: 0x000000,
     });
   }
@@ -153,20 +158,29 @@ export function createHeartScene() {
       m.material.opacity = !!id && m.userData.id !== id ? 0.63 : 1;
     }
   }
-  function frame(time = 0, reduced = false) {
-    if (rotating && !reduced) targets.y += 0.006;
-    heart.rotation.x += (targets.x - heart.rotation.x) * 0.12;
-    heart.rotation.y += (targets.y - heart.rotation.y) * 0.12;
-    camera.position.z += (targets.zoom - camera.position.z) * 0.16;
+  function frame(time = 0, reduced = false, delta = 1 / 60) {
+    const dt = Math.min(Math.max(delta, 0), 0.05);
+    const settle = 1 - Math.exp(-10 * dt);
+    if (rotating && !reduced) targets.y += 0.4 * dt;
+    heart.rotation.x += (targets.x - heart.rotation.x) * settle;
+    heart.rotation.y += (targets.y - heart.rotation.y) * settle;
+    camera.position.z +=
+      (targets.zoom - camera.position.z) * (1 - Math.exp(-12 * dt));
     for (const m of chambers) {
       const p = m.userData.original;
       const factor = explode ? 1.65 : 1;
-      m.position.x += (p[0] * factor - m.position.x) * 0.12;
-      m.position.y += (p[1] * factor - m.position.y) * 0.12;
+      m.position.x += (p[0] * factor - m.position.x) * settle;
+      m.position.y += (p[1] * factor - m.position.y) * settle;
     }
     if (!reduced) {
       const s = 1 + Math.sin(time * 0.0017) * 0.012;
       heart.scale.setScalar(s);
+    }
+    if (selected) {
+      const glow = reduced ? 0.32 : 0.28 + Math.sin(time * 0.003) * 0.06;
+      for (const mesh of meshes)
+        mesh.material.emissiveIntensity =
+          mesh.userData.id === selected ? glow : 0;
     }
   }
   function resize(width, height) {

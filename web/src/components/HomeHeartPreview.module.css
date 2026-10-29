@@ -1,0 +1,73 @@
+.stage {
+  container-type: inline-size;
+}
+.reset {
+  position: absolute;
+  z-index: 3;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid #ffffff35;
+  border-radius: 999px;
+  background: #261447a8;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  backdrop-filter: blur(10px);
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+.reset:hover {
+  background: #5331bc;
+  transform: translateY(-1px);
+}
+.reset:focus-visible {
+  outline: 3px solid #65e7ff;
+  outline-offset: 3px;
+}
+.loading {
+  position: absolute;
+  inset: 48px 0 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 12px;
+  color: #e5dcec;
+  font-size: 11px;
+}
+.loadingOrb {
+  width: 44px;
+  aspect-ratio: 1;
+  border: 1px solid #d4c5ff77;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 10px #d4c5ff10,
+    inset 0 0 20px #65e7ff26;
+  background: radial-gradient(
+    circle at 34% 30%,
+    #ffffff60,
+    #7955ff32 38%,
+    transparent 74%
+  );
+}
+@media (max-width: 600px) {
+  .reset span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reset {
+    transition: none;
+  }
+}

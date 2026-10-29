@@ -18,6 +18,8 @@ export function applyTheme() {
     danger: c.danger,
     "danger-tint": c.dangerTint,
     anatomy: c.anatomy,
+    cyan: c.cyan,
+    lavender: c.lavender,
     "font-body": t.body,
     "font-display": t.display,
     "shadow-low": s.elevation.low,

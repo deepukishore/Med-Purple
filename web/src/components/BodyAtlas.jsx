@@ -27,7 +27,10 @@ export default function BodyAtlas() {
   const host = useRef(null),
     engine = useRef(null),
     label = useRef(null),
-    selectedRef = useRef(null);
+    selectedRef = useRef(null),
+    stageRef = useRef(null),
+    immersiveToggle = useRef(null),
+    wasImmersive = useRef(false);
   const [layers, setLayers] = useState({ skeletal: true });
   const [catalog, setCatalog] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -39,6 +42,7 @@ export default function BodyAtlas() {
   const [rotation, setRotation] = useState(false);
   const [exploded, setExploded] = useState(false);
   const [xray, setXray] = useState(false);
+  const [immersive, setImmersive] = useState(false);
   const [opacity, setOpacity] = useState(1);
   const [reference, setReference] = useState(null);
   const referenceCache = useRef(new Map());
@@ -427,19 +431,15 @@ export default function BodyAtlas() {
     const atlas = engine.current;
     if (!atlas) return;
     atlas.setXray(xray);
-    for (const [id, root] of atlas.roots)
-      root.visible = xray || !!layers[id];
+    for (const [id, root] of atlas.roots) root.visible = xray || !!layers[id];
     for (const [id, object] of atlas.meshes) {
       object.visible =
         xray || (!hidden.has(id) && (!isolated || id === selected));
       object.material.emissive.set(id === selected ? 0x633b80 : 0);
       object.material.emissiveIntensity =
         id === selected ? 0.5 : xray ? 0.25 : 0;
-      object.material.opacity = xray && id !== selected
-        ? 0.34
-        : id === selected
-          ? 1
-          : opacity;
+      object.material.opacity =
+        xray && id !== selected ? 0.34 : id === selected ? 1 : opacity;
       object.material.transparent = xray || (opacity < 1 && id !== selected);
       object.material.depthWrite = !object.material.transparent;
       const shader = object.material.userData.xrayShader;
@@ -458,6 +458,43 @@ export default function BodyAtlas() {
     if (engine.current) engine.current.controls.autoRotate = rotation;
     engine.current?.invalidate(500);
   }, [rotation]);
+  useEffect(() => {
+    if (!immersive) {
+      if (wasImmersive.current) immersiveToggle.current?.focus();
+      wasImmersive.current = false;
+      return undefined;
+    }
+    wasImmersive.current = true;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOrContain = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setImmersive(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const controls = stageRef.current?.querySelectorAll(
+        'button:not(:disabled), input:not(:disabled), select:not(:disabled), [tabindex="0"]',
+      );
+      if (!controls?.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", closeOrContain);
+    requestAnimationFrame(() => immersiveToggle.current?.focus());
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", closeOrContain);
+    };
+  }, [immersive]);
   const item = catalog.find((entry) => entry.id === selected);
   useEffect(() => {
     setReference(null);
@@ -530,10 +567,13 @@ export default function BodyAtlas() {
                   type="checkbox"
                   checked={!!layers[system.id]}
                   onChange={(event) => {
+                    const enabled = event.target.checked;
                     setLayers((previous) => ({
                       ...previous,
-                      [system.id]: event.target.checked,
+                      [system.id]: enabled,
                     }));
+                    if (!enabled && item?.system === system.id)
+                      setSelected(null);
                     setIsolated(false);
                   }}
                 />
@@ -581,7 +621,14 @@ export default function BodyAtlas() {
             Restore hidden structures
           </button>
         </aside>
-        <section className={s.stage} aria-label="Whole-body anatomy viewer">
+        <section
+          ref={stageRef}
+          className={`${s.stage} ${immersive ? s.immersive : ""}`}
+          aria-label="Whole-body anatomy viewer"
+          role={immersive ? "dialog" : undefined}
+          aria-modal={immersive || undefined}
+          tabIndex={immersive ? -1 : undefined}
+        >
           <div
             ref={host}
             className={s.canvas}
@@ -655,6 +702,13 @@ export default function BodyAtlas() {
               }}
             >
               Back
+            </button>
+            <button
+              ref={immersiveToggle}
+              aria-pressed={immersive}
+              onClick={() => setImmersive((value) => !value)}
+            >
+              {immersive ? "Exit immersive view" : "Immersive view"}
             </button>
             {item && (
               <button onClick={() => engine.current?.focus(selected)}>

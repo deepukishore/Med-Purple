@@ -1,19 +1,274 @@
 import { useEffect, useState } from "react";
-import { ArrowsDownUp, Moon, TextAa, Translate, CheckCircle } from "@phosphor-icons/react";
+import {
+  ArrowsDownUp,
+  Moon,
+  TextAa,
+  Translate,
+  CheckCircle,
+} from "@phosphor-icons/react";
 import usePageMeta from "../hooks/usePageMeta";
 import useData from "../hooks/useData";
 import { api, useApp } from "../context/AppContext";
 import Button from "../components/Button";
 import s from "./Productivity.module.css";
-const defaultWidgets = ["Daily question", "Planner", "Streak", "Community feed", "Exam countdown"];
+const defaultWidgets = [
+  "Daily question",
+  "Planner",
+  "Streak",
+  "Community feed",
+  "Exam countdown",
+];
 export default function Preferences() {
-  usePageMeta("Personalize your desk", "Choose the content, language, reading mode, and dashboard layout that works for you.");
-  const { notify } = useApp(); const { data } = useData("/features");
-  const [prefs, setPrefs] = useState({ language: "English", difficulty: "Suggested", subjects: ["Anatomy", "Physiology"], widgets: defaultWidgets, readingMode: false, nightMode: false });
-  useEffect(() => { if (data?.preferences) setPrefs((old) => ({ ...old, ...data.preferences, widgets: data.preferences.widgets || old.widgets })); }, [data]);
-  function save(next) { setPrefs(next); api.patch("/features", { preferences: next }).then(() => notify("Preferences saved.")).catch((error) => notify(error.message)); }
-  function move(index, direction) { const widgets = [...prefs.widgets]; const next = index + direction; if (next < 0 || next >= widgets.length) return; [widgets[index], widgets[next]] = [widgets[next], widgets[index]]; save({ ...prefs, widgets }); }
-  function toggleSubject(subject) { const subjects = prefs.subjects.includes(subject) ? prefs.subjects.filter((x) => x !== subject) : [...prefs.subjects, subject]; save({ ...prefs, subjects }); }
-  function setReading(key, value) { const next = { ...prefs, [key]: value }; save(next); if (key === "readingMode") document.documentElement.dataset.reading = String(value); if (key === "nightMode") document.documentElement.dataset.night = String(value); }
-  return <div className={s.page}><section className={s.hero}><div><span className={s.eyebrow}>YOUR DESK, YOUR RULES</span><h1>Make Med Purple fit the way you study.</h1><p>Change your focus anytime. Nothing here is mandatory, and every preference can be changed later.</p></div><CheckCircle size={40} color="#dff49b" /></section><div className={s.grid}><div className={s.stack}><section className={s.card}><div className={s.head}><div><h2>Choose your focus</h2><p className={s.subtext}>These subjects shape suggestions and daily sessions.</p></div><Translate size={22} color="var(--purple-600)" /></div><div className={s.chips}>{["Anatomy", "Physiology", "Medicine", "Pathology", "Pharmacology", "Community medicine"].map((subject) => <button key={subject} aria-pressed={prefs.subjects.includes(subject)} onClick={() => toggleSubject(subject)}>{subject}</button>)}</div></section><section className={s.card}><div className={s.head}><div><h2>Language and difficulty</h2><p className={s.subtext}>Start with suggested difficulty, then adjust whenever you want.</p></div><TextAa size={22} color="var(--purple-600)" /></div><label style={{ display: "grid", gap: 6, fontSize: "0.76rem" }}>Explanation language<select value={prefs.language} onChange={(e) => save({ ...prefs, language: e.target.value })}><option>English</option><option>हिन्दी</option><option>বাংলা</option><option>தமிழ்</option><option>తెలుగు</option><option>मराठी</option></select></label><label style={{ display: "grid", gap: 6, marginTop: 13, fontSize: "0.76rem" }}>Quiz difficulty<select value={prefs.difficulty} onChange={(e) => save({ ...prefs, difficulty: e.target.value })}><option>Suggested</option><option>Easy</option><option>Medium</option><option>Exam-level</option></select></label></section><section className={s.card}><div className={s.head}><div><h2>Comfortable reading</h2><p className={s.subtext}>Keep long notes calm and easy to read.</p></div><Moon size={22} color="var(--purple-600)" /></div><div className={s.row}><button className={s.mode} aria-pressed={prefs.readingMode} onClick={() => setReading("readingMode", !prefs.readingMode)}><TextAa size={15} /> Reading mode</button><button className={s.mode} aria-pressed={prefs.nightMode} onClick={() => setReading("nightMode", !prefs.nightMode)}><Moon size={15} /> Night mode</button></div></section></div><aside className={s.stack}><section className={s.card}><div className={s.head}><div><h2>Arrange your home</h2><p className={s.subtext}>Drag widgets into the order that helps you start.</p></div><ArrowsDownUp size={22} color="var(--purple-600)" /></div><div className={s.widgets}>{prefs.widgets.map((widget, index) => <div className={s.widget} draggable key={widget} onDragStart={(e) => e.dataTransfer.setData("text/plain", String(index))} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { const from = Number(e.dataTransfer.getData("text/plain")); const widgets = [...prefs.widgets]; const [item] = widgets.splice(from, 1); widgets.splice(index, 0, item); save({ ...prefs, widgets }); }}><span>{widget}</span><b>{index + 1}</b><button className={s.action} onClick={() => move(index, -1)} aria-label={`Move ${widget} up`}>↑</button><button className={s.action} onClick={() => move(index, 1)} aria-label={`Move ${widget} down`}>↓</button></div>)}</div></section><div className={s.notice}><strong>Onboarding is skip-friendly.</strong><br />You can revisit these choices anytime from your profile. <Button to="/profile" variant="ghost" small>Back to profile</Button></div></aside></div></div>;
+  usePageMeta(
+    "Personalize your desk",
+    "Choose the content, language, reading mode, and dashboard layout that works for you.",
+  );
+  const { notify } = useApp();
+  const { data } = useData("/features");
+  const [prefs, setPrefs] = useState({
+    language: "English",
+    difficulty: "Suggested",
+    subjects: ["Anatomy", "Physiology"],
+    widgets: defaultWidgets,
+    readingMode: false,
+    nightMode: false,
+    copyTone: "focused",
+  });
+  useEffect(() => {
+    if (data?.preferences)
+      setPrefs((old) => ({
+        ...old,
+        ...data.preferences,
+        widgets: data.preferences.widgets || old.widgets,
+      }));
+  }, [data]);
+  function save(next) {
+    setPrefs(next);
+    api
+      .patch("/features", { preferences: next })
+      .then(() => notify("Preferences saved."))
+      .catch((error) => notify(error.message));
+  }
+  function move(index, direction) {
+    const widgets = [...prefs.widgets];
+    const next = index + direction;
+    if (next < 0 || next >= widgets.length) return;
+    [widgets[index], widgets[next]] = [widgets[next], widgets[index]];
+    save({ ...prefs, widgets });
+  }
+  function toggleSubject(subject) {
+    const subjects = prefs.subjects.includes(subject)
+      ? prefs.subjects.filter((x) => x !== subject)
+      : [...prefs.subjects, subject];
+    save({ ...prefs, subjects });
+  }
+  function setReading(key, value) {
+    const next = { ...prefs, [key]: value };
+    save(next);
+    if (key === "readingMode")
+      document.documentElement.dataset.reading = String(value);
+    if (key === "nightMode")
+      document.documentElement.dataset.night = String(value);
+  }
+  return (
+    <div className={s.page}>
+      <section className={s.hero}>
+        <div>
+          <span className={s.eyebrow}>YOUR DESK, YOUR RULES</span>
+          <h1>Make Med Purple fit the way you study.</h1>
+          <p>
+            Change your focus anytime. Nothing here is mandatory, and every
+            preference can be changed later.
+          </p>
+        </div>
+        <CheckCircle size={40} color="#dff49b" />
+      </section>
+      <div className={s.grid}>
+        <div className={s.stack}>
+          <section className={s.card}>
+            <div className={s.head}>
+              <div>
+                <h2>Choose your focus</h2>
+                <p className={s.subtext}>
+                  These subjects shape suggestions and daily sessions.
+                </p>
+              </div>
+              <Translate size={22} color="var(--purple-600)" />
+            </div>
+            <div className={s.chips}>
+              {[
+                "Anatomy",
+                "Physiology",
+                "Medicine",
+                "Pathology",
+                "Pharmacology",
+                "Community medicine",
+              ].map((subject) => (
+                <button
+                  key={subject}
+                  aria-pressed={prefs.subjects.includes(subject)}
+                  onClick={() => toggleSubject(subject)}
+                >
+                  {subject}
+                </button>
+              ))}
+            </div>
+          </section>
+          <section className={s.card}>
+            <div className={s.head}>
+              <div>
+                <h2>Language and difficulty</h2>
+                <p className={s.subtext}>
+                  Start with suggested difficulty, then adjust whenever you
+                  want.
+                </p>
+              </div>
+              <TextAa size={22} color="var(--purple-600)" />
+            </div>
+            <label style={{ display: "grid", gap: 6, fontSize: "0.76rem" }}>
+              Explanation language
+              <select
+                value={prefs.language}
+                onChange={(e) => save({ ...prefs, language: e.target.value })}
+              >
+                <option>English</option>
+                <option>हिन्दी</option>
+                <option>বাংলা</option>
+                <option>தமிழ்</option>
+                <option>తెలుగు</option>
+                <option>मराठी</option>
+              </select>
+            </label>
+            <label
+              style={{
+                display: "grid",
+                gap: 6,
+                marginTop: 13,
+                fontSize: "0.76rem",
+              }}
+            >
+              Quiz difficulty
+              <select
+                value={prefs.difficulty}
+                onChange={(e) => save({ ...prefs, difficulty: e.target.value })}
+              >
+                <option>Suggested</option>
+                <option>Easy</option>
+                <option>Medium</option>
+                <option>Exam-level</option>
+              </select>
+            </label>
+          </section>
+          <section className={s.card}>
+            <div className={s.head}>
+              <div>
+                <h2>Comfortable reading</h2>
+                <p className={s.subtext}>
+                  Keep long notes calm and easy to read.
+                </p>
+              </div>
+              <Moon size={22} color="var(--purple-600)" />
+            </div>
+            <div className={s.row}>
+              <button
+                className={s.mode}
+                aria-pressed={prefs.readingMode}
+                onClick={() => setReading("readingMode", !prefs.readingMode)}
+              >
+                <TextAa size={15} /> Reading mode
+              </button>
+              <button
+                className={s.mode}
+                aria-pressed={prefs.nightMode}
+                onClick={() => setReading("nightMode", !prefs.nightMode)}
+              >
+                <Moon size={15} /> Night mode
+              </button>
+            </div>
+          </section>
+          <section className={s.card}>
+            <div className={s.head}>
+              <div>
+                <h2>Study voice</h2>
+                <p className={s.subtext}>
+                  Keep encouragement focused or add a little internet-native
+                  energy.
+                </p>
+              </div>
+            </div>
+            <div className={s.row} role="group" aria-label="Study voice">
+              {["focused", "playful"].map((copyTone) => (
+                <button
+                  key={copyTone}
+                  className={s.mode}
+                  aria-pressed={prefs.copyTone === copyTone}
+                  onClick={() => save({ ...prefs, copyTone })}
+                >
+                  {copyTone === "focused" ? "Focused" : "Playful"}
+                </button>
+              ))}
+            </div>
+          </section>
+        </div>
+        <aside className={s.stack}>
+          <section className={s.card}>
+            <div className={s.head}>
+              <div>
+                <h2>Arrange your home</h2>
+                <p className={s.subtext}>
+                  Drag widgets into the order that helps you start.
+                </p>
+              </div>
+              <ArrowsDownUp size={22} color="var(--purple-600)" />
+            </div>
+            <div className={s.widgets}>
+              {prefs.widgets.map((widget, index) => (
+                <div
+                  className={s.widget}
+                  draggable
+                  key={widget}
+                  onDragStart={(e) =>
+                    e.dataTransfer.setData("text/plain", String(index))
+                  }
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    const from = Number(e.dataTransfer.getData("text/plain"));
+                    const widgets = [...prefs.widgets];
+                    const [item] = widgets.splice(from, 1);
+                    widgets.splice(index, 0, item);
+                    save({ ...prefs, widgets });
+                  }}
+                >
+                  <span>{widget}</span>
+                  <b>{index + 1}</b>
+                  <button
+                    className={s.action}
+                    onClick={() => move(index, -1)}
+                    aria-label={`Move ${widget} up`}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    className={s.action}
+                    onClick={() => move(index, 1)}
+                    aria-label={`Move ${widget} down`}
+                  >
+                    ↓
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+          <div className={s.notice}>
+            <strong>Onboarding is skip-friendly.</strong>
+            <br />
+            You can revisit these choices anytime from your profile.{" "}
+            <Button to="/profile" variant="ghost" small>
+              Back to profile
+            </Button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
 }

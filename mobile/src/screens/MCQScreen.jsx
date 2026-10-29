@@ -59,8 +59,16 @@ export default function MCQScreen({ navigation, route }) {
     error: progressError,
     reload: reloadProgress,
   } = useData("/progress");
+  const featureState = useData("/features");
+  const copyTone =
+    featureState.data?.preferences?.copyTone === "playful"
+      ? "playful"
+      : "focused";
   const examSecondsLeft = examSession
-    ? Math.max(0, Math.ceil((Date.parse(examSession.expires_at) - examClock) / 1000))
+    ? Math.max(
+        0,
+        Math.ceil((Date.parse(examSession.expires_at) - examClock) / 1000),
+      )
     : 0;
   useEffect(() => {
     const timer = setInterval(() => setExamClock(Date.now()), 1000);
@@ -207,7 +215,9 @@ export default function MCQScreen({ navigation, route }) {
         subject,
         topic,
         difficulty,
-        limit: [3, 5, 10].includes(Number(route.params?.set)) ? Number(route.params.set) : 10,
+        limit: [3, 5, 10].includes(Number(route.params?.set))
+          ? Number(route.params.set)
+          : 10,
         mode,
         pass_mark: 70,
       });
@@ -229,7 +239,9 @@ export default function MCQScreen({ navigation, route }) {
     setExamPending(true);
     setExamError("");
     try {
-      const completed = await api.post(`/mcqs/exam-sessions/${examSession.id}/complete`);
+      const completed = await api.post(
+        `/mcqs/exam-sessions/${examSession.id}/complete`,
+      );
       setExamResult(completed);
       reloadProgress();
     } catch (error) {
@@ -252,7 +264,9 @@ export default function MCQScreen({ navigation, route }) {
       setExamSession((current) => ({
         ...current,
         items: current.items.map((item) =>
-          item.id === question.id ? { ...item, selected_index: examSelected } : item,
+          item.id === question.id
+            ? { ...item, selected_index: examSelected }
+            : item,
         ),
       }));
       if (examIndex + 1 < examSession.items.length) {
@@ -365,9 +379,15 @@ export default function MCQScreen({ navigation, route }) {
               Fixed set · 60 seconds per question · 70% pass mark. Answers and
               explanations remain hidden until submission.
             </Text>
-            {!!examError && <Text style={[s.body, { color: colors.danger }]}>{examError}</Text>}
+            {!!examError && (
+              <Text style={[s.body, { color: colors.danger }]}>
+                {examError}
+              </Text>
+            )}
             <Button
-              title={examPending ? "Starting…" : "Start timed exam · 10 questions"}
+              title={
+                examPending ? "Starting…" : "Start timed exam · 10 questions"
+              }
               loading={examPending}
               disabled={examPending || loading}
               onPress={startExam}
@@ -375,98 +395,157 @@ export default function MCQScreen({ navigation, route }) {
           </View>
         ) : examResult ? (
           <View style={s.card}>
-            <Ionicons name="trophy-outline" size={48} color={colors.accentInk} />
-            <Text style={s.heading}>{examResult.passed ? "Exam passed" : "Exam complete"}</Text>
+            <Ionicons
+              name="trophy-outline"
+              size={48}
+              color={colors.accentInk}
+            />
+            <Text style={s.heading}>
+              {examResult.passed ? "Exam passed" : "Exam complete"}
+            </Text>
             <Text style={s.body}>
               Score: {examResult.score}% · Pass mark: {examResult.pass_mark}% ·{" "}
-              {examResult.items.filter((item) => item.correct).length} of {examResult.items.length} correct.
+              {examResult.items.filter((item) => item.correct).length} of{" "}
+              {examResult.items.length} correct.
             </Text>
             <Text style={s.small}>Exam XP is higher for passing.</Text>
             {examResult.items.map((item, itemIndex) => (
               <View key={item.id} style={s.card}>
-                <Text style={s.heading}>{itemIndex + 1}. {item.stem}</Text>
-                <Text style={s.body}>
-                  Your answer: {item.selected_index === null ? "Not answered" : item.options[item.selected_index]}
+                <Text style={s.heading}>
+                  {itemIndex + 1}. {item.stem}
                 </Text>
-                <Text style={s.pillText}>Correct answer: {item.options[item.correct_index]}</Text>
+                <Text style={s.body}>
+                  Your answer:{" "}
+                  {item.selected_index === null
+                    ? "Not answered"
+                    : item.options[item.selected_index]}
+                </Text>
+                <Text style={s.pillText}>
+                  Correct answer: {item.options[item.correct_index]}
+                </Text>
                 <Text style={s.body}>{item.explanation}</Text>
                 <Button
                   title="Read the source"
                   variant="secondary"
-                  onPress={() => Linking.openURL(item.source_url).catch(() => notify("Could not open the source."))}
+                  onPress={() =>
+                    Linking.openURL(item.source_url).catch(() =>
+                      notify("Could not open the source."),
+                    )
+                  }
                 />
               </View>
             ))}
             <Button
               title="Back to practice"
               variant="secondary"
-              onPress={() => { setExamSession(null); setExamResult(null); setExamMode(false); }}
+              onPress={() => {
+                setExamSession(null);
+                setExamResult(null);
+                setExamMode(false);
+              }}
             />
           </View>
         ) : (
           <View style={s.card}>
             {(() => {
               const question = examSession.items[examIndex];
-              return <>
-                <View style={s.between}>
-                  <Text style={s.small}>Exam · {examIndex + 1} / {examSession.items.length}</Text>
-                  <Text style={[s.pillText, { color: colors.danger }]}>
-                    {Math.floor(examSecondsLeft / 60)}:{String(examSecondsLeft % 60).padStart(2, "0")}
+              return (
+                <>
+                  <View style={s.between}>
+                    <Text style={s.small}>
+                      Exam · {examIndex + 1} / {examSession.items.length}
+                    </Text>
+                    <Text style={[s.pillText, { color: colors.danger }]}>
+                      {Math.floor(examSecondsLeft / 60)}:
+                      {String(examSecondsLeft % 60).padStart(2, "0")}
+                    </Text>
+                  </View>
+                  <Text style={s.heading}>{question.stem}</Text>
+                  {question.options.map((option, optionIndex) => (
+                    <Pressable
+                      key={optionIndex}
+                      accessibilityRole="radio"
+                      accessibilityState={{
+                        selected: examSelected === optionIndex,
+                      }}
+                      onPress={() => setExamSelected(optionIndex)}
+                      style={{
+                        borderWidth: 1,
+                        borderColor:
+                          examSelected === optionIndex
+                            ? colors.purple[600]
+                            : colors.line,
+                        backgroundColor:
+                          examSelected === optionIndex
+                            ? colors.purple[50]
+                            : colors.surface,
+                        borderRadius: 12,
+                        padding: 15,
+                        minHeight: 54,
+                        flexDirection: "row",
+                        gap: 10,
+                      }}
+                    >
+                      <Text style={s.pillText}>
+                        {String.fromCharCode(65 + optionIndex)}.
+                      </Text>
+                      <Text style={[s.body, { flex: 1 }]}>{option}</Text>
+                    </Pressable>
+                  ))}
+                  {!!examError && (
+                    <Text style={[s.body, { color: colors.danger }]}>
+                      {examError}
+                    </Text>
+                  )}
+                  <View style={{ gap: 8 }}>
+                    <Button
+                      title="Previous"
+                      variant="secondary"
+                      disabled={examIndex === 0 || examPending}
+                      onPress={() => {
+                        setExamIndex((current) => current - 1);
+                        setExamSelected(
+                          examSession.items[examIndex - 1].selected_index ??
+                            null,
+                        );
+                      }}
+                    />
+                    <Button
+                      title={
+                        examIndex + 1 === examSession.items.length
+                          ? "Submit exam"
+                          : "Skip / next"
+                      }
+                      variant="secondary"
+                      disabled={examPending}
+                      onPress={() => {
+                        if (examIndex + 1 < examSession.items.length) {
+                          setExamIndex((current) => current + 1);
+                          setExamSelected(
+                            examSession.items[examIndex + 1].selected_index ??
+                              null,
+                          );
+                        } else completeExam();
+                      }}
+                    />
+                    <Button
+                      title={
+                        examPending
+                          ? "Saving…"
+                          : examIndex + 1 === examSession.items.length
+                            ? "Save & submit"
+                            : "Save & next"
+                      }
+                      disabled={examSelected === null || examPending}
+                      loading={examPending}
+                      onPress={saveExamAnswer}
+                    />
+                  </View>
+                  <Text style={s.small}>
+                    Correctness and explanations stay hidden until you submit.
                   </Text>
-                </View>
-                <Text style={s.heading}>{question.stem}</Text>
-                {question.options.map((option, optionIndex) => (
-                  <Pressable
-                    key={optionIndex}
-                    accessibilityRole="radio"
-                    accessibilityState={{ selected: examSelected === optionIndex }}
-                    onPress={() => setExamSelected(optionIndex)}
-                    style={{
-                      borderWidth: 1,
-                      borderColor: examSelected === optionIndex ? colors.purple[600] : colors.line,
-                      backgroundColor: examSelected === optionIndex ? colors.purple[50] : colors.surface,
-                      borderRadius: 12,
-                      padding: 15,
-                      minHeight: 54,
-                      flexDirection: "row",
-                      gap: 10,
-                    }}
-                  >
-                    <Text style={s.pillText}>{String.fromCharCode(65 + optionIndex)}.</Text>
-                    <Text style={[s.body, { flex: 1 }]}>{option}</Text>
-                  </Pressable>
-                ))}
-                {!!examError && <Text style={[s.body, { color: colors.danger }]}>{examError}</Text>}
-                <View style={{ gap: 8 }}>
-                  <Button
-                    title="Previous"
-                    variant="secondary"
-                    disabled={examIndex === 0 || examPending}
-                    onPress={() => {
-                      setExamIndex((current) => current - 1);
-                      setExamSelected(examSession.items[examIndex - 1].selected_index ?? null);
-                    }}
-                  />
-                  <Button
-                    title={examIndex + 1 === examSession.items.length ? "Submit exam" : "Skip / next"}
-                    variant="secondary"
-                    disabled={examPending}
-                    onPress={() => {
-                      if (examIndex + 1 < examSession.items.length) {
-                        setExamIndex((current) => current + 1);
-                        setExamSelected(examSession.items[examIndex + 1].selected_index ?? null);
-                      } else completeExam();
-                    }}
-                  />
-                  <Button
-                    title={examPending ? "Saving…" : examIndex + 1 === examSession.items.length ? "Save & submit" : "Save & next"}
-                    disabled={examSelected === null || examPending}
-                    loading={examPending}
-                    onPress={saveExamAnswer}
-                  />
-                </View>
-                <Text style={s.small}>Correctness and explanations stay hidden until you submit.</Text>
-              </>;
+                </>
+              );
             })()}
           </View>
         )
@@ -594,6 +673,7 @@ export default function MCQScreen({ navigation, route }) {
             </View>
             <QuestionCard
               q={q}
+              tone={copyTone}
               index={index}
               total={items.length}
               selected={selected}

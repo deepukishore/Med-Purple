@@ -1,4 +1,3 @@
-import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowUpRight,
@@ -24,9 +23,9 @@ import FocusTimer from "../components/FocusTimer";
 import StudyLaunchpad from "../components/StudyLaunchpad";
 import QuickRecall from "../components/QuickRecall";
 import StoryBar from "../components/StoryBar";
+import HomeHeartPreview from "../components/HomeHeartPreview";
 import useStudyDeskMotion from "../hooks/useStudyDeskMotion";
 import s from "./Desk.module.css";
-const AnatomyCanvas = lazy(() => import("../components/AnatomyCanvas"));
 export default function Home() {
   usePageMeta(
     "Study desk",
@@ -34,7 +33,10 @@ export default function Home() {
   );
   const dashboard = useData("/dashboard"),
     progress = useData("/progress"),
-    storyOfDay = useData("/stories/featured");
+    storyOfDay = useData("/stories/featured"),
+    quickLesson = useData("/medbytes?limit=1"),
+    featureState = useData("/features");
+  const playfulCopy = featureState.data?.preferences?.copyTone === "playful";
   const deskReady = Boolean(dashboard.data && progress.data);
   const {
     deskRef,
@@ -60,6 +62,7 @@ export default function Home() {
     );
   const d = dashboard.data,
     p = progress.data;
+  const featuredLesson = quickLesson.data?.items?.[0];
   const weakest = [...p.subjects]
     .filter((x) => x.answered > 0 && x.accuracy < 100)
     .sort((a, b) => a.accuracy - b.accuracy)[0];
@@ -91,25 +94,46 @@ export default function Home() {
   ];
   return (
     <div className={s.desk} ref={deskRef}>
-      <header className={s.welcome}>
-        <div>
-          <p className={s.overline}>MED PURPLE / STUDY DESK</p>
+      <header
+        className={s.welcome}
+        ref={atlasCardRef}
+        onPointerMove={handleAtlasPointerMove}
+        onPointerLeave={resetAtlasPointer}
+      >
+        <div className={s.welcomeCopy}>
+          <p className={s.overline}>MED PURPLE / {d.user.name.split(" ")[0].toUpperCase()}’S STUDY DESK</p>
           <h1>
-            Welcome back, <span>{d.user.name.split(" ")[0]}.</span>
+            Understand the body. <span>Remember what matters.</span>
           </h1>
-          <p>Your progress, your pace. Go be annoyingly good at medicine today.</p>
-        </div>
-        <Link to="/progress" className={s.streak}>
-          <CalendarCheck size={22} weight="light" />
-          <div>
-            <b>{p.streak} day study streak</b>
-            <small>
-              {p.streak
-                ? "Consistent study, day by day."
-                : "Start a consistent study habit today."}
-            </small>
+          <p>
+            {playfulCopy
+              ? "Today, let's make it click. Big ideas, one small session at a time. Pick a question, a concept, or a quick reset."
+              : "Today, let's make it click. Explore anatomy, practise recall, and return to the topics that need another look."}
+          </p>
+          <div className={s.heroActions}>
+            <Link to="/mcqs?set=5" className={s.heroPrimary}>
+              Start a 5-question sprint <ArrowRight size={17} />
+            </Link>
+            <Link to="/anatomy" className={s.heroSecondary}>
+              Open anatomy studio <ArrowUpRight size={16} />
+            </Link>
+            <Link to="/learn" className={s.heroTertiary}>
+              Open revision toolkit <ArrowUpRight size={15} />
+            </Link>
           </div>
-        </Link>
+          <Link to="/progress" className={s.streak}>
+            <CalendarCheck size={21} weight="light" />
+            <div>
+              <b>{p.streak} day study streak</b>
+              <small>
+                {p.streak
+                  ? "Consistent study, day by day."
+                  : "Start a consistent study habit today."}
+              </small>
+            </div>
+          </Link>
+        </div>
+        <HomeHeartPreview styles={s} modelRef={atlasModelRef} />
       </header>
       <StoryBar />
       <div className={s.columns}>
@@ -178,7 +202,37 @@ export default function Home() {
             subjects={p.subjects}
             recommendedSubject={weakest?.subject || ""}
           />
+          <section className={s.medbyteFeature} aria-labelledby="medbyte-feature-title">
+            <div className={s.medbyteFeatureMark} aria-hidden="true">
+              <PlayCircle size={27} weight="duotone" />
+              <span>01</span>
+            </div>
+            <div className={s.medbyteFeatureCopy}>
+              <p className={s.overline}>A SHORT CHANGE OF PACE</p>
+              {featuredLesson ? (
+                <>
+                  <h2 id="medbyte-feature-title">{featuredLesson.title}</h2>
+                  <p>{featuredLesson.takeaway}</p>
+                  <small>{featuredLesson.subject} · Captioned MedByte</small>
+                </>
+              ) : quickLesson.error ? (
+                <>
+                  <h2 id="medbyte-feature-title">Take a quick concept break.</h2>
+                  <p>MedBytes could not load right now. You can still open the lesson library and try again there.</p>
+                </>
+              ) : (
+                <>
+                  <h2 id="medbyte-feature-title">Take a quick concept break.</h2>
+                  <p>Open a short, captioned medical lesson with a quick concept check at the end.</p>
+                </>
+              )}
+            </div>
+            <Link to={featuredLesson ? `/medbytes?subject=${encodeURIComponent(featuredLesson.subject)}` : "/medbytes"} className={s.medbyteFeatureLink}>
+              {featuredLesson ? "Explore this MedByte" : "Browse MedBytes"} <ArrowRight size={17} />
+            </Link>
+          </section>
           <QuickRecall
+            tone={playfulCopy ? "playful" : "focused"}
             onCompleted={() => {
               dashboard.reload();
               progress.reload();
@@ -285,39 +339,6 @@ export default function Home() {
               </span>
               <Link to="/progress">View progress</Link>
             </div>
-          </section>
-          <section
-            className={s.atlasPreview}
-            ref={atlasCardRef}
-            onPointerMove={handleAtlasPointerMove}
-            onPointerLeave={resetAtlasPointer}
-          >
-            <div className={s.atlasPreviewCopy}>
-              <p className={s.overline}>LIVE 3D ATLAS</p>
-              <h2>Explore the human heart.</h2>
-              <Link to="/anatomy">
-                Enter anatomy studio <ArrowUpRight size={16} />
-              </Link>
-            </div>
-            <span className={s.atlasDragHint} aria-hidden="true">
-              DRAG TO ROTATE
-            </span>
-            <Suspense
-              fallback={
-                <div className={s.atlasLoading} aria-label="Loading 3D heart">
-                  Loading 3D model…
-                </div>
-              }
-            >
-              <div className={s.atlasModel}>
-              <AnatomyCanvas
-                compact
-                modelId="heart"
-                autoRotate
-                controlsRef={atlasModelRef}
-              />
-              </div>
-            </Suspense>
           </section>
           <section className={s.questPanel}>
             <div className={s.sectionHead}>

@@ -64,7 +64,10 @@ export default function MCQs() {
     return () => clearInterval(timer);
   }, []);
   const examSecondsLeft = examSession
-    ? Math.max(0, Math.ceil((Date.parse(examSession.expires_at) - examClock) / 1000))
+    ? Math.max(
+        0,
+        Math.ceil((Date.parse(examSession.expires_at) - examClock) / 1000),
+      )
     : 0;
   useEffect(() => {
     if (examSession && !examResult && examSecondsLeft === 0) {
@@ -89,6 +92,9 @@ export default function MCQs() {
     error: progressError,
     reload: reloadProgress,
   } = useData("/progress");
+  const { data: featureState } = useData("/features");
+  const copyTone =
+    featureState?.preferences?.copyTone === "playful" ? "playful" : "focused";
   const path =
     "/mcqs?" +
     new URLSearchParams({
@@ -212,25 +218,26 @@ export default function MCQs() {
   }
   const correct = results.filter((r) => r.correct).length;
   const missed = results.filter((r) => !r.correct);
-  const patientRhythm = examMode && examSession
-    ? examResult
-      ? examExpired
-        ? "flatline"
-        : examResult.passed
+  const patientRhythm =
+    examMode && examSession
+      ? examResult
+        ? examExpired
+          ? "flatline"
+          : examResult.passed
+            ? "revived"
+            : "arrhythmia"
+        : examSecondsLeft <= 10
+          ? "codeBlue"
+          : "steady"
+      : finished
+        ? correct / Math.max(results.length, 1) >= 0.7
           ? "revived"
-          : "arrhythmia"
-      : examSecondsLeft <= 10
-        ? "codeBlue"
-        : "steady"
-    : finished
-      ? correct / Math.max(results.length, 1) >= 0.7
-        ? "revived"
-        : "steady"
-      : result
-        ? result.correct
-          ? "steady"
-          : "arrhythmia"
-        : "steady";
+          : "steady"
+        : result
+          ? result.correct
+            ? "steady"
+            : "arrhythmia"
+          : "steady";
   const nextDifficulty = { Foundation: "Applied", Applied: "Challenge" }[
     difficulty
   ];
@@ -277,7 +284,9 @@ export default function MCQs() {
       setExamSession((current) => ({
         ...current,
         items: current.items.map((item) =>
-          item.id === question.id ? { ...item, selected_index: examSelected } : item,
+          item.id === question.id
+            ? { ...item, selected_index: examSelected }
+            : item,
         ),
       }));
       if (examIndex + 1 < examSession.items.length) {
@@ -298,7 +307,9 @@ export default function MCQs() {
     setExamPending(true);
     setExamError("");
     try {
-      const completed = await api.post(`/mcqs/exam-sessions/${examSession.id}/complete`);
+      const completed = await api.post(
+        `/mcqs/exam-sessions/${examSession.id}/complete`,
+      );
       setExamResult(completed);
       reloadProgress();
     } catch (error) {
@@ -324,7 +335,12 @@ export default function MCQs() {
         journey={progress?.mcq_journey}
         difficulty={difficulty}
         onChange={chooseLevel}
-        disabled={pending || bookmarkPending || loading || (!!examSession && !examResult)}
+        disabled={
+          pending ||
+          bookmarkPending ||
+          loading ||
+          (!!examSession && !examResult)
+        }
       />
       <div className={s.modes} aria-label="Study session type">
         <button
@@ -352,7 +368,9 @@ export default function MCQs() {
         ].map(([key, label]) => (
           <button
             aria-pressed={mode === key}
-            disabled={pending || bookmarkPending || (!!examSession && !examResult)}
+            disabled={
+              pending || bookmarkPending || (!!examSession && !examResult)
+            }
             className={`${s.mode} ${mode === key ? s.selectedMode : ""}`}
             key={key}
             onClick={() => setMode(key)}
@@ -366,7 +384,9 @@ export default function MCQs() {
           Subject
           <select
             value={subject}
-            disabled={pending || bookmarkPending || (!!examSession && !examResult)}
+            disabled={
+              pending || bookmarkPending || (!!examSession && !examResult)
+            }
             onChange={(e) => {
               setSubject(e.target.value);
               setTopic("");
@@ -382,7 +402,9 @@ export default function MCQs() {
           Topic
           <select
             value={topic}
-            disabled={pending || bookmarkPending || (!!examSession && !examResult)}
+            disabled={
+              pending || bookmarkPending || (!!examSession && !examResult)
+            }
             onChange={(e) => setTopic(e.target.value)}
           >
             <option value="">All topics</option>
@@ -395,7 +417,9 @@ export default function MCQs() {
           Set size
           <select
             value={sessionSize}
-            disabled={pending || bookmarkPending || (!!examSession && !examResult)}
+            disabled={
+              pending || bookmarkPending || (!!examSession && !examResult)
+            }
             onChange={(e) => setSessionSize(Number(e.target.value))}
           >
             <option value={3}>3 questions</option>
@@ -411,75 +435,157 @@ export default function MCQs() {
           !examSession ? (
             <section className={s.examPanel}>
               <h2>Timed exam mode</h2>
-              <p>Fixed question set, 60 seconds per question, and a 70% pass mark. Answers and explanations stay hidden until you submit.</p>
+              <p>
+                Fixed question set, 60 seconds per question, and a 70% pass
+                mark. Answers and explanations stay hidden until you submit.
+              </p>
               {examError && <p role="alert">{examError}</p>}
-              <Button disabled={examPending || !data?.items?.length} onClick={startExam}>
-                {examPending ? "Starting…" : `Start ${Math.min(sessionSize, data?.total || sessionSize)}-question exam`}
+              <Button
+                disabled={examPending || !data?.items?.length}
+                onClick={startExam}
+              >
+                {examPending
+                  ? "Starting…"
+                  : `Start ${Math.min(sessionSize, data?.total || sessionSize)}-question exam`}
               </Button>
             </section>
           ) : examResult ? (
             <section className={s.examPanel}>
               <Trophy size={48} weight="duotone" color="var(--accent-ink)" />
               <h2>{examResult.passed ? "Exam passed" : "Exam complete"}</h2>
-              <p>Score: {examResult.score}% · Pass mark: {examResult.pass_mark}% · {examResult.items.filter((item) => item.correct).length} of {examResult.items.length} correct.</p>
-              <p>{examResult.progress?.xp ?? progress?.xp} XP total · exam rewards are higher for passing.</p>
+              <p>
+                Score: {examResult.score}% · Pass mark: {examResult.pass_mark}%
+                · {examResult.items.filter((item) => item.correct).length} of{" "}
+                {examResult.items.length} correct.
+              </p>
+              <p>
+                {examResult.progress?.xp ?? progress?.xp} XP total · exam
+                rewards are higher for passing.
+              </p>
               {examResult.items.map((item, itemIndex) => (
                 <article className={s.examReview} key={item.id}>
-                  <strong>{itemIndex + 1}. {item.stem}</strong>
-                  <p>Your answer: {item.selected_index === null ? "Not answered" : item.options[item.selected_index]}</p>
+                  <strong>
+                    {itemIndex + 1}. {item.stem}
+                  </strong>
+                  <p>
+                    Your answer:{" "}
+                    {item.selected_index === null
+                      ? "Not answered"
+                      : item.options[item.selected_index]}
+                  </p>
                   <p>Correct answer: {item.options[item.correct_index]}</p>
                   <p>{item.explanation}</p>
-                  <a href={item.source_url} target="_blank" rel="noreferrer">Read the source</a>
+                  <a href={item.source_url} target="_blank" rel="noreferrer">
+                    Read the source
+                  </a>
                 </article>
               ))}
-              <Button onClick={() => { setExamSession(null); setExamResult(null); setExamMode(false); }}>Back to practice</Button>
+              <Button
+                onClick={() => {
+                  setExamSession(null);
+                  setExamResult(null);
+                  setExamMode(false);
+                }}
+              >
+                Back to practice
+              </Button>
             </section>
           ) : (
             <section className={s.examPanel}>
               {(() => {
                 const question = examSession.items[examIndex];
-                return <>
-                  <div className={s.examHead}>
-                    <span>Code Blue · {examIndex + 1} / {examSession.items.length}</span>
-                    <strong role="timer">{Math.floor(examSecondsLeft / 60)}:{String(examSecondsLeft % 60).padStart(2, "0")}</strong>
-                  </div>
-                  {examSecondsLeft <= 10 && (
-                    <div
-                      className={s.defibCharge}
-                      role="progressbar"
-                      aria-label="Defibrillator charging"
-                      aria-valuemin={0}
-                      aria-valuemax={10}
-                      aria-valuenow={10 - examSecondsLeft}
-                      style={{
-                        "--charge": `${((10 - examSecondsLeft) / 10) * 100}%`,
-                      }}
-                    >
-                      <span />
-                      <small>DEFIBRILLATOR CHARGING</small>
+                return (
+                  <>
+                    <div className={s.examHead}>
+                      <span>
+                        Code Blue · {examIndex + 1} / {examSession.items.length}
+                      </span>
+                      <strong role="timer">
+                        {Math.floor(examSecondsLeft / 60)}:
+                        {String(examSecondsLeft % 60).padStart(2, "0")}
+                      </strong>
                     </div>
-                  )}
-                  <h2>{question.stem}</h2>
-                  <div className={s.examOptions}>
-                    {question.options.map((option, optionIndex) => (
-                      <button
-                        className={examSelected === optionIndex ? s.examOptionSelected : s.examOption}
-                        key={optionIndex}
-                        aria-pressed={examSelected === optionIndex}
-                        onClick={() => setExamSelected(optionIndex)}
+                    {examSecondsLeft <= 10 && (
+                      <div
+                        className={s.defibCharge}
+                        role="progressbar"
+                        aria-label="Defibrillator charging"
+                        aria-valuemin={0}
+                        aria-valuemax={10}
+                        aria-valuenow={10 - examSecondsLeft}
+                        style={{
+                          "--charge": `${((10 - examSecondsLeft) / 10) * 100}%`,
+                        }}
                       >
-                        <span>{String.fromCharCode(65 + optionIndex)}.</span> {option}
-                      </button>
-                    ))}
-                  </div>
-                  {examError && <p role="alert">{examError}</p>}
-                  <div className={s.examActions}>
-                    <Button variant="secondary" disabled={examIndex === 0 || examPending} onClick={() => { setExamIndex((current) => current - 1); setExamSelected(examSession.items[examIndex - 1].selected_index ?? null); }}>Previous</Button>
-                    <Button variant="secondary" disabled={examPending} onClick={() => { if (examIndex + 1 < examSession.items.length) { setExamIndex((current) => current + 1); setExamSelected(examSession.items[examIndex + 1].selected_index ?? null); } else completeExam(); }}>Skip / submit</Button>
-                    <Button disabled={examSelected === null || examPending} onClick={saveExamAnswer}>{examPending ? "Saving…" : examIndex + 1 === examSession.items.length ? "Save & submit exam" : "Save & next"}</Button>
-                  </div>
-                  <p className={s.examHint}>Your answer is saved without revealing correctness. You can return to an earlier question before submitting.</p>
-                </>;
+                        <span />
+                        <small>DEFIBRILLATOR CHARGING</small>
+                      </div>
+                    )}
+                    <h2>{question.stem}</h2>
+                    <div className={s.examOptions}>
+                      {question.options.map((option, optionIndex) => (
+                        <button
+                          className={
+                            examSelected === optionIndex
+                              ? s.examOptionSelected
+                              : s.examOption
+                          }
+                          key={optionIndex}
+                          aria-pressed={examSelected === optionIndex}
+                          onClick={() => setExamSelected(optionIndex)}
+                        >
+                          <span>{String.fromCharCode(65 + optionIndex)}.</span>{" "}
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                    {examError && <p role="alert">{examError}</p>}
+                    <div className={s.examActions}>
+                      <Button
+                        variant="secondary"
+                        disabled={examIndex === 0 || examPending}
+                        onClick={() => {
+                          setExamIndex((current) => current - 1);
+                          setExamSelected(
+                            examSession.items[examIndex - 1].selected_index ??
+                              null,
+                          );
+                        }}
+                      >
+                        Previous
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        disabled={examPending}
+                        onClick={() => {
+                          if (examIndex + 1 < examSession.items.length) {
+                            setExamIndex((current) => current + 1);
+                            setExamSelected(
+                              examSession.items[examIndex + 1].selected_index ??
+                                null,
+                            );
+                          } else completeExam();
+                        }}
+                      >
+                        Skip / submit
+                      </Button>
+                      <Button
+                        disabled={examSelected === null || examPending}
+                        onClick={saveExamAnswer}
+                      >
+                        {examPending
+                          ? "Saving…"
+                          : examIndex + 1 === examSession.items.length
+                            ? "Save & submit exam"
+                            : "Save & next"}
+                      </Button>
+                    </div>
+                    <p className={s.examHint}>
+                      Your answer is saved without revealing correctness. You
+                      can return to an earlier question before submitting.
+                    </p>
+                  </>
+                );
               })()}
             </section>
           )
@@ -594,6 +700,7 @@ export default function MCQs() {
               <QuestionCard
                 key={q.id}
                 question={q}
+                tone={copyTone}
                 index={index}
                 total={items.length}
                 selected={selected}
