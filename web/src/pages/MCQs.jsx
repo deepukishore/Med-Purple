@@ -488,11 +488,18 @@ export default function MCQs() {
                     : " Every answer correct. Ready for your next challenge?"}
                 </p>
                 {reward && (
-                  <div className={s.reward}>
+                  <div
+                    className={`${s.reward} ${reward.leveledUp ? s.levelUpReward : ""}`}
+                  >
                     {reward.leveledUp
                       ? `Level up! You reached level ${reward.level}. `
                       : ""}
                     {reward.xp !== null && `+${reward.xp} XP this round`}
+                    {reward.leveledUp && (
+                      <span className={s.levelUpConfetti} aria-hidden="true">
+                        💊　🧬　🩺
+                      </span>
+                    )}
                   </div>
                 )}
                 <div className={s.completeActions}>

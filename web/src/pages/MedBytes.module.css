@@ -414,15 +414,56 @@
   transform: rotateX(55deg) translateY(220px);
 }
 .theater .feed {
+  position: relative;
+  z-index: 1;
   width: min(100%, 390px);
   margin: 0;
   display: block;
   overscroll-behavior: contain;
   touch-action: pan-x;
   border-radius: 23px;
+  perspective: 1200px;
+}
+.nextReelPeek {
+  position: absolute;
+  z-index: -1;
+  inset: 12px -18px 12px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 22px;
+  overflow: hidden;
+  border: 1px solid #ffffff30;
+  border-radius: 23px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 70% 22%, #c59be944, transparent 38%),
+    linear-gradient(155deg, #553c72, #261a34 72%);
+  box-shadow: 0 24px 48px #0f091a66;
+  transform: rotateY(-9deg) translateX(14px) scale(0.96);
+  transform-origin: center left;
+  pointer-events: none;
+}
+.nextReelPeek span {
+  color: #e4d5f3;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+.nextReelPeek strong {
+  max-width: 260px;
+  font-size: 21px;
+  line-height: 1.25;
+}
+.nextReelPeek small {
+  color: #d3c5df;
+  font-size: 10px;
 }
 .theater .reel {
   animation: reelEnter 320ms ease-out;
+  position: relative;
+  z-index: 1;
 }
 .immersive {
   height: clamp(460px, 72dvh, 760px);
@@ -592,6 +633,14 @@
     min-width: 0;
     flex: 1;
   }
+  .nextReelPeek {
+    inset: 8px -6px 8px 6px;
+    padding: 12px;
+    transform: rotateY(-5deg) translateX(8px) scale(0.97);
+  }
+  .nextReelPeek strong {
+    font-size: 16px;
+  }
   .immersive {
     height: clamp(430px, 70dvh, 700px);
     border-radius: 17px;
@@ -629,6 +678,9 @@
     animation: none;
   }
   .reelNav button:hover:not(:disabled) {
+    transform: none;
+  }
+  .nextReelPeek {
     transform: none;
   }
 }

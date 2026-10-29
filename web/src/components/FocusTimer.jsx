@@ -155,7 +155,10 @@ export default function FocusTimer() {
   }
   function clock() {
     return (
-      <div className={s.clock} style={{ "--progress": fraction * 360 + "deg" }}>
+      <div
+        className={`${s.clock} ${timer.end ? s.clockRunning : ""}`}
+        style={{ "--progress": fraction * 360 + "deg" }}
+      >
         <div>
           <span role="timer" aria-label="Focus time remaining">
             {display}

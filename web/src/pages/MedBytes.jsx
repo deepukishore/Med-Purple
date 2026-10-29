@@ -143,6 +143,13 @@ function Feed({ subject, exam, onOptions }) {
               if (Math.abs(delta) > 55) navigate(delta > 0 ? 1 : -1);
             }}
           >
+            {items[active + 1] && (
+              <div className={s.nextReelPeek} aria-hidden="true">
+                <span>UP NEXT · {items[active + 1].subject}</span>
+                <strong>{items[active + 1].title}</strong>
+                <small>A little more anatomy, just ahead.</small>
+              </div>
+            )}
             <div className={s.reel} key={items[active].feedKey}>
               <MedByteCard
                 clip={{

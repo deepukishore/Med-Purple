@@ -158,6 +158,7 @@ export default function StoryShelf() {
   const [draft, setDraft] = useState(initialDraft);
   const [selected, setSelected] = useState(null);
   const [selectedSlideIndex, setSelectedSlideIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState(1);
   const [failure, setFailure] = useState("");
   const [working, setWorking] = useState(false);
   const [pollChoice, setPollChoice] = useState(null);
@@ -363,16 +364,23 @@ export default function StoryShelf() {
     } catch (error) {
       setFailure(error.message);
     }
-    async function showSlide(index) {
-      if (!selected || index < 0 || index >= selected.slides.length || index === selectedSlideIndex) return;
-      try {
-        setSelected(await api.get(`/stories/${selected.id}?slide_index=${index}`));
-        setSelectedSlideIndex(index);
-        setPollChoice(null);
-        setAnswer("");
-      } catch (error) {
-        setFailure(error.message);
-      }
+  }
+  async function showSlide(index) {
+    if (
+      !selected ||
+      index < 0 ||
+      index >= selected.slides.length ||
+      index === selectedSlideIndex
+    )
+      return;
+    try {
+      setSlideDirection(index > selectedSlideIndex ? 1 : -1);
+      setSelected(await api.get(`/stories/${selected.id}?slide_index=${index}`));
+      setSelectedSlideIndex(index);
+      setPollChoice(null);
+      setAnswer("");
+    } catch (error) {
+      setFailure(error.message);
     }
   }
   function closeComposer() {
@@ -611,6 +619,11 @@ export default function StoryShelf() {
                 ))}
               </div>
             )}
+            <div
+              key={`story-slide-${selectedSlideIndex}`}
+              className={s.storySlideScene}
+              style={{ "--story-direction": slideDirection }}
+            >
             <h2 id="story-view-title">{selected.title}</h2>
             {selected.mine && selected.needs_review && (
               <p className={s.storyWarning} role="alert">
@@ -670,6 +683,7 @@ export default function StoryShelf() {
                 <button type="button" onClick={() => showSlide(selectedSlideIndex + 1)} disabled={selectedSlideIndex === selected.slides.length - 1}>Next slide</button>
               </footer>
             )}
+            </div>
           </article>
         </div>
       )}

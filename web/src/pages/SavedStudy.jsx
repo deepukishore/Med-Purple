@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   Plus,
@@ -31,6 +31,7 @@ export default function SavedStudy({ kind }) {
     [reviewing, setReviewing] = useState(flash && params.get("review") === "1"),
     [flipped, setFlipped] = useState(false),
     [reviewed, setReviewed] = useState(new Set());
+  const swipeStart = useRef(null);
   const today = new Intl.DateTimeFormat("en-CA", {
     timeZone: user.timezone,
     year: "numeric",
@@ -286,38 +287,66 @@ export default function SavedStudy({ kind }) {
               <span className={s.chip}>
                 {due.length} left in this round · {current.subject}
               </span>
-              <Stack size={35} color="#8655c4" style={{ margin: "auto" }} />
-              <h2>{current.title}</h2>
-              {flipped ? (
-                <>
-                  <div className={s.answer}>{current.content}</div>
-                  <p className={s.muted}>How did that feel?</p>
-                  <div className={s.row}>
-                    <Button
-                      disabled={busy}
-                      variant="secondary"
-                      onClick={() => rate("again")}
-                    >
-                      Again today
-                    </Button>
-                    <Button disabled={busy} onClick={() => rate("good")}>
-                      Got it
-                    </Button>
-                    <Button
-                      disabled={busy}
-                      variant="secondary"
-                      onClick={() => rate("easy")}
-                    >
-                      Easy
+              <div
+                className={s.reviewDeck}
+                onPointerDown={(event) => {
+                  if (flipped && !event.target.closest("button"))
+                    swipeStart.current = {
+                      x: event.clientX,
+                      y: event.clientY,
+                    };
+                }}
+                onPointerUp={(event) => {
+                  const start = swipeStart.current;
+                  swipeStart.current = null;
+                  if (!flipped || !start || busy) return;
+                  const dx = event.clientX - start.x;
+                  const dy = event.clientY - start.y;
+                  if (Math.abs(dx) < 90 || Math.abs(dx) < Math.abs(dy)) return;
+                  rate(dx < 0 ? "again" : "good");
+                }}
+                onPointerCancel={() => {
+                  swipeStart.current = null;
+                }}
+              >
+                <div
+                  className={`${s.reviewFlip} ${flipped ? s.isFlipped : ""}`}
+                >
+                  <div className={s.reviewFace}>
+                    <Stack size={35} color="#8655c4" />
+                    <h2>{current.title}</h2>
+                    <Button onClick={() => setFlipped(true)}>
+                      <ArrowClockwise size={18} />
+                      Reveal answer
                     </Button>
                   </div>
-                </>
-              ) : (
-                <Button onClick={() => setFlipped(true)}>
-                  <ArrowClockwise size={18} />
-                  Reveal answer
-                </Button>
-              )}
+                  <div className={`${s.reviewFace} ${s.reviewBack}`}>
+                    <div className={s.answer}>{current.content}</div>
+                    <p className={s.muted}>
+                      Swipe left to try again · right when you know it
+                    </p>
+                    <div className={s.row}>
+                      <Button
+                        disabled={busy}
+                        variant="secondary"
+                        onClick={() => rate("again")}
+                      >
+                        Again today
+                      </Button>
+                      <Button disabled={busy} onClick={() => rate("good")}>
+                        Got it
+                      </Button>
+                      <Button
+                        disabled={busy}
+                        variant="secondary"
+                        onClick={() => rate("easy")}
+                      >
+                        Easy
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </>
           ) : (
             <>

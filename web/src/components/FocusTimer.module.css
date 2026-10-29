@@ -213,6 +213,19 @@
   margin: 30px auto;
   background: conic-gradient(#d7eca5 var(--progress), #645572 0);
 }
+.room .clockRunning {
+  animation: focusBreathe 8s ease-in-out infinite;
+}
+@keyframes focusBreathe {
+  0%, 100% {
+    box-shadow: 0 0 0 0 #d7eca500, 0 0 28px #d7eca51c;
+    transform: rotate(-90deg) scale(0.98);
+  }
+  50% {
+    box-shadow: 0 0 0 14px #d7eca50b, 0 0 44px #d7eca538;
+    transform: rotate(-90deg) scale(1.025);
+  }
+}
 .room .clock > div {
   background: #31283d;
   border-color: #403449;
@@ -253,6 +266,11 @@
 @media (max-width: 600px) {
   .room {
     padding: 18px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .room .clockRunning {
+      animation: none;
+    }
   }
   .room > header > span {
     font-size: 9px;

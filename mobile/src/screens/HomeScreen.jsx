@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, ScrollView, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -48,6 +48,17 @@ export default function HomeScreen({ navigation }) {
   const { notify, changed } = useApp();
   const [pending, setPending] = useState(false),
     [now, setNow] = useState(Date.now());
+  const previousLevel = useRef(null);
+  useEffect(() => {
+    const level = rewards.data?.level;
+    if (!Number.isFinite(level)) return;
+    if (previousLevel.current !== null && level > previousLevel.current) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(
+        () => {},
+      );
+    }
+    previousLevel.current = level;
+  }, [rewards.data?.level]);
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 60000);
     return () => clearInterval(id);

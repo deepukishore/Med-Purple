@@ -761,6 +761,26 @@
   background: linear-gradient(180deg, #1b1722, #2d2238);
   color: #f8f4fc;
 }
+.storySlideScene {
+  display: grid;
+  gap: 13px;
+  transform-origin: center center;
+  animation: storyCubeIn 480ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+@keyframes storyCubeIn {
+  from {
+    opacity: 0.25;
+    transform:
+      perspective(900px)
+      translateX(calc(var(--story-direction) * 24px))
+      rotateY(calc(var(--story-direction) * -15deg))
+      scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(900px) translateX(0) rotateY(0) scale(1);
+  }
+}
 .storyViewer header {
   justify-content: space-between;
 }
@@ -1349,6 +1369,11 @@
 @media (max-width: 600px) {
   .pulse { grid-template-columns: 1fr; padding: 18px; }
   .pulseIntro { grid-column: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .storySlideScene {
+    animation: none;
+  }
 }
 @media (max-width: 1100px) {
   .layout {
