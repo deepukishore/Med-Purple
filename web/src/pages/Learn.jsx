@@ -18,6 +18,7 @@ import {
   SlidersHorizontal,
   Sparkle,
   Stack,
+  Target,
   Toolbox,
   Tray,
 } from "@phosphor-icons/react";
@@ -57,6 +58,7 @@ export default function Learn() {
   usePageMeta("Revision toolkit", "A focused study space for question practice, anatomy, notes, flashcards, and revision planning.");
   const [filter, setFilter] = useState("Everything");
   const [search, setSearch] = useState("");
+  const [previewFlipped, setPreviewFlipped] = useState(false);
   const progress = useData("/progress");
   const flashcards = useData("/flashcards");
   const notes = useData("/notes");
@@ -69,6 +71,7 @@ export default function Learn() {
   const accuracy = totalAnswered ? `${progress.data.accuracy}%` : "—";
   const reviewTo = flashcards.data?.length ? "/flashcards?review=1" : "/flashcards";
   const reviewLabel = flashcards.data?.length ? "Review your cards" : "Create your first card";
+  const flashcard = flashcards.data?.[0];
   const query = search.trim().toLocaleLowerCase();
   const visibleTools = tools.filter((tool) =>
     matchesFilter(tool, filter) && (!query || `${tool[0]} ${tool[2]} ${tool[4]}`.toLocaleLowerCase().includes(query)),
@@ -82,9 +85,9 @@ export default function Learn() {
       <section className={s.toolkitHero} aria-labelledby="toolkit-title">
         <div className={s.toolkitHeroCopy}>
           <p className={s.eyebrow}>THE REVISION TOOLKIT / YOUR STUDY SPACE</p>
-          <h1 id="toolkit-title">For the way your brain works.</h1>
+          <h1 id="toolkit-title">Give your next study move a place.</h1>
           <p className={s.toolkitIntro}>
-            Pick a question, a concept, or a quiet place to organise your notes. Start with the kind of session you have room for today.
+            Your questions, anatomy, saved prompts, and lessons meet here. Follow a topic you have practised or choose a different way into the subject.
           </p>
           <div className={s.toolkitHeroActions}>
             <Link to={nextPath} className={s.toolkitPrimary}>
@@ -98,33 +101,43 @@ export default function Learn() {
           </div>
         </div>
 
-        <aside className={s.studyCompass} aria-label="Recommended next study step">
-          <div className={s.compassTop}>
-            <span><Sparkle size={15} /> YOUR NEXT STEP</span>
-            <span className={s.compassLive}><i /> READY</span>
+        <aside className={s.studyOrbitPanel} aria-label="Study routes and recommended next step">
+          <div className={s.orbitPanelTop}>
+            <span><Sparkle size={15} /> STUDY ORBIT</span>
+            <span>SELECT A ROUTE</span>
           </div>
-          {focusSubject ? (
-            <>
-              <p className={s.compassLabel}>A topic to revisit</p>
-              <h2>{focusSubject.subject}</h2>
-              <p className={s.compassCopy}>
-                {focusSubject.accuracy}% accuracy across {focusSubject.answered} answered {focusSubject.answered === 1 ? "question" : "questions"}. Pick up here when you want a focused review.
-              </p>
-              <div className={s.compassTrack} aria-label={`${focusSubject.accuracy}% question accuracy`}>
-                <span style={{ width: `${focusSubject.accuracy}%` }} />
-              </div>
-            </>
-          ) : (
-            <>
-              <p className={s.compassLabel}>Start with a baseline</p>
-              <h2>One small set.</h2>
-              <p className={s.compassCopy}>Answer a few questions to give your study space a real starting point.</p>
-              <div className={s.compassSteps}><span>Choose</span><i /><span>Recall</span><i /><span>Review</span></div>
-            </>
-          )}
-          <Link to={nextPath} className={s.compassLink}>
-            {focusSubject ? "Continue this review" : "Choose a question set"} <ArrowRight size={16} />
-          </Link>
+          <div className={s.studyOrbit}>
+            <span className={s.orbitTrackOuter} aria-hidden="true" />
+            <span className={s.orbitTrackInner} aria-hidden="true" />
+            <span className={s.orbitMeridian} aria-hidden="true" />
+            <Link
+              to={nextPath}
+              className={s.orbitCore}
+              aria-label={focusSubject ? `Continue ${focusSubject.subject} practice` : "Start a five question practice set"}
+            >
+              <small>{focusSubject ? "RETURN TO" : "START HERE"}</small>
+              <strong>{focusSubject ? focusSubject.subject : "Five questions"}</strong>
+              <span>{focusSubject ? `${focusSubject.accuracy}% recorded accuracy` : "Build a practice baseline"}</span>
+              <b>Continue <ArrowRight size={14} /></b>
+            </Link>
+            <Link to="/anatomy" className={`${s.orbitNode} ${s.orbitAnatomy}`}>
+              <Cube size={17} /><span>SEE</span><strong>Anatomy</strong>
+            </Link>
+            <Link to={nextPath} className={`${s.orbitNode} ${s.orbitPractice}`}>
+              <Brain size={17} /><span>TEST</span><strong>Questions</strong>
+            </Link>
+            <Link to={reviewTo} className={`${s.orbitNode} ${s.orbitRecall}`}>
+              <Stack size={17} /><span>KEEP</span><strong>Recall</strong>
+            </Link>
+            <Link to="/medbytes" className={`${s.orbitNode} ${s.orbitLesson}`}>
+              <PlayCircle size={17} /><span>WATCH</span><strong>MedBytes</strong>
+            </Link>
+          </div>
+          <p className={s.orbitNote}>
+            {focusSubject
+              ? `${focusSubject.answered} ${focusSubject.answered === 1 ? "answer" : "answers"} recorded in ${focusSubject.subject}. The orbit starts there.`
+              : "Each marker opens a working study tool. Your next step will update after practice."}
+          </p>
         </aside>
       </section>
 
@@ -165,13 +178,46 @@ export default function Learn() {
               <p>Open the mistake set and work back through the explanations.</p>
               <b>Open mistake review <ArrowRight size={16} /></b>
             </Link>
-            <Link to={reviewTo} className={`${s.studyMove} ${s.moveRecall}`}>
+            <article className={`${s.studyMove} ${s.moveRecall}`}>
               <span className={s.moveNumber}>02 / RETRIEVE</span>
               <span className={s.moveIcon}><Stack size={22} weight="duotone" /></span>
-              <h3>{reviewLabel}</h3>
-              <p>{flashcards.data?.length ? `${flashcards.data.length} saved ${flashcards.data.length === 1 ? "card" : "cards"} in your deck.` : "Save a prompt from your studies, then practise answering before you reveal it."}</p>
-              <b>{flashcards.data?.length ? "Open flashcard review" : "Build a recall card"} <ArrowRight size={16} /></b>
-            </Link>
+              {flashcard ? (
+                <>
+                  <button
+                    type="button"
+                    className={`${s.toolkitFlipCard} ${previewFlipped ? s.toolkitFlipCardRevealed : ""}`}
+                    onClick={() => setPreviewFlipped((value) => !value)}
+                    aria-pressed={previewFlipped}
+                    aria-label={previewFlipped ? "Show flashcard prompt" : "Reveal flashcard answer"}
+                  >
+                    <span className={s.toolkitFlipInner}>
+                      <span className={s.toolkitFlipFace} aria-hidden={previewFlipped}>
+                        <small>RECALL PROMPT / {flashcard.subject}</small>
+                        <strong>{flashcard.title}</strong>
+                        <span>Try to answer before you turn the card.</span>
+                      </span>
+                      <span className={`${s.toolkitFlipFace} ${s.toolkitFlipBack}`} aria-hidden={!previewFlipped}>
+                        <small>YOUR SAVED ANSWER</small>
+                        <strong>{flashcard.title}</strong>
+                        <span>{flashcard.content}</span>
+                      </span>
+                    </span>
+                  </button>
+                  <div className={s.toolkitFlipActions}>
+                    <button type="button" onClick={() => setPreviewFlipped((value) => !value)}>
+                      {previewFlipped ? "Show prompt" : "Reveal answer"} <ArrowRight size={14} />
+                    </button>
+                    <Link to={reviewTo}>Review your deck <ArrowUpRight size={14} /></Link>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3>{reviewLabel}</h3>
+                  <p>Save a prompt from your studies, then practise answering before you reveal it.</p>
+                  <Link to="/flashcards" className={s.studyMoveAction}>Build a recall card <ArrowRight size={16} /></Link>
+                </>
+              )}
+            </article>
             <Link to="/notes" className={`${s.studyMove} ${s.moveNotes}`}>
               <span className={s.moveNumber}>03 / ORGANISE</span>
               <span className={s.moveIcon}><Notebook size={22} weight="duotone" /></span>

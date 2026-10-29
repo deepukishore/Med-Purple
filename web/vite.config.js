@@ -29,6 +29,10 @@ export default defineConfig(({ mode }) => {
             const path = id.replaceAll("\\", "/");
             // Keep full-atlas loaders and controls out of the heart preview's
             // core Three.js download. The atlas route requests these on demand.
+            if (path.includes("/node_modules/three/examples/jsm/loaders/"))
+              return "three-loaders";
+            if (path.includes("/node_modules/three/examples/jsm/controls/"))
+              return "three-controls";
             if (path.includes("/node_modules/three/examples/jsm/"))
               return "three-extras";
             if (path.includes("/node_modules/three/")) return "three";

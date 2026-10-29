@@ -291,7 +291,7 @@ export default function AppShell() {
       <div className={s.mainWrap} inert={menu || undefined}>
         <QuickCapture />
         {!user?.is_guest && <GuidedTour />}
-        <header className={s.topbar}>
+        <header className={`${s.topbar} ${pathname === "/" ? s.topbarHome : ""}`}>
           <button
             className={s.menuButton}
             aria-label="Open navigation"
@@ -373,7 +373,7 @@ export default function AppShell() {
         </main>
       </div>
       <nav
-        className={s.bottomNav}
+        className={`${s.bottomNav} ${pathname === "/" ? s.bottomNavHome : ""}`}
         aria-label="Mobile shortcuts"
         inert={menu || undefined}
       >

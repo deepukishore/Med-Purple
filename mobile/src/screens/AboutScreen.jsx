@@ -3,6 +3,7 @@ import {
   Animated,
   Dimensions,
   Easing,
+  Linking,
   Pressable,
   StyleSheet,
   Text,
@@ -14,14 +15,16 @@ import Screen from "../components/Screen";
 import Button from "../components/Button";
 import DepthCard from "../components/DepthCard";
 import HeartViewer from "../components/HeartViewer";
+import useData from "../hooks/useData";
+import { api } from "../context/AppContext";
 import { colors, fonts, styles as s } from "../theme";
 import useReducedMotion from "../hooks/useReducedMotion";
 import content from "../../../shared/legal.json";
 
 const chapters = [
-  { title: "Start with a question.", label: "PRACTISE", chamber: "ra", path: "MCQs" },
-  { title: "See how the pieces connect.", label: "EXPLORE", chamber: "rv", path: "Anatomy" },
-  { title: "Find a study rhythm that fits.", label: "MAKE IT YOURS", chamber: "lv", path: "Planner" },
+  { title: "See how the pieces connect.", label: "SEE IT", chamber: "lv", path: "Anatomy" },
+  { title: "Test what you understand.", label: "TEST IT", chamber: "ra", path: "MCQs" },
+  { title: "Keep what matters.", label: "KEEP IT", chamber: "rv", path: "Flashcards" },
 ];
 const chambers = [
   ["ra", "Right atrium"],
@@ -45,6 +48,10 @@ const introStories = [
     body: bio,
   })),
 ];
+const requestId = () => "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+  const n = Math.floor(Math.random() * 16);
+  return (c === "x" ? n : (n & 3) | 8).toString(16);
+});
 
 export default function AboutScreen({ navigation }) {
   const model = useRef(null);
@@ -53,6 +60,18 @@ export default function AboutScreen({ navigation }) {
   const [active, setActive] = useState(0);
   const [selected, setSelected] = useState("ra");
   const [activeIntro, setActiveIntro] = useState(0);
+  const [answerIndex, setAnswerIndex] = useState(null);
+  const [answerResult, setAnswerResult] = useState(null);
+  const [answerError, setAnswerError] = useState("");
+  const [answerPending, setAnswerPending] = useState(false);
+  const [flashRevealed, setFlashRevealed] = useState(false);
+  const answerRequest = useRef(requestId());
+  const questions = useData("/mcqs?limit=1&shuffle=true");
+  const flashcards = useData("/flashcards");
+  const question = questions.data?.items?.[0];
+  const flashcard = Array.isArray(flashcards.data)
+    ? flashcards.data[0]
+    : flashcards.data?.items?.[0];
   const introSpin = useRef(new Animated.Value(0)).current;
   const reducedMotion = useReducedMotion();
   const onScroll = useCallback((event) => {
@@ -61,10 +80,32 @@ export default function AboutScreen({ navigation }) {
     const travel = stageHeight.current + viewport;
     const progress = Math.max(0, Math.min(1, (offset - stageY.current + viewport) / travel));
     model.current?.pose?.(progress);
+    model.current?.wake?.(30);
     const next = Math.min(chapters.length - 1, Math.floor(progress * chapters.length));
     setActive((value) => value === next ? value : next);
     setSelected((value) => value === chapters[next].chamber ? value : chapters[next].chamber);
   }, []);
+  useEffect(() => {
+    setAnswerIndex(null);
+    setAnswerResult(null);
+    setAnswerError("");
+    answerRequest.current = requestId();
+    setFlashRevealed(false);
+  }, [active, question?.id, flashcard?.id]);
+  const submitPreview = async () => {
+    if (!question || answerIndex === null || answerPending || answerResult) return;
+    setAnswerPending(true);
+    try {
+      setAnswerResult(await api.post(`/mcqs/${question.id}/answer`, {
+        selected_index: answerIndex,
+        request_id: answerRequest.current,
+      }));
+    } catch (error) {
+      setAnswerError(error.message || "The answer could not be checked. Please try again.");
+    } finally {
+      setAnswerPending(false);
+    }
+  };
   const selectIntro = (index) => {
     setActiveIntro(index);
     Haptics.selectionAsync().catch(() => {});
@@ -187,34 +228,106 @@ export default function AboutScreen({ navigation }) {
           </View>
           <Text style={a.sceneStep}>{active + 1} / 3</Text>
         </View>
-        <View style={a.modelStage}>
-          <View style={a.modelGlow} />
-          <View style={a.modelRing} />
-          <HeartViewer
-            compact
-            interactiveCompact
-            scrollDriven
-            controlsRef={model}
-            selected={selected}
-            height={240}
-          />
-        </View>
-        <Text style={a.sceneHint}>Scroll to move through the story · swipe sideways to rotate</Text>
-        <View style={a.chambers}>
-          {chambers.map(([id, name]) => (
-            <Pressable
-              key={id}
-              accessibilityRole="button"
-              accessibilityLabel={`Highlight ${name}`}
-              accessibilityState={{ selected: selected === id }}
-              onPress={() => setSelected(id)}
-              style={[a.chamber, selected === id && a.chamberSelected]}
-            >
-              <Text style={[a.chamberCode, selected === id && a.chamberCodeSelected]}>{id.toUpperCase()}</Text>
-            </Pressable>
-          ))}
-          <Text style={a.chamberName}>{chambers.find(([id]) => id === selected)?.[1]}</Text>
-        </View>
+        {active === 0 ? (
+          <>
+            <View style={a.modelStage}>
+              <View style={a.modelGlow} />
+              <View style={a.modelRing} />
+              <HeartViewer
+                compact
+                interactiveCompact
+                autoRotate={false}
+                scrollDriven
+                controlsRef={model}
+                selected={selected}
+                height={240}
+              />
+            </View>
+            <Text style={a.sceneHint}>Schematic heart · swipe to rotate · scroll to follow the story</Text>
+            <View style={a.chambers}>
+              {chambers.map(([id, name]) => (
+                <Pressable
+                  key={id}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Highlight ${name}`}
+                  accessibilityState={{ selected: selected === id }}
+                  onPress={() => setSelected(id)}
+                  style={[a.chamber, selected === id && a.chamberSelected]}
+                >
+                  <Text style={[a.chamberCode, selected === id && a.chamberCodeSelected]}>{id.toUpperCase()}</Text>
+                </Pressable>
+              ))}
+              <Text style={a.chamberName}>{chambers.find(([id]) => id === selected)?.[1]}</Text>
+            </View>
+          </>
+        ) : active === 1 ? (
+          <View style={a.previewStage}>
+            <Text style={a.previewEyebrow}>ONE REAL QUESTION</Text>
+            {questions.loading && !question ? (
+              <Text style={a.previewCopy}>Finding a question from your bank…</Text>
+            ) : question ? (
+              <>
+                <Text style={a.previewMeta}>{question.subject} · {question.topic}</Text>
+                <Text style={a.previewQuestion}>{question.stem}</Text>
+                <View style={a.previewOptions}>
+                  {question.options.map((option, index) => (
+                    <Pressable
+                      key={`${question.id}-${index}`}
+                      accessibilityRole="radio"
+                      accessibilityState={{ checked: answerIndex === index, disabled: !!answerResult || answerPending }}
+                      disabled={!!answerResult || answerPending}
+                      onPress={() => setAnswerIndex(index)}
+                      style={[
+                        a.previewOption,
+                        answerIndex === index && a.previewOptionSelected,
+                        answerResult && index === answerResult.correct_index && a.previewOptionCorrect,
+                      ]}
+                    >
+                      <Text style={[a.previewOptionText, answerIndex === index && a.previewOptionTextSelected]}>{String.fromCharCode(65 + index)}  {option}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+                {answerError ? <Text style={a.previewError} accessibilityRole="alert">{answerError}</Text> : null}
+                {answerResult ? (
+                  <>
+                    <Text style={a.previewFeedback} accessibilityRole="text">
+                      {answerResult.correct ? "Correct. " : "Review this one. "}{answerResult.explanation}
+                    </Text>
+                    {answerResult.source_url ? (
+                      <Pressable accessibilityRole="link" onPress={() => Linking.openURL(answerResult.source_url).catch(() => {})} style={a.previewSource}>
+                        <Text style={a.previewSourceText}>Read the source <Ionicons name="open-outline" size={13} /></Text>
+                      </Pressable>
+                    ) : null}
+                  </>
+                ) : (
+                  <Button title={answerPending ? "Checking…" : "Check my answer"} disabled={answerIndex === null || answerPending} onPress={submitPreview} />
+                )}
+              </>
+            ) : (
+              <Text style={a.previewCopy}>No preview question is available right now. You can still open the question bank.</Text>
+            )}
+          </View>
+        ) : (
+          <View style={a.previewStage}>
+            <Text style={a.previewEyebrow}>A SAVED FLASHCARD</Text>
+            {flashcard ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={flashRevealed ? "Hide flashcard answer" : "Reveal flashcard answer"}
+                accessibilityState={{ expanded: flashRevealed }}
+                onPress={() => setFlashRevealed((value) => !value)}
+                style={[a.flashPreview, flashRevealed && a.flashPreviewBack]}
+              >
+                <Text style={a.flashSubject}>{flashcard.subject || "YOUR STUDY DECK"}</Text>
+                <Text style={a.flashPrompt}>{flashRevealed ? flashcard.content : flashcard.title}</Text>
+                <Text style={a.flashHint}>{flashRevealed ? "TAP TO SEE THE PROMPT" : "TAP TO REVEAL"}</Text>
+              </Pressable>
+            ) : (
+              <Text style={a.previewCopy}>Your deck is ready when you are. Add a card in Flashcards and it will be available to review here.</Text>
+            )}
+            <Button title="Open my flashcards" variant="secondary" onPress={() => navigation.navigate("Flashcards")} />
+          </View>
+        )}
         <View style={a.track}>
           {chapters.map((chapter, index) => (
             <View key={chapter.label} style={[a.trackSegment, index <= active && a.trackActive]} />
@@ -233,10 +346,10 @@ export default function AboutScreen({ navigation }) {
             <Text style={a.chapterTitle}>{chapter.title}</Text>
             <Text style={a.chapterCopy}>
               {index === 0
-                ? "Use active recall to find what you know and what needs another look."
+                ? "Rotate the schematic heart, highlight a chamber, and move into the Anatomy atlas."
                 : index === 1
-                  ? "Rotate the model and connect anatomy with your notes and lessons."
-                  : "Bring notes, flashcards, progress, and planning into one rhythm."}
+                  ? "Answer a real question from the bank and review its source-linked explanation."
+                  : "Turn a saved prompt over, then continue with your own revision deck."}
             </Text>
             <Text style={a.chapterAction}>EXPLORE THIS PART  <Ionicons name="arrow-forward" size={13} /></Text>
           </Pressable>
@@ -340,6 +453,26 @@ const a = StyleSheet.create({
   sceneTitle: { color: "#fff", fontFamily: fonts.display, fontSize: 19, lineHeight: 25, marginTop: 5 },
   sceneStep: { color: "#b8fff0", fontFamily: fonts.bold, fontSize: 11, marginTop: 2 },
   modelStage: { height: 242, overflow: "hidden", alignItems: "center", justifyContent: "center", borderRadius: 19, backgroundColor: "#352248" },
+  previewStage: { minHeight: 255, padding: 15, gap: 9, borderWidth: 1, borderColor: "#795d91", borderRadius: 19, backgroundColor: "#352248" },
+  previewEyebrow: { color: "#bffff1", fontFamily: fonts.bold, fontSize: 9, letterSpacing: 1.1 },
+  previewMeta: { color: "#cbbcdc", fontFamily: fonts.medium, fontSize: 9 },
+  previewQuestion: { color: "#fff", fontFamily: fonts.display, fontSize: 16, lineHeight: 22 },
+  previewCopy: { color: "#d6c6e3", fontFamily: fonts.body, fontSize: 12, lineHeight: 18 },
+  previewOptions: { gap: 6 },
+  previewOption: { minHeight: 39, justifyContent: "center", paddingHorizontal: 11, borderWidth: 1, borderColor: "#ffffff35", borderRadius: 11, backgroundColor: "#ffffff09" },
+  previewOptionSelected: { borderColor: "#bffff1", backgroundColor: "#bffff11a" },
+  previewOptionCorrect: { borderColor: "#a7e2b3", backgroundColor: "#a7e2b326" },
+  previewOptionText: { color: "#e6dcec", fontFamily: fonts.body, fontSize: 11, lineHeight: 16 },
+  previewOptionTextSelected: { color: "#fff", fontFamily: fonts.bold },
+  previewError: { color: "#ffc1c1", fontFamily: fonts.body, fontSize: 10 },
+  previewFeedback: { color: "#def5e5", fontFamily: fonts.body, fontSize: 11, lineHeight: 17 },
+  previewSource: { minHeight: 39, justifyContent: "center", alignSelf: "flex-start", paddingHorizontal: 4 },
+  previewSourceText: { color: "#bffff1", fontFamily: fonts.bold, fontSize: 10 },
+  flashPreview: { minHeight: 167, padding: 17, justifyContent: "space-between", borderWidth: 1, borderColor: "#b18bd2", borderRadius: 17, backgroundColor: "#4b3261", shadowColor: "#130d1b", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.24, shadowRadius: 15, elevation: 6 },
+  flashPreviewBack: { backgroundColor: "#284843", borderColor: "#a0dbc4" },
+  flashSubject: { color: "#bffff1", fontFamily: fonts.bold, fontSize: 8, letterSpacing: 1 },
+  flashPrompt: { color: "#fff", fontFamily: fonts.display, fontSize: 18, lineHeight: 24 },
+  flashHint: { color: "#d9c3ef", fontFamily: fonts.bold, fontSize: 8, letterSpacing: 0.8 },
   modelGlow: { position: "absolute", width: 220, height: 220, borderRadius: 110, backgroundColor: "#8e5db2", opacity: 0.33 },
   modelRing: { position: "absolute", width: 214, height: 214, borderRadius: 107, borderWidth: 1, borderColor: "#e9cfff55" },
   sceneHint: { color: "#d6c6e3", fontFamily: fonts.medium, fontSize: 10, textAlign: "center" },

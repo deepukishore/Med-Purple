@@ -1,448 +1,231 @@
 import { Link } from "react-router-dom";
 import {
-  ArrowUpRight,
+  ArrowDown,
   ArrowRight,
-  CheckCircle,
-  Lightning,
-  Target,
-  CalendarCheck,
-  Trophy,
+  ArrowUpRight,
+  BookOpenText,
   Brain,
-  PlayCircle,
   Cube,
-  Stack,
-  CalendarDots,
-  BookmarkSimple,
+  PlayCircle,
   Sparkle,
+  Stack,
+  Target,
 } from "@phosphor-icons/react";
 import useData from "../hooks/useData";
 import usePageMeta from "../hooks/usePageMeta";
-import { PageSkeleton, ErrorState } from "../components/States";
-import Button from "../components/Button";
-import FocusTimer from "../components/FocusTimer";
-import StudyLaunchpad from "../components/StudyLaunchpad";
+import HomeSpecimenStage from "../components/HomeSpecimenStage";
 import QuickRecall from "../components/QuickRecall";
 import StoryBar from "../components/StoryBar";
-import HomeHeartPreview from "../components/HomeHeartPreview";
-import useStudyDeskMotion from "../hooks/useStudyDeskMotion";
 import s from "./Desk.module.css";
+
 export default function Home() {
   usePageMeta(
-    "Study desk",
-    "Your medical revision desk: question practice, viva recall, and a realistic study plan.",
+    "Med Purple — study in three dimensions",
+    "Explore a named skeletal reference, practise with real questions, and keep your medical revision moving.",
   );
-  const dashboard = useData("/dashboard"),
-    progress = useData("/progress"),
-    storyOfDay = useData("/stories/featured"),
-    quickLesson = useData("/medbytes?limit=1"),
-    featureState = useData("/features");
-  const playfulCopy = featureState.data?.preferences?.copyTone === "playful";
-  const deskReady = Boolean(dashboard.data && progress.data);
-  const {
-    deskRef,
-    atlasCardRef,
-    atlasModelRef,
-    handleAtlasPointerMove,
-    resetAtlasPointer,
-  } = useStudyDeskMotion(s, deskReady);
-  if (
-    (dashboard.loading && !dashboard.data) ||
-    (progress.loading && !progress.data)
-  )
-    return <PageSkeleton />;
-  if (dashboard.error || progress.error)
-    return (
-      <ErrorState
-        message={dashboard.error || progress.error}
-        onRetry={() => {
-          dashboard.reload();
-          progress.reload();
-        }}
-      />
-    );
-  const d = dashboard.data,
-    p = progress.data;
-  const featuredLesson = quickLesson.data?.items?.[0];
-  const weakest = [...p.subjects]
-    .filter((x) => x.answered > 0 && x.accuracy < 100)
+  const dashboard = useData("/dashboard");
+  const progress = useData("/progress");
+  const quickLesson = useData("/medbytes?limit=1");
+  const record = progress.data;
+  const totalAnswered = record?.total_answered || 0;
+  const subjects = Array.isArray(record?.subjects) ? record.subjects : [];
+  const weakest = subjects
+    .filter((subject) => subject.answered > 0 && Number.isFinite(subject.accuracy))
     .sort((a, b) => a.accuracy - b.accuracy)[0];
-  const quests = [
-    {
-      title: "Question practice",
-      detail: `${d.answered_today} of ${d.daily_target} questions completed today`,
-      to: "/mcqs?set=5",
-      done: d.answered_today >= d.daily_target,
-      icon: Brain,
-      color: "violet",
-    },
-    {
-      title: "Review a medical concept",
-      detail: `${d.clips_today} MedBytes watched today`,
-      to: "/medbytes",
-      done: d.clips_today > 0,
-      icon: PlayCircle,
-      color: "peach",
-    },
-    {
-      title: "Explore anatomy",
-      detail: "Review one structure in the atlas",
-      to: "/anatomy",
-      done: d.goals.find((x) => x.key === "anatomy")?.done,
-      icon: Cube,
-      color: "mint",
-    },
-  ];
+  const nextPath = weakest
+    ? `/mcqs?subject=${encodeURIComponent(weakest.subject)}`
+    : "/mcqs?set=5";
+  const nextLabel = weakest ? `Continue ${weakest.subject}` : "Start a 5-question sprint";
+  const lesson = quickLesson.data?.items?.[0];
+  const d = dashboard.data;
+  const goals = Array.isArray(d?.goals) ? d.goals : [];
+  const completedGoals = goals.filter((goal) => goal.done).length;
+
   return (
-    <div className={s.desk} ref={deskRef}>
-      <header
-        className={s.welcome}
-        ref={atlasCardRef}
-        onPointerMove={handleAtlasPointerMove}
-        onPointerLeave={resetAtlasPointer}
-      >
-        <div className={s.welcomeCopy}>
-          <p className={s.overline}>MED PURPLE / {d.user.name.split(" ")[0].toUpperCase()}’S STUDY DESK</p>
-          <h1>
-            Understand the body. <span>Remember what matters.</span>
-          </h1>
-          <p>
-            {playfulCopy
-              ? "Today, let's make it click. Big ideas, one small session at a time. Pick a question, a concept, or a quick reset."
-              : "Today, let's make it click. Explore anatomy, practise recall, and return to the topics that need another look."}
-          </p>
-          <div className={s.heroActions}>
-            <Link to="/mcqs?set=5" className={s.heroPrimary}>
-              Start a 5-question sprint <ArrowRight size={17} />
-            </Link>
-            <Link to="/anatomy" className={s.heroSecondary}>
-              Open anatomy studio <ArrowUpRight size={16} />
-            </Link>
-            <Link to="/learn" className={s.heroTertiary}>
-              Open revision toolkit <ArrowUpRight size={15} />
-            </Link>
-          </div>
-          <Link to="/progress" className={s.streak}>
-            <CalendarCheck size={21} weight="light" />
-            <div>
-              <b>{p.streak} day study streak</b>
-              <small>
-                {p.streak
-                  ? "Consistent study, day by day."
-                  : "Start a consistent study habit today."}
-              </small>
+    <main className={`${s.desk} ${s.homeWorld}`}>
+      <header className={s.opening}>
+        <div className={s.openingLayout}>
+          <div className={s.openingCopy}>
+            <span className={s.openingKicker}><i /> MED PURPLE / ANATOMY IN MOTION</span>
+            <h1>See the body.<br /><em>Understand the why.</em></h1>
+            <p>
+              Step into a medical study space made for looking closer, testing what you know, and keeping the ideas that matter.
+            </p>
+            <nav className={s.openingActions} aria-label="Start studying">
+              <Link className={s.actionPrimary} to="/anatomy">
+                Enter the anatomy atlas <ArrowRight size={17} />
+              </Link>
+              <Link className={s.actionSecondary} to={nextPath}>
+                {nextLabel} <ArrowUpRight size={16} />
+              </Link>
+            </nav>
+            <div className={s.heroProof} aria-label="Anatomy reference details">
+              <span><strong>9</strong><small>layers</small></span>
+              <i aria-hidden="true" />
+              <span><strong>2,491</strong><small>named mesh parts</small></span>
+              <i aria-hidden="true" />
+              <span><strong>01</strong><small>reference specimen</small></span>
             </div>
-          </Link>
-        </div>
-        <HomeHeartPreview styles={s} modelRef={atlasModelRef} />
-      </header>
-      <StoryBar />
-      <div className={s.columns}>
-        <div className={s.mainColumn}>
-          <div className={s.statStrip}>
-            <Link to="/progress">
-              <span className={s.statIcon}>
-                <Lightning size={21} weight="fill" />
-              </span>
-              <div>
-                <strong>{p.xp}</strong>
-                <small>Experience points</small>
-              </div>
-            </Link>
-            <Link to="/progress">
-              <span className={s.statIcon}>
-                <Target size={21} />
-              </span>
-              <div>
-                <strong>{p.total_answered ? p.accuracy + "%" : "—"}</strong>
-                <small>Question accuracy</small>
-              </div>
-            </Link>
-            <Link to="/progress">
-              <span className={s.statIcon}>
-                <Trophy size={21} />
-              </span>
-              <div>
-                <strong>
-                  {p.badges.filter((b) => b.earned).length}
-                  <i> / {p.badges.length}</i>
-                </strong>
-                <small>Achievements</small>
-              </div>
-            </Link>
-          </div>
-          <section className={s.storyOfDay} aria-label="Story of the day">
-            <div>
-              <p className={s.overline}>COMMUNITY PICK</p>
-              <h2>Story of the day</h2>
-              {storyOfDay.data?.item ? (
-                <>
-                  <p>
-                    {storyOfDay.data.item.title} ·{" "}
-                    {storyOfDay.data.item.subject}
-                  </p>
-                  <Link
-                    to={`/community?story=${encodeURIComponent(storyOfDay.data.item.id)}`}
-                  >
-                    Read this story <ArrowRight size={16} />
-                  </Link>
-                </>
-              ) : storyOfDay.error ? (
-                <p role="status">The featured story could not be loaded.</p>
-              ) : (
-                <p>A helpful community story will appear here.</p>
-              )}
-            </div>
-            {storyOfDay.error && (
-              <button type="button" onClick={storyOfDay.reload}>
-                Retry
+            {record && (
+              <Link className={s.heroProgress} to="/progress">
+                <span className={s.progressGlyph}><Target size={17} /></span>
+                <span>
+                  <strong>{totalAnswered.toLocaleString()} questions answered</strong>
+                  <small>{record.streak ? `${record.streak} day study streak` : "Your practice history is ready to grow"}</small>
+                </span>
+                <ArrowUpRight size={16} />
+              </Link>
+            )}
+            {progress.error && (
+              <button className={s.inlineRetry} type="button" onClick={progress.reload}>
+                Study totals are unavailable. Retry
               </button>
             )}
-          </section>
-          <StudyLaunchpad
-            subjects={p.subjects}
-            recommendedSubject={weakest?.subject || ""}
-          />
-          <section className={s.medbyteFeature} aria-labelledby="medbyte-feature-title">
-            <div className={s.medbyteFeatureMark} aria-hidden="true">
-              <PlayCircle size={27} weight="duotone" />
-              <span>01</span>
-            </div>
-            <div className={s.medbyteFeatureCopy}>
-              <p className={s.overline}>A SHORT CHANGE OF PACE</p>
-              {featuredLesson ? (
-                <>
-                  <h2 id="medbyte-feature-title">{featuredLesson.title}</h2>
-                  <p>{featuredLesson.takeaway}</p>
-                  <small>{featuredLesson.subject} · Captioned MedByte</small>
-                </>
-              ) : quickLesson.error ? (
-                <>
-                  <h2 id="medbyte-feature-title">Take a quick concept break.</h2>
-                  <p>MedBytes could not load right now. You can still open the lesson library and try again there.</p>
-                </>
-              ) : (
-                <>
-                  <h2 id="medbyte-feature-title">Take a quick concept break.</h2>
-                  <p>Open a short, captioned medical lesson with a quick concept check at the end.</p>
-                </>
-              )}
-            </div>
-            <Link to={featuredLesson ? `/medbytes?subject=${encodeURIComponent(featuredLesson.subject)}` : "/medbytes"} className={s.medbyteFeatureLink}>
-              {featuredLesson ? "Explore this MedByte" : "Browse MedBytes"} <ArrowRight size={17} />
-            </Link>
-          </section>
-          <QuickRecall
-            tone={playfulCopy ? "playful" : "focused"}
-            onCompleted={() => {
-              dashboard.reload();
-              progress.reload();
-            }}
-          />
-          <section>
-            <div className={s.sectionHead}>
-              <div>
-                <p className={s.overline}>STUDY TOOLS</p>
-                <h2>Continue your studies</h2>
-              </div>
-              <Link to="/learn">
-                The whole toolkit <ArrowUpRight size={16} />
-              </Link>
-            </div>
-            <div className={s.shortcuts}>
-              {[
-                [
-                  "/mcqs?mode=mistakes",
-                  "Mistake review",
-                  "Revisit missed questions and strengthen recall.",
-                  BookmarkSimple,
-                  "peach",
-                  "REVISIT",
-                ],
-                [
-                  "/flashcards",
-                  "Viva rehearsal",
-                  "Practice concise answers for your next viva.",
-                  Stack,
-                  "violet",
-                  "RECALL",
-                ],
-                [
-                  "/anatomy",
-                  "3D anatomy atlas",
-                  "Explore body systems and named structures in 3D.",
-                  Cube,
-                  "mint",
-                  "EXPLORE",
-                ],
-              ].map(([to, title, copy, Icon, color, tag]) => (
-                <Link className={`${s.shortcut} ${s[color]}`} key={to} to={to}>
-                  <div>
-                    <Icon size={28} weight="duotone" />
-                    <ArrowUpRight size={18} />
-                  </div>
-                  <small>{tag}</small>
-                  <h3>{title}</h3>
-                  <p>{copy}</p>
-                </Link>
-              ))}
-            </div>
-          </section>
-          <section className={s.revision}>
-            <span className={s.revisionIcon}>
-              <Sparkle size={26} />
-            </span>
-            <div>
-              <p className={s.overline}>STUDY INSIGHT</p>
-              <h3>
-                {weakest
-                  ? "Prioritise " + weakest.subject + " next."
-                  : "Build your progress baseline."}
-              </h3>
-              <p>
-                {weakest
-                  ? `Current question accuracy is ${weakest.accuracy}%. A focused review can strengthen this area.`
-                  : "Complete a question set to see a personalised subject review here."}
-              </p>
-            </div>
-            <Button
-              small
-              variant="secondary"
-              to={
-                weakest
-                  ? "/mcqs?subject=" + encodeURIComponent(weakest.subject)
-                  : "/mcqs?set=5"
-              }
-            >
-              Review subject <ArrowRight size={16} />
-            </Button>
-          </section>
+          </div>
+          <HomeSpecimenStage className={s.openingStage} />
         </div>
-        <aside className={s.rail}>
-          <section className={s.identity}>
-            <div className={s.identityTop}>
-              <span>STUDENT PROFILE</span>
-              <Sparkle size={17} />
-            </div>
-            <div className={s.identityMain}>
-              <span className={s.level}>L{p.level}</span>
-              <div>
-                <h3>{d.user.name}</h3>
-                <p>{d.user.year}</p>
-              </div>
-            </div>
-            <div className={s.identityProgress}>
-              <span style={{ width: p.level_progress + "%" }} />
-            </div>
-            <div className={s.identityBottom}>
-              <span>
-                {100 - p.level_progress} XP to level {p.level + 1}
-              </span>
-              <Link to="/progress">View progress</Link>
-            </div>
-          </section>
-          <section className={s.questPanel}>
-            <div className={s.sectionHead}>
-              <div>
-                <p className={s.overline}>DAILY CHALLENGES</p>
-                <h2>Today’s quests</h2>
-              </div>
-              <span className={s.counter}>
-                {quests.filter((q) => q.done).length} of 3 complete
-              </span>
-            </div>
-            <div className={s.challengeProgress}>
-              <div>
-                <span>Challenge progress</span>
-                <strong>
-                  {Math.round(
-                    (quests.filter((q) => q.done).length / quests.length) * 100,
-                  )}
-                  %
-                </strong>
-              </div>
-              <span className={s.challengeTrack}>
-                <i
-                  style={{
-                    width: `${(quests.filter((q) => q.done).length / quests.length) * 100}%`,
-                  }}
-                />
-              </span>
-            </div>
-            {quests.map((q, i) => (
-              <Link key={q.to} to={q.to} className={s.quest}>
-                <span className={`${s.questIcon} ${s[q.color]}`}>
-                  {q.done ? (
-                    <CheckCircle size={25} weight="fill" />
-                  ) : (
-                    <q.icon size={25} weight="duotone" />
-                  )}
-                </span>
-                <div>
-                  <h3>{q.title}</h3>
-                  <p>{q.detail}</p>
-                </div>
-                <span className={s.questStatus}>
-                  {q.done ? "DONE" : "0" + (i + 1)}
-                </span>
-                <ArrowUpRight size={18} />
-              </Link>
-            ))}
-          </section>
-          <FocusTimer />
-          <section className={s.schedule}>
-            <div className={s.sectionHead}>
-              <div>
-                <p className={s.overline}>YOUR NEXT CHECKPOINT</p>
-                <h2>{d.user.exam_name}</h2>
-              </div>
-              <CalendarDots size={23} />
-            </div>
-            <div className={s.countdown}>
-              <strong>{d.days_to_exam}</strong>
-              <span>
-                days remaining
-                <br />
-                <Link to="/profile">Edit exam date ↗</Link>
-              </span>
-            </div>
-            <div className={s.scheduleLabel}>
-              TODAY'S PLAN <span>{d.schedule.length} sessions</span>
-            </div>
-            {d.schedule.length ? (
-              d.schedule.slice(0, 3).map((b, i) => (
-                <div className={s.scheduleItem} key={i}>
-                  <time>{b.time}</time>
-                  <div>
-                    <h3>{b.title}</h3>
-                    <p>{b.detail}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className={s.noPlan}>
-                No sessions planned yet.
-                <br />
-                Add a focused study block when ready.
-              </p>
-            )}
-            <Link to="/planner" className={s.planLink}>
-              Open study planner <ArrowUpRight size={17} />
-            </Link>
-          </section>
-          <Link to="/community" className={s.circle}>
-            <div className={s.circleDots} aria-hidden="true">
-              <span>?</span>
-              <span>!</span>
-              <span>✳</span>
-            </div>
-            <h3>Study with peers.</h3>
-            <p>Ask a question, compare ideas, and learn with other students.</p>
-            <b>
-              Open community <ArrowUpRight size={18} />
-            </b>
+        <a className={s.scrollCue} href="#study-path">
+          <span>SCROLL INTO YOUR NEXT STUDY MOVE</span><ArrowDown size={15} />
+        </a>
+      </header>
+
+      <section className={s.studyPath} id="study-path" aria-labelledby="study-path-title">
+        <div className={s.pathIntro}>
+          <div>
+            <span className={s.sectionKicker}>A STUDY SESSION, IN THREE MOVES</span>
+            <h2 id="study-path-title">Look closer.<br /><em>Bring it back.</em></h2>
+          </div>
+          <p>Move from an anatomical view to a real question, then save a prompt for the next time you sit down.</p>
+        </div>
+        <div className={s.pathRail}>
+          <Link to="/anatomy" className={`${s.pathStop} ${s.pathSee}`}>
+            <span className={s.pathStepNo}>01 / SEE</span>
+            <span className={s.pathSymbol}><Cube size={23} weight="duotone" /></span>
+            <span className={s.pathTitle}>Explore a structure</span>
+            <span className={s.pathCopy}>Turn the reference model and select a named part.</span>
+            <span className={s.pathLink}>Open the atlas <ArrowUpRight size={15} /></span>
           </Link>
-        </aside>
-      </div>
-    </div>
+          <Link to={nextPath} className={`${s.pathStop} ${s.pathTest}`}>
+            <span className={s.pathStepNo}>02 / TEST</span>
+            <span className={s.pathSymbol}><Brain size={23} weight="duotone" /></span>
+            <span className={s.pathTitle}>{weakest ? `Revisit ${weakest.subject}` : "Try a question set"}</span>
+            <span className={s.pathCopy}>{weakest ? `${weakest.accuracy}% recorded accuracy from ${weakest.answered} answers.` : "Start with five questions and source-linked explanations."}</span>
+            <span className={s.pathLink}>Start practice <ArrowUpRight size={15} /></span>
+          </Link>
+          <Link to="/learn" className={`${s.pathStop} ${s.pathKeep}`}>
+            <span className={s.pathStepNo}>03 / KEEP</span>
+            <span className={s.pathSymbol}><Stack size={23} weight="duotone" /></span>
+            <span className={s.pathTitle}>Make it yours</span>
+            <span className={s.pathCopy}>Build a recall card, organise notes, or choose a small revision block.</span>
+            <span className={s.pathLink}>Open the toolkit <ArrowUpRight size={15} /></span>
+          </Link>
+        </div>
+        <div className={s.pathBaseline} aria-hidden="true"><span /><span /><span /><span /></div>
+      </section>
+
+      <section className={s.practiceScene} aria-labelledby="practice-title">
+        <div className={s.practiceIntro}>
+          <span className={s.sectionKicker}>ACTIVE RECALL / LIVE QUESTION</span>
+          <h2 id="practice-title">Make the idea<br /><em>come back to you.</em></h2>
+          <p>Choose an answer, submit it, and read the explanation. Your response is recorded in your practice history.</p>
+          <Link to="/mcqs" className={s.textRoute}>Browse question practice <ArrowRight size={16} /></Link>
+        </div>
+        <div className={s.questionStage}>
+          <span className={s.stageIndex}>PRACTICE WINDOW / 01</span>
+          <QuickRecall onCompleted={() => { dashboard.reload(); progress.reload(); }} />
+        </div>
+      </section>
+
+      <section className={s.learningRecord} aria-labelledby="learning-record-title">
+        <div className={s.recordHeading}>
+          <span className={s.sectionKicker}>YOUR STUDY RECORD / REAL ACTIVITY</span>
+          <h2 id="learning-record-title">A little progress,<br /><em>made visible.</em></h2>
+          <p>Keep going from the practice already recorded for you. These totals come from your saved study history.</p>
+          <Link to="/progress" className={s.textRoute}>Open study history <ArrowUpRight size={16} /></Link>
+        </div>
+        <div className={s.recordInstrument}>
+          <div className={s.recordArc} aria-hidden="true"><span /></div>
+          <div className={s.recordData}>
+            <div><span>ANSWERS</span><strong>{record ? totalAnswered.toLocaleString() : "—"}</strong></div>
+            <div><span>ACCURACY</span><strong>{record && totalAnswered ? `${record.accuracy}%` : "—"}</strong></div>
+            <div><span>STREAK</span><strong>{record?.streak ?? "—"}<small>{record ? " days" : ""}</small></strong></div>
+          </div>
+          <div className={s.recordFocus}>
+            <span className={s.recordFocusIcon}>{weakest ? <Target size={18} /> : <Sparkle size={18} />}</span>
+            <div>
+              <span>{weakest ? "LOWEST RECORDED SUBJECT" : "FIRST STUDY MOVE"}</span>
+              <strong>{weakest ? weakest.subject : "Start with one question set"}</strong>
+            </div>
+            <Link to={nextPath} aria-label={weakest ? `Continue ${weakest.subject}` : "Start a five question set"}><ArrowUpRight size={18} /></Link>
+          </div>
+          {dashboard.error && <button className={s.inlineRetry} type="button" onClick={dashboard.reload}>Dashboard activity is unavailable. Retry</button>}
+        </div>
+      </section>
+
+      <section className={s.medbyteScene} aria-labelledby="medbyte-title">
+        <div className={s.lessonNumber} aria-hidden="true">MP / 03</div>
+        <div className={s.lessonCopy}>
+          <span className={s.sectionKicker}>A SHORT CHANGE OF PACE / MEDBYTES</span>
+          {lesson ? (
+            <>
+              <h2 id="medbyte-title">{lesson.title}</h2>
+              <p>{lesson.takeaway}</p>
+              <span className={s.lessonSubject}>{lesson.subject} <i /> Captioned lesson</span>
+            </>
+          ) : (
+            <>
+              <h2 id="medbyte-title">One idea.<br /><em>A few focused minutes.</em></h2>
+              <p>{quickLesson.error ? "The featured lesson is unavailable right now." : "Browse short, captioned medical lessons and quick concept checks."}</p>
+            </>
+          )}
+          <Link className={s.lessonLink} to={lesson ? `/medbytes?subject=${encodeURIComponent(lesson.subject)}` : "/medbytes"}>
+            {lesson ? "Open this MedByte" : "Browse MedBytes"} <ArrowUpRight size={17} />
+          </Link>
+        </div>
+        <div className={s.lessonStage} aria-hidden="true">
+          <span className={s.lessonScan} />
+          <span className={s.lessonPlate}><PlayCircle size={50} weight="light" /></span>
+          <span className={s.lessonMeasure}>CONCEPT / 03 MIN</span>
+          <span className={s.lessonRule} />
+        </div>
+      </section>
+
+      <section className={s.continueSection} aria-labelledby="continue-title">
+        <div className={s.continueHead}>
+          <div>
+            <span className={s.sectionKicker}>KEEP THE STUDY MOVING</span>
+            <h2 id="continue-title">Your next move is ready.</h2>
+          </div>
+          <Link to="/learn">All study tools <ArrowUpRight size={16} /></Link>
+        </div>
+        <div className={s.continueLine}>
+          <Link to={nextPath} className={s.continueLead}>
+            <span>CONTINUE LEARNING</span>
+            <strong>{weakest ? weakest.subject : "Build your practice baseline"}</strong>
+            <small>{weakest ? `${weakest.accuracy}% across ${weakest.answered} answered ${weakest.answered === 1 ? "question" : "questions"}` : "A five-question set gives your progress a starting point."}</small>
+            <b>{nextLabel} <ArrowRight size={16} /></b>
+          </Link>
+          <Link to="/flashcards" className={s.continueNode}>
+            <span><Stack size={19} /></span><small>RECALL</small><strong>Review a card</strong><ArrowUpRight size={16} />
+          </Link>
+          <Link to="/notes" className={s.continueNode}>
+            <span><BookOpenText size={19} /></span><small>ORGANISE</small><strong>Open notes</strong><ArrowUpRight size={16} />
+          </Link>
+          {d && (
+            <div className={s.goalDial} aria-label={`${completedGoals} of ${goals.length} recorded daily goals completed`}>
+              <div className={s.goalDialText}><strong>{goals.length ? `${completedGoals}/${goals.length}` : "—"}</strong><span>daily goals</span></div>
+              <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" /><circle className={s.goalProgress} cx="50" cy="50" r="44" style={{ strokeDashoffset: goals.length ? 276.46 * (1 - completedGoals / goals.length) : 276.46 }} /></svg>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <StoryBar />
+      <footer className={s.homeFooter}>
+        <span>MED PURPLE / EDUCATION AND REVISION</span>
+        <Link to="/about">The story behind the study space <ArrowUpRight size={15} /></Link>
+        <span className={s.footerNote}>Clinical information should be checked against current authoritative sources.</span>
+      </footer>
+    </main>
   );
 }

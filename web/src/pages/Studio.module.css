@@ -899,6 +899,299 @@
   border-color: #30213f;
 }
 
+/* Revision toolkit: a navigable study field instead of a metric dashboard. */
+.toolkitPage {
+  gap: clamp(22px, 3.4vw, 44px);
+  max-width: 1500px;
+}
+.toolkitHero {
+  position: relative;
+  grid-template-columns: minmax(280px, .72fr) minmax(440px, 1.28fr);
+  align-items: center;
+  gap: clamp(20px, 4vw, 56px);
+  min-height: 620px;
+  padding: clamp(28px, 4vw, 58px);
+  overflow: hidden;
+  border: 1px solid #4f3d63;
+  border-radius: 29px;
+  color: white;
+  background:
+    linear-gradient(#ffffff07 1px, transparent 1px),
+    linear-gradient(90deg, #ffffff07 1px, transparent 1px),
+    radial-gradient(ellipse at 80% 46%, #654a7c52, transparent 43%),
+    linear-gradient(133deg, #181220, #21182d 68%, #1a2229);
+  background-size: 64px 64px, 64px 64px, auto, auto;
+  box-shadow: 0 28px 70px -45px #1d1128b8, inset 0 1px #ffffff17;
+}
+.toolkitHero::before,
+.toolkitHero::after { display: none; }
+.toolkitHeroCopy { position: relative; z-index: 2; max-width: 580px; }
+.toolkitPage .toolkitHero .eyebrow { color: #ceb8e4; font-size: 8px; letter-spacing: .17em; }
+.toolkitHero h1 {
+  max-width: 550px;
+  margin: 15px 0 15px;
+  color: white;
+  font-family: var(--font-display), serif;
+  font-size: clamp(42px, 5.2vw, 72px);
+  font-weight: 400;
+  letter-spacing: -.05em;
+  line-height: .98;
+}
+.toolkitIntro { max-width: 430px; color: #c9bfd2; font-size: 12px; line-height: 1.8; }
+.toolkitHeroActions { margin-top: 24px; }
+.toolkitPrimary,
+.toolkitSecondary { min-height: 46px; border-radius: 11px; font-size: 9px; }
+.toolkitPrimary { color: #30273b; background: #d8f19f; }
+.toolkitSecondary { border-color: #ffffff2a; color: #eee5f5; background: #ffffff09; }
+.studyOrbitPanel {
+  position: relative;
+  min-width: 0;
+  padding: 14px 10px 0;
+  color: #f5effa;
+}
+.orbitPanelTop { display: flex; justify-content: space-between; align-items: center; gap: 12px; max-width: 480px; margin: 0 auto; color: #c7b2d8; font-size: 7px; font-weight: 800; letter-spacing: .14em; }
+.orbitPanelTop span:first-child { display: inline-flex; align-items: center; gap: 7px; color: #e4d5f2; }
+.orbitPanelTop span:last-child { color: #9e90aa; }
+.studyOrbit { position: relative; width: min(100%, 550px); height: 398px; margin: 0 auto; perspective: 900px; }
+.orbitTrackOuter,
+.orbitTrackInner,
+.orbitMeridian { position: absolute; left: 50%; top: 50%; pointer-events: none; border: 1px solid #d2b8eb3c; border-radius: 50%; transform: translate(-50%, -50%) rotateX(59deg) rotateZ(-20deg); }
+.orbitTrackOuter { width: 88%; height: 72%; box-shadow: 0 0 0 16px #d3b6ea06, inset 0 0 35px #ac80d30a; }
+.orbitTrackInner { width: 67%; height: 54%; border-color: #77d7d44b; transform: translate(-50%, -50%) rotateX(59deg) rotateZ(26deg); }
+.orbitMeridian { width: 39%; height: 99%; border-color: #c7a4e126; transform: translate(-50%, -50%) rotateY(62deg) rotateZ(-18deg); }
+.orbitCore {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 7px;
+  width: clamp(145px, 36%, 190px);
+  min-height: 160px;
+  padding: 20px 14px;
+  border: 1px solid #d4b6ec6b;
+  border-radius: 50%;
+  color: white;
+  text-align: center;
+  background:
+    radial-gradient(circle at 34% 26%, #ffffff20, transparent 48%),
+    linear-gradient(150deg, #56416a, #22192f 70%);
+  box-shadow: 0 22px 45px #08050d78, 0 0 32px #af88db24, inset 0 1px #ffffff32;
+  transform: translate(-50%, -50%) translateZ(36px);
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+.orbitCore:hover { border-color: #d8c1ed; transform: translate(-50%, -50%) translateZ(48px) scale(1.025); }
+.orbitCore > small { color: #d2b8e6; font-size: 7px; font-weight: 800; letter-spacing: .17em; }
+.orbitCore > strong { max-width: 165px; color: #fff; font-family: var(--font-display), serif; font-size: 22px; font-weight: 400; line-height: 1; }
+.orbitCore > span { color: #c9bdd3; font-size: 8px; }
+.orbitCore > b { display: inline-flex; align-items: center; gap: 5px; color: #d9f1a3; font-size: 8px; }
+.orbitNode {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 3px;
+  width: 94px;
+  min-height: 83px;
+  padding: 8px 6px;
+  border: 1px solid #ffffff2b;
+  border-radius: 18px 18px 18px 5px;
+  color: #f2ebf8;
+  background: linear-gradient(145deg, #382b47ed, #211a2cf2);
+  box-shadow: 0 13px 22px #07040d5c, inset 0 1px #ffffff19;
+  transform: translate(-50%, -50%) rotateX(4deg) rotateY(-6deg) translateZ(22px);
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+.orbitNode:hover { border-color: #c4a3e1; background: #433251; transform: translate(-50%, -50%) rotateX(0) rotateY(0) translateZ(34px); }
+.orbitNode > svg { margin-bottom: 2px; color: #d9eda6; }
+.orbitNode > span { color: #b8a4c9; font-size: 6px; font-weight: 800; letter-spacing: .15em; }
+.orbitNode > strong { font-size: 8px; }
+.orbitAnatomy { left: 50%; top: 10%; }
+.orbitPractice { left: 86%; top: 51%; }
+.orbitRecall { left: 50%; top: 91%; }
+.orbitLesson { left: 14%; top: 51%; }
+.orbitNote { max-width: 410px; margin: -2px auto 0; color: #b7a9c2; text-align: center; font-size: 8px; line-height: 1.55; }
+.toolkitPage a:focus-visible,
+.toolkitPage button:focus-visible { outline: 3px solid #8de5df; outline-offset: 3px; }
+.toolkitMetrics { gap: 0; border-top: 1px solid #ded5e5; border-bottom: 1px solid #ded5e5; background: transparent; }
+.toolkitMetrics article { min-height: 96px; grid-template-columns: 34px 1fr; gap: 8px; padding: 16px 19px; border: 0; border-right: 1px solid #e5dce9; border-radius: 0; background: transparent; box-shadow: none; }
+.toolkitMetrics article:last-child { border-right: 0; }
+.toolkitMetrics .metricIcon { width: 32px; height: 32px; border-radius: 10px; }
+.toolkitMetrics article div { display: grid; gap: 2px; }
+.toolkitMetrics strong { color: #382747; font-family: var(--font-display), serif; font-size: 25px; font-weight: 400; }
+.toolkitMetrics article div span { color: #6e6178; font-size: 8px; }
+.toolkitMetrics article small { grid-column: 2; color: #92869a; font-size: 7px; }
+.toolkitWorkspace { grid-template-columns: minmax(0, 1.4fr) minmax(245px, .6fr); gap: 26px; }
+.toolkitSectionHead { margin-bottom: 4px; }
+.toolkitSectionHead h2,
+.subjectShelfHead h2,
+.toolDirectoryHead h2 { color: #342441; font-family: var(--font-display), serif; font-size: clamp(25px, 3vw, 39px); font-weight: 400; letter-spacing: -.035em; }
+.toolkitSectionHead p:not(.eyebrow),
+.toolDirectoryHead > div > p:not(.eyebrow) { color: #776c7e; font-size: 9px; }
+.toolkitSectionHead > a,
+.subjectShelfHead > a { color: #71518a; font-size: 8px; }
+.studyMoves { position: relative; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; padding-top: 14px; border-top: 1px solid #e4dce8; }
+.studyMove { min-height: 274px; padding: 16px 16px 14px 0; border: 0; border-right: 1px solid #e9e1ec; border-radius: 0; background: transparent; box-shadow: none; }
+.studyMove:last-child { border-right: 0; padding-left: 15px; }
+.studyMove:nth-child(2) { padding-inline: 15px; }
+.studyMove::after { display: none; }
+.studyMove:hover { border-color: #e9e1ec; box-shadow: none; transform: translateY(-2px); }
+.moveNumber { color: #927e9d; font-size: 7px; }
+.moveIcon { width: 36px; height: 36px; margin: 15px 0 10px; border-radius: 11px; }
+.studyMove h3 { color: #372744; font-size: 12px; }
+.studyMove p { color: #776d7e; font-size: 8px; line-height: 1.55; }
+.studyMove b,
+.studyMoveAction { color: #72518b; font-size: 8px; }
+.studyMoveAction { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; font-weight: 800; }
+.toolkitFlipCard {
+  position: relative;
+  width: 100%;
+  min-height: 119px;
+  margin: 2px 0 9px;
+  padding: 0;
+  perspective: 700px;
+  border: 0;
+  border-radius: 13px;
+  color: #362641;
+  background: transparent;
+  text-align: left;
+}
+.toolkitFlipInner {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 119px;
+  transform-style: preserve-3d;
+  transition: transform 520ms cubic-bezier(.18,.75,.22,1);
+}
+.toolkitFlipCardRevealed .toolkitFlipInner { transform: rotateY(180deg); }
+.toolkitFlipFace {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  gap: 7px;
+  min-height: 119px;
+  padding: 13px;
+  overflow: hidden;
+  border: 1px solid #ddd1e7;
+  border-radius: 13px 13px 13px 4px;
+  color: #392947;
+  background:
+    linear-gradient(#8e73aa12 1px, transparent 1px),
+    linear-gradient(90deg, #8e73aa12 1px, transparent 1px),
+    linear-gradient(145deg, #fbf8fd, #eee5f5);
+  background-size: 18px 18px, 18px 18px, auto;
+  box-shadow: 0 12px 24px -20px #271235a8, inset 0 1px #fff;
+  backface-visibility: hidden;
+}
+.toolkitFlipFace > small { color: #886c9b; font-size: 6px; font-weight: 800; letter-spacing: .13em; }
+.toolkitFlipFace > strong { display: -webkit-box; overflow: hidden; color: #382747; font-family: var(--font-display), serif; font-size: 15px; font-weight: 400; line-height: 1.1; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.toolkitFlipFace > span { display: -webkit-box; overflow: hidden; color: #786d80; font-size: 7px; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.toolkitFlipBack { border-color: #d9e2c3; background: linear-gradient(145deg, #f1f7e7, #e5edd6); transform: rotateY(180deg); }
+.toolkitFlipActions { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+.toolkitFlipActions button,
+.toolkitFlipActions a { display: inline-flex; align-items: center; gap: 4px; border: 0; padding: 5px 0; color: #6f4d88; background: transparent; font-size: 7px; font-weight: 800; }
+.toolkitFlipActions button:hover,
+.toolkitFlipActions a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.subjectShelf { padding: 20px 0 0; border: 0; border-top: 1px solid #e1d9e5; border-radius: 0; background: transparent; box-shadow: none; }
+.subjectShelfHead { margin-bottom: 13px; }
+.subjectShelfHead h2 { font-size: 24px; }
+.subjectRow { grid-template-columns: 28px minmax(120px, 1fr) minmax(70px, .65fr) 35px 14px; padding: 12px 5px; }
+.subjectRow:hover { background: #f6f2f8; }
+.subjectProgress i { background: linear-gradient(90deg, #7f60a2, #76aaa0); }
+.subjectEmpty { border-top-color: #e5dce8; }
+.toolkitSavedPanel { padding: 19px; border: 1px solid #ddd1e5; border-radius: 18px; background: linear-gradient(145deg, #f0e8f7, #fbf9fc 82%); }
+.toolkitSavedPanel h2 { margin: 17px 0 7px; font-size: 24px; }
+.toolkitSavedPanel > p,
+.toolkitVideoPanel > p { font-size: 8px; }
+.libraryCounts a { border-radius: 9px; }
+.toolkitVideoPanel { min-height: 205px; padding: 20px; border-radius: 18px; }
+.toolkitVideoPanel h2 { font-size: 24px; }
+.toolkitNudge { border-radius: 12px; }
+.toolDirectory { padding: 0; border: 0; border-top: 1px solid #ded5e4; border-radius: 0; background: transparent; }
+.toolDirectoryHead { align-items: end; padding: 22px 0 4px; }
+.toolDirectoryHead h2 { margin: 8px 0 4px; }
+.toolSearch { border-color: #ddd3e4; background: #fbf9fc; }
+.toolkitFilters { margin: 15px 0 8px; }
+.toolDirectoryGrid { grid-template-columns: 1fr; gap: 0; border-top: 1px solid #e4dce8; }
+.directoryTool,
+.directoryFeatured { min-height: 72px; padding: 11px 8px; border: 0; border-bottom: 1px solid #e4dce8; border-radius: 0; background: transparent; }
+.directoryTool:hover { border-color: #e4dce8; background: #f6f2f8; box-shadow: none; transform: translateX(3px); }
+.directoryIcon { width: 35px; height: 35px; border-radius: 10px; }
+.directoryCopy strong { font-size: 10px; }
+.directoryCopy > span { font-size: 8px; }
+.toolkitNoResults { border-radius: 12px; }
+@media (max-width: 1080px) {
+  .toolkitHero { grid-template-columns: minmax(0, .75fr) minmax(350px, 1.25fr); padding: 32px 26px; }
+  .studyOrbit { height: 350px; }
+  .toolkitWorkspace { grid-template-columns: 1fr; }
+  .toolkitRail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .toolkitNudge { grid-column: 1 / -1; }
+}
+@media (max-width: 760px) {
+  .toolkitPage { gap: 22px; }
+  .toolkitHero { display: grid; grid-template-columns: 1fr; gap: 10px; min-height: 0; padding: 27px 19px 18px; border-radius: 23px; }
+  .toolkitHero h1 { max-width: 540px; font-size: 46px; }
+  .toolkitHeroActions { margin-top: 18px; }
+  .studyOrbitPanel { padding-inline: 0; }
+  .orbitPanelTop { font-size: 6px; }
+  .studyOrbit { height: 330px; }
+  .orbitTrackOuter { width: 100%; height: 73%; }
+  .orbitTrackInner { width: 74%; }
+  .orbitNode { width: 78px; min-height: 74px; border-radius: 14px 14px 14px 4px; }
+  .orbitAnatomy { top: 8%; }
+  .orbitPractice { left: 88%; }
+  .orbitRecall { top: 93%; }
+  .orbitLesson { left: 12%; }
+  .orbitCore { width: 154px; min-height: 142px; }
+  .orbitCore > strong { font-size: 20px; }
+  .orbitNote { margin-top: 3px; }
+  .toolkitMetrics article { min-height: 84px; grid-template-columns: 1fr; padding: 12px 10px; }
+  .toolkitMetrics article small { grid-column: 1; }
+  .toolkitMetrics article div { display: grid; }
+  .studyMoves { grid-template-columns: 1fr; gap: 0; }
+  .studyMove,
+  .studyMove:nth-child(2),
+  .studyMove:last-child { min-height: 0; padding: 15px 0; border-right: 0; border-bottom: 1px solid #e9e1ec; }
+  .studyMove:last-child { border-bottom: 0; }
+  .moveIcon { margin: 9px 0 8px; }
+  .toolkitFlipCard,
+  .toolkitFlipInner,
+  .toolkitFlipFace { min-height: 130px; }
+  .toolkitRail { grid-template-columns: 1fr; }
+  .toolkitNudge { grid-column: auto; }
+  .toolDirectoryHead { align-items: stretch; flex-direction: column; }
+  .toolSearch { width: 100%; }
+}
+@media (max-width: 430px) {
+  .toolkitHero { padding-inline: 15px; }
+  .toolkitHero h1 { font-size: 41px; }
+  .toolkitHeroActions { flex-direction: column; align-items: stretch; }
+  .toolkitPrimary,
+  .toolkitSecondary { width: 100%; }
+  .studyOrbit { height: 310px; }
+  .orbitNode { width: 70px; min-height: 69px; }
+  .orbitNode > strong { font-size: 7px; }
+  .orbitCore { width: 139px; min-height: 132px; }
+  .toolkitMetrics article div span { font-size: 7px; }
+  .toolkitMetrics strong { font-size: 19px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .orbitCore,
+  .orbitNode,
+  .toolkitFlipInner,
+  .toolkitFlipActions,
+  .directoryTool:hover { transition: none; }
+  .orbitCore:hover,
+  .orbitNode:hover,
+  .studyMove:hover { transform: none; }
+  .directoryTool:hover { transform: none; }
+}
+
 /* Revision toolkit: a lively, editorial launchpad for the existing study tools. */
 .toolkitPage {
   gap: 17px;

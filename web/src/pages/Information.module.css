@@ -1259,3 +1259,260 @@
   .closingPrimary, .closingSecondary { transition: none; }
   .closingPrimary:hover, .closingSecondary:hover { transform: none; }
 }
+
+/* About becomes a scroll-led product story with a live study scene. */
+.page {
+  gap: clamp(25px, 4vw, 56px);
+  max-width: 1500px;
+}
+.hero {
+  position: relative;
+  grid-template-columns: minmax(290px, .78fr) minmax(390px, 1.22fr);
+  align-items: center;
+  gap: clamp(24px, 5vw, 74px);
+  min-height: min(100svh, 1050px);
+  margin: -30px -38px 0;
+  padding: clamp(35px, 6vw, 86px) clamp(28px, 5vw, 76px);
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  color: #f7f1fc;
+  background:
+    linear-gradient(#ffffff07 1px, transparent 1px),
+    linear-gradient(90deg, #ffffff07 1px, transparent 1px),
+    radial-gradient(ellipse at 78% 38%, #6b4d813d, transparent 41%),
+    linear-gradient(128deg, #17111f, #120e19 58%, #1b1426);
+  background-size: 70px 70px, 70px 70px, auto, auto;
+}
+.hero::before {
+  inset: 9% auto 9% 50%;
+  width: 38vw;
+  height: auto;
+  border: 1px solid #c6a9e317;
+  border-radius: 50%;
+  opacity: .55;
+  background: transparent;
+  box-shadow: 0 0 0 35px #c6a9e30a, 0 0 0 85px #c6a9e306;
+  animation: none;
+}
+.hero::after { display: none; }
+.heroCopy { position: relative; z-index: 2; max-width: 580px; }
+.heroCopy .eyebrow { color: #c7b0de; font-size: 8px; letter-spacing: .17em; }
+.heroCopy h1 {
+  margin: 17px 0 15px;
+  color: #fff;
+  font-family: var(--font-display), serif;
+  font-size: clamp(45px, 5.4vw, 76px);
+  font-weight: 400;
+  letter-spacing: -.05em;
+  line-height: .98;
+}
+.heroCopy > p { max-width: 470px; color: #cec2d8; font-size: 12px; line-height: 1.8; }
+.primaryLink { border-radius: 11px; padding: 13px 16px; background: #d7f09c; color: #332d3d; font-size: 9px; }
+.heroIntro { position: relative; z-index: 1; width: 100%; max-width: 650px; justify-self: center; }
+.introStage {
+  min-height: 370px;
+  border: 1px solid #80629370;
+  border-radius: 27px;
+  background:
+    linear-gradient(#ffffff08 1px, transparent 1px),
+    linear-gradient(90deg, #ffffff08 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 52%, #694b7b70, #21182b 69%);
+  background-size: 34px 34px, 34px 34px, auto;
+  box-shadow: 0 30px 80px #09050e67, inset 0 1px #ffffff20;
+}
+.introOrbit { border-color: #c8b0df54; box-shadow: 0 0 28px #a983d425; }
+.introOrbitTwo { border-color: #7edfd452; }
+.introCore { width: clamp(150px, 18vw, 214px); height: clamp(150px, 18vw, 214px); border-color: #ccb0e9a6; background: radial-gradient(circle at 32% 25%, #ffffff2a, #775493 49%, #392246); box-shadow: 0 24px 45px #09050e7a, 0 0 40px #d9baf138, inset 0 1px #fff5; }
+.introFounderNode { border-color: #ffffff32; color: #f7f0fc; background: #21182de8; box-shadow: 0 14px 28px #08050d6b, inset 0 1px #ffffff20; }
+.introNodeActive { border-color: #d5f19c; box-shadow: 0 0 0 4px #d5f19c16, 0 14px 28px #08050d6b; }
+.introNode small { color: #c9b7d8; }
+.introDetail { border: 1px solid #ffffff24; border-radius: 16px; color: #f5eef9; background: #21182dbd; box-shadow: 0 16px 34px #08050d4f, inset 0 1px #ffffff13; backdrop-filter: blur(14px); }
+.introDetail > span { color: #bfe9de; }
+.introDetail strong { color: #fff; }
+.introDetail p { color: #cbbfd3; }
+.heroMark { right: 3%; bottom: -9%; color: #b897d00d; }
+.mission { grid-template-columns: minmax(230px, .6fr) minmax(0, 1fr); padding: clamp(28px, 5vw, 58px) 0; border: 0; border-bottom: 1px solid #e5dce9; border-radius: 0; background: transparent; }
+.mission .eyebrow,
+.challenge .eyebrow,
+.platformApproach .eyebrow,
+.founders .eyebrow { color: #85679b; font-size: 8px; letter-spacing: .15em; }
+.mission h2 { color: #342441; font-family: var(--font-display), serif; font-size: clamp(29px, 3.5vw, 44px); font-weight: 400; letter-spacing: -.03em; }
+.mission p { max-width: 670px; color: #74697b; font-size: 12px; line-height: 1.8; }
+.challenge { grid-template-columns: minmax(230px, .75fr) minmax(0, 1.25fr); padding: clamp(28px, 4.6vw, 56px); border-color: #564466; border-radius: 25px; background: radial-gradient(ellipse at 90% 0, #65e7ff20, transparent 32%), linear-gradient(120deg, #21172e, #342346 72%, #203947); }
+.challenge .eyebrow { color: #d2bfe4; }
+.challengeIntro h2 { color: #fff; font-family: var(--font-display), serif; font-size: clamp(27px, 3.3vw, 42px); font-weight: 400; }
+.challengeStory > p { color: #d6ccdf; font-size: 11px; }
+.challengeThreads { margin-top: 22px; }
+.challengeThreads strong { font-size: 21px; }
+.challengeThreads small { color: #c8bed1; font-size: 8px; }
+.journey { grid-template-columns: minmax(0, 1.04fr) minmax(300px, .76fr); gap: clamp(20px, 3vw, 44px); }
+.journeyStage { top: 96px; }
+.scenePanel {
+  height: min(590px, calc(100vh - 145px));
+  min-height: 480px;
+  border: 1px solid #59446c;
+  border-radius: 26px;
+  background:
+    linear-gradient(#ffffff08 1px, transparent 1px),
+    linear-gradient(90deg, #ffffff08 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 49%, #674a7d80, #1b1525 70%);
+  background-size: 44px 44px, 44px 44px, auto;
+  box-shadow: 0 25px 60px #1d112a3a, inset 0 1px #ffffff18;
+}
+.scenePanel::before { opacity: .24; background-image: linear-gradient(90deg, #fff1 1px, transparent 1px), linear-gradient(#fff1 1px, transparent 1px); background-size: 42px 42px; mask-image: linear-gradient(130deg, #000, transparent 82%); animation: none; }
+.scenePanel::after,
+.sceneOrb { display: none; }
+.sceneHeading { inset: 17px 18px auto; }
+.sceneHeading .eyebrow { color: #d3c1e2; font-size: 7px; letter-spacing: .13em; }
+.sceneCounter { color: #e9dff0; font-size: 8px; }
+.sceneOrbit,
+.sceneOrbitAlt { top: 48%; width: 80%; height: 40%; border-color: #83e1dc52; box-shadow: none; animation: none; }
+.sceneOrbitAlt { width: 85%; height: 53%; border-color: #d1b7eb38; }
+.scenePanel > :global([role="application"]) { inset: 62px 0 82px; }
+.sceneKind { position: absolute; z-index: 4; top: 48px; left: 20px; color: #d3c0e4; font-size: 7px; font-weight: 800; letter-spacing: .14em; }
+.sceneCaption { inset: auto 17px 15px; z-index: 5; padding: 9px 10px; border: 1px solid #ffffff1b; border-radius: 12px; background: #181321d9; backdrop-filter: blur(12px); }
+.sceneCaption span { color: #c8eca0; font-size: 7px; }
+.sceneCaption strong { font-size: 18px; }
+.sceneCaption small { color: #c6b7d1; font-size: 8px; }
+.structurePicker { gap: 5px; margin-top: 2px; }
+.structurePicker button { min-width: 36px; min-height: 34px; border-color: #d9cde2; background: #fff; }
+.structurePicker > span { color: #654b79; font-size: 8px; }
+.sceneProgress { gap: 4px; padding: 10px 3px; }
+.sceneProgress span { background: #ded5e4; }
+.sceneProgress .progressActive { background: #765397; }
+.questionScene,
+.savedCardScene { position: absolute; z-index: 3; inset: 77px 16px 86px; overflow: auto; scrollbar-width: thin; }
+.questionScene :global(section) { margin: 0; max-width: none; border: 1px solid #d9cee1; border-radius: 16px; box-shadow: 0 17px 32px #09050e31; }
+.questionScene .sceneKind,
+.savedCardScene .sceneKind { position: absolute; top: 0; left: 1px; color: #d4c1e3; }
+.questionScene :global(section) > header { padding-top: 21px; }
+.questionScene :global(section) h2 { font-size: 17px; }
+.questionScene :global(section) h3 { font-size: 13px; line-height: 1.35; }
+.questionScene :global(section) button { min-height: 39px; }
+.savedCardScene { display: grid; align-content: center; justify-items: center; gap: 14px; overflow: visible; }
+.savedCardScene .sceneKind { top: 0; }
+.aboutFlipCard { position: relative; width: min(88%, 390px); min-height: 210px; padding: 0; border: 0; border-radius: 17px; background: transparent; perspective: 950px; text-align: left; }
+.aboutFlipInner { position: relative; display: block; width: 100%; min-height: 210px; transform-style: preserve-3d; transition: transform 560ms cubic-bezier(.18,.75,.22,1); }
+.aboutFlipRevealed .aboutFlipInner { transform: rotateY(180deg); }
+.aboutFlipFace { position: absolute; inset: 0; display: grid; align-content: center; gap: 10px; padding: 23px; overflow: hidden; border: 1px solid #d3bfe1; border-radius: 17px 17px 17px 5px; color: #32223f; background: linear-gradient(#8966a614 1px, transparent 1px), linear-gradient(90deg,#8966a614 1px,transparent 1px), linear-gradient(145deg,#fffdfb,#eee5f5); background-size: 21px 21px,21px 21px,auto; box-shadow: 0 25px 43px #09050e4b, inset 0 1px #fff; backface-visibility: hidden; }
+.aboutFlipFace > small { color: #805d97; font-size: 7px; font-weight: 800; letter-spacing: .15em; }
+.aboutFlipFace > strong { display: -webkit-box; overflow: hidden; color: #32223f; font-family: var(--font-display),serif; font-size: 25px; font-weight: 400; line-height: 1.08; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.aboutFlipFace > span { display: -webkit-box; overflow: hidden; color: #786d80; font-size: 9px; line-height: 1.6; -webkit-box-orient: vertical; -webkit-line-clamp: 4; }
+.aboutFlipBack { border-color: #d0dfbc; background: linear-gradient(145deg,#f4f8e9,#e3edd3); transform: rotateY(180deg); }
+.savedCardEmpty { display: grid; justify-items: center; gap: 10px; max-width: 360px; padding: 20px; color: #f5eef9; text-align: center; }
+.emptyCardGlyph { display: grid; place-items: center; width: 50px; height: 50px; border: 1px solid #ffffff2c; border-radius: 15px; color: #d8efa2; background: #ffffff0e; }
+.savedCardEmpty > strong { font-family: var(--font-display),serif; font-size: 22px; font-weight: 400; }
+.savedCardEmpty > span { color: #c6b9d1; font-size: 8px; line-height: 1.6; }
+.savedCardEmpty > a,
+.aboutCardActions a,
+.aboutCardActions button { display: inline-flex; align-items: center; gap: 6px; border: 0; padding: 6px; color: #d8efa2; background: transparent; font-size: 8px; font-weight: 800; }
+.aboutCardActions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+.aboutCardActions a,
+.aboutCardActions button { color: #eadff3; }
+.scenePanel :global([role="application"]):focus-visible,
+.aboutFlipCard:focus-visible,
+.savedCardEmpty a:focus-visible,
+.aboutCardActions button:focus-visible { outline: 3px solid #a6e8df; outline-offset: 3px; }
+.journeySteps { gap: 15px; }
+.journeyStep { min-height: min(530px, 67vh); padding: clamp(25px, 3.2vw, 40px); border-radius: 20px 20px 28px 20px; background: linear-gradient(145deg, #fffefa, #f0e9f6); }
+.journeyStep:nth-child(2) { background: linear-gradient(145deg,#f3fbf8,#e5f2f1 70%,#eeeafa); }
+.journeyStep:nth-child(3) { background: linear-gradient(145deg,#fbf7eb,#f3ebf1 72%,#e9e5f4); }
+.stepNumber { margin-bottom: 26px; color: #8d739f; font-size: 48px; }
+.journeyStep .eyebrow { color: #826394; font-size: 7px; letter-spacing: .15em; }
+.journeyStep h2 { color: #342441; font-size: clamp(28px, 3.3vw, 41px); line-height: 1.04; }
+.journeyStep p { color: #756a7d; font-size: 11px; line-height: 1.75; }
+.stepLink { color: #694a83; font-size: 9px; }
+.stepActive { border-color: #af92c5; box-shadow: 0 22px 50px #2d1a3a22, inset 0 1px #fff; }
+.platformApproach { gap: 24px; }
+.platformApproachHead { align-items: end; }
+.platformApproachHead h2 { max-width: 650px; color: #342441; font-size: clamp(31px, 4vw, 47px); line-height: 1.02; }
+.platformApproachHead > p { color: #776d7f; font-size: 10px; }
+.platformApproach .featureGrid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 0; border-top: 1px solid #ded5e4; border-bottom: 1px solid #ded5e4; }
+.platformApproach .card { min-height: 245px; padding: 25px; border: 0; border-right: 1px solid #e4dce8; border-radius: 0; background: transparent; box-shadow: none; transition: background 180ms ease; }
+.platformApproach .card:last-child { border-right: 0; }
+.platformApproach .card:hover { transform: none; background: #f7f3f9; box-shadow: none; }
+.platformApproach .card h2 { color: #382647; font-size: 22px; }
+.platformApproach .card p { color: #776d7f; font-size: 9px; }
+.featureIcon { color: #795890; }
+.founders { padding-top: 22px; border-top: 1px solid #e2d9e7; }
+.founders h2 { color: #342441; font-family: var(--font-display),serif; font-size: clamp(30px,3.8vw,46px); font-weight: 400; }
+.founders p { color: #766b7d; font-size: 10px; line-height: 1.75; }
+.founderGrid { gap: 14px; }
+.founder { border-radius: 18px; box-shadow: 0 15px 32px #25133112; }
+.closing { border-radius: 23px; }
+.page a:focus-visible,
+.page button:focus-visible { outline: 3px solid #8060a0; outline-offset: 3px; }
+@media (max-width: 1050px) {
+  .hero { grid-template-columns: minmax(0,.85fr) minmax(330px,1.15fr); gap: 23px; }
+  .introStage { min-height: 315px; }
+  .journey { grid-template-columns: minmax(0,1fr) minmax(275px,.8fr); gap: 18px; }
+  .scenePanel { height: min(540px,calc(100vh - 130px)); }
+}
+@media (max-width: 850px) {
+  .mission { grid-template-columns: 1fr; gap: 12px; }
+  .journey { grid-template-columns: 1fr; }
+  .journeyStage { position: relative; top: auto; order: 0; }
+  .journeySteps { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; }
+  .journeyStep { min-height: 310px; padding: 18px; }
+  .stepNumber { margin-bottom: 17px; font-size: 36px; }
+  .journeyStep h2 { font-size: 25px; }
+  .journeyStep p { font-size: 9px; }
+}
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; min-height: 0; margin: -18px -14px 0; padding: 30px 18px 46px; }
+  .heroCopy h1 { font-size: clamp(44px,11vw,62px); }
+  .heroIntro { max-width: 600px; }
+  .introStage { min-height: 300px; }
+  .introDetail { padding: 13px; }
+  .heroMark { right: 0; bottom: -4%; font-size: 190px; }
+  .challenge { grid-template-columns: 1fr; gap: 16px; padding: 23px; }
+  .journeySteps { grid-template-columns: 1fr; gap: 8px; }
+  .journeyStep { min-height: 0; padding: 20px; }
+  .stepNumber { margin: 0 0 13px; }
+  .scenePanel { height: min(640px,74vh); min-height: 530px; }
+  .questionScene,
+  .savedCardScene { inset: 80px 11px 88px; }
+  .questionScene :global(section) { padding: 13px; }
+  .questionScene :global(section) h2 { font-size: 15px; }
+  .questionScene :global(section) h3 { font-size: 11px; }
+  .sceneCaption { inset-inline: 10px; }
+  .structurePicker { flex-wrap: wrap; }
+  .structurePicker > span { font-size: 7px; }
+  .platformApproachHead { align-items: flex-start; flex-direction: column; gap: 7px; }
+  .platformApproach .featureGrid { grid-template-columns: 1fr; }
+  .platformApproach .card { min-height: 0; padding: 19px 5px; border-right: 0; border-bottom: 1px solid #e4dce8; }
+  .platformApproach .card:last-child { border-bottom: 0; }
+  .founderGrid { grid-template-columns: 1fr; }
+  .closing { align-items: flex-start; flex-direction: column; }
+  .closingActions { justify-content: flex-start; }
+}
+@media (max-width: 430px) {
+  .hero { padding-inline: 13px; }
+  .introStage { min-height: 270px; }
+  .introNode span { font-size: 8px; }
+  .scenePanel { min-height: 500px; height: 61vh; }
+  .sceneHeading .eyebrow { font-size: 6px; }
+  .sceneCaption strong { font-size: 16px; }
+  .aboutFlipCard,
+  .aboutFlipInner,
+  .aboutFlipFace { min-height: 185px; }
+  .aboutFlipFace { padding: 17px; }
+  .aboutFlipFace > strong { font-size: 21px; }
+  .challengeThreads > span { grid-template-columns: 23px 74px 1fr; }
+  .challengeThreads small { font-size: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero::before,
+  .introNode,
+  .journeyStep,
+  .sceneOrbit,
+  .sceneOrbitAlt,
+  .aboutFlipInner,
+  .stepLink svg { animation: none; transition: none; }
+  .sceneOrbit,
+  .sceneOrbitAlt { transform: translate(-50%,-50%); }
+  .stepActive { animation: none; }
+}
+:global(html[data-calm="true"]) .sceneOrbit,
+:global(html[data-calm="true"]) .sceneOrbitAlt { animation: none; }

@@ -24,14 +24,19 @@ function displayName(name) {
 }
 
 export default function BodyAtlas() {
+  const initialParams = new URLSearchParams(window.location.search);
+  const initialLayer = systems.some((system) => system.id === initialParams.get("layer"))
+    ? initialParams.get("layer")
+    : "skeletal";
   const host = useRef(null),
     engine = useRef(null),
     label = useRef(null),
     selectedRef = useRef(null),
     stageRef = useRef(null),
     immersiveToggle = useRef(null),
-    wasImmersive = useRef(false);
-  const [layers, setLayers] = useState({ skeletal: true });
+    wasImmersive = useRef(false),
+    requestedStructure = useRef(initialParams.get("structure"));
+  const [layers, setLayers] = useState({ [initialLayer]: true });
   const [catalog, setCatalog] = useState([]);
   const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState("");
@@ -48,6 +53,18 @@ export default function BodyAtlas() {
   const referenceCache = useRef(new Map());
   const selectRef = useRef(setSelected);
   selectedRef.current = selected;
+  useEffect(() => {
+    const wanted = requestedStructure.current;
+    if (!wanted) return;
+    const match = catalog.find((entry) =>
+      entry.system === initialLayer &&
+      (entry.raw === wanted || entry.name.toLowerCase() === wanted.toLowerCase()),
+    );
+    if (!match) return;
+    requestedStructure.current = null;
+    setSearch(match.name);
+    setSelected(match.id);
+  }, [catalog, initialLayer]);
   useEffect(() => {
     const el = host.current;
     let renderer;
@@ -403,7 +420,7 @@ export default function BodyAtlas() {
       if (!document.hidden) invalidate(200);
     };
     document.addEventListener("visibilitychange", visibility);
-    atlas.load("skeletal");
+    atlas.load(initialLayer);
     invalidate(500);
     return () => {
       disposed = true;
@@ -422,7 +439,7 @@ export default function BodyAtlas() {
       renderer.domElement.remove();
       engine.current = null;
     };
-  }, []);
+  }, [initialLayer]);
   useEffect(() => {
     for (const system of systems)
       if (layers[system.id]) engine.current?.load(system.id);

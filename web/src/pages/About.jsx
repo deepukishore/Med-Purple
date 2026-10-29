@@ -2,6 +2,8 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, BookOpen, Heart, Sparkle } from "@phosphor-icons/react";
 import usePageMeta from "../hooks/usePageMeta";
+import useData from "../hooks/useData";
+import QuickRecall from "../components/QuickRecall";
 import content from "../../../shared/legal.json";
 import s from "./Information.module.css";
 
@@ -26,30 +28,30 @@ const introNodes = [
 const chapters = [
   {
     number: "01",
-    eyebrow: "PRACTISE",
-    title: "Start with a question.",
-    body: "Active recall helps turn a quick session into a useful one. Work through MCQs, review explanations, and see where to focus next.",
-    path: "/mcqs",
-    action: "Try question practice",
-    structure: "ra",
+    eyebrow: "SEE IT",
+    title: "Start by looking closer.",
+    body: "Turn the schematic heart and explore a chamber. The model is a study aid, with labels and notes to guide the next step.",
+    path: "/anatomy",
+    action: "Explore anatomy",
+    structure: "lv",
   },
   {
     number: "02",
-    eyebrow: "EXPLORE",
-    title: "See how the pieces connect.",
-    body: "Turn the heart in 3D and explore schematic anatomy alongside your notes and lessons.",
-    path: "/anatomy",
-    action: "Open the 3D atlas",
-    structure: "rv",
+    eyebrow: "TEST IT",
+    title: "Try a question while it is fresh.",
+    body: "Answer a real multiple-choice question, then read the explanation and its source before you move on.",
+    path: "/mcqs",
+    action: "Open question practice",
+    structure: null,
   },
   {
     number: "03",
-    eyebrow: "MAKE IT YOURS",
-    title: "Find a study rhythm that fits.",
-    body: "Bring notes, flashcards, progress, and planning together in a study space you can return to each day.",
-    path: "/planner",
-    action: "Build your study plan",
-    structure: "lv",
+    eyebrow: "KEEP IT",
+    title: "Save the thought you want to recall.",
+    body: "Turn a useful prompt into a flashcard, reveal your own answer, and return when you are ready to review.",
+    path: "/flashcards",
+    action: "Open your recall cards",
+    structure: null,
   },
 ];
 export default function About() {
@@ -58,13 +60,18 @@ export default function About() {
   const modelRef = useRef(null);
   const [activeChapter, setActiveChapter] = useState(0);
   const [activeIntro, setActiveIntro] = useState(0);
+  const [cardRevealed, setCardRevealed] = useState(false);
   const [selectedStructure, setSelectedStructure] = useState(chapters[0].structure);
+  const flashcards = useData("/flashcards");
+  const savedCard = flashcards.data?.[0];
   const structureNames = {
     ra: "Right atrium",
     rv: "Right ventricle",
     lv: "Left ventricle",
     la: "Left atrium",
   };
+
+  useEffect(() => setCardRevealed(false), [activeChapter]);
 
   useEffect(() => {
     let frame = 0;
@@ -94,11 +101,12 @@ export default function About() {
           }
         });
         setActiveChapter((current) => current === nearest ? current : nearest);
-        setSelectedStructure((current) =>
-          current === chapters[nearest].structure
-            ? current
-            : chapters[nearest].structure,
-        );
+        if (chapters[nearest].structure)
+          setSelectedStructure((current) =>
+            current === chapters[nearest].structure
+              ? current
+              : chapters[nearest].structure,
+          );
       });
     };
     updateScene();
@@ -225,42 +233,93 @@ export default function About() {
             }}
           >
             <div className={s.sceneHeading}>
-              <span className={s.eyebrow}>SCROLL TO EXPLORE THE HEART</span>
+              <span className={s.eyebrow}>SCROLL THROUGH THREE STUDY STATES</span>
               <span className={s.sceneCounter}>0{activeChapter + 1} / 03</span>
             </div>
-            <div className={s.sceneOrb} aria-hidden="true" />
-            <div className={s.sceneOrbit} aria-hidden="true" />
-            <div className={s.sceneOrbitAlt} aria-hidden="true" />
-            <Suspense fallback={<div className={s.modelFallback}>Preparing the 3D study scene…</div>}>
-              <AnatomyCanvas
-                compact
-                modelId="heart"
-                resetOnLeave={false}
-                controlsRef={modelRef}
-                selected={selectedStructure}
-                onSelect={setSelectedStructure}
-              />
-            </Suspense>
+            {activeChapter === 0 && (
+              <>
+                <span className={s.sceneKind}>SCHEMATIC HEART / INTERACTIVE STUDY MODEL</span>
+                <div className={s.sceneOrbit} aria-hidden="true" />
+                <div className={s.sceneOrbitAlt} aria-hidden="true" />
+                <Suspense fallback={<div className={s.modelFallback}>Preparing the schematic heart…</div>}>
+                  <AnatomyCanvas
+                    compact
+                    modelId="heart"
+                    resetOnLeave={false}
+                    controlsRef={modelRef}
+                    selected={selectedStructure}
+                    onSelect={setSelectedStructure}
+                  />
+                </Suspense>
+              </>
+            )}
+            {activeChapter === 1 && (
+              <div className={s.questionScene}>
+                <span className={s.sceneKind}>A REAL QUESTION / SOURCE-LINKED FEEDBACK</span>
+                <QuickRecall tone="focused" />
+              </div>
+            )}
+            {activeChapter === 2 && (
+              <div className={s.savedCardScene}>
+                <span className={s.sceneKind}>YOUR SAVED RECALL / TAP TO TURN</span>
+                {savedCard ? (
+                  <button
+                    type="button"
+                    className={`${s.aboutFlipCard} ${cardRevealed ? s.aboutFlipRevealed : ""}`}
+                    aria-pressed={cardRevealed}
+                    onClick={() => setCardRevealed((value) => !value)}
+                  >
+                    <span className={s.aboutFlipInner}>
+                      <span className={s.aboutFlipFace} aria-hidden={cardRevealed}>
+                        <small>{savedCard.subject} / PROMPT</small>
+                        <strong>{savedCard.title}</strong>
+                        <span>Think it through, then turn the card.</span>
+                      </span>
+                      <span className={`${s.aboutFlipFace} ${s.aboutFlipBack}`} aria-hidden={!cardRevealed}>
+                        <small>SAVED ANSWER</small>
+                        <strong>{savedCard.title}</strong>
+                        <span>{savedCard.content}</span>
+                      </span>
+                    </span>
+                  </button>
+                ) : (
+                  <div className={s.savedCardEmpty}>
+                    <span className={s.emptyCardGlyph}><BookOpen size={24} /></span>
+                    <strong>Your first recall card can start here.</strong>
+                    <span>Create a prompt and save your own answer for review.</span>
+                    <Link to="/flashcards">Create a flashcard <ArrowUpRight size={15} /></Link>
+                  </div>
+                )}
+                {savedCard && (
+                  <div className={s.aboutCardActions}>
+                    <button type="button" onClick={() => setCardRevealed((value) => !value)}>{cardRevealed ? "Show prompt" : "Reveal answer"}</button>
+                    <Link to="/flashcards?review=1">Open due cards <ArrowUpRight size={14} /></Link>
+                  </div>
+                )}
+              </div>
+            )}
             <div className={s.sceneCaption}>
               <span>{chapters[activeChapter].eyebrow}</span>
               <strong>{chapters[activeChapter].title}</strong>
-              <small>Scroll to travel · drag to turn · click a chamber</small>
+              <small>{activeChapter === 0 ? "Scroll to travel · drag to turn · select a chamber" : activeChapter === 1 ? "Choose an answer and read the explanation." : "Tap the saved card to reveal its answer."}</small>
             </div>
           </div>
-          <div className={s.structurePicker} aria-label="Highlight a heart chamber">
-            {Object.entries(structureNames).map(([id, name]) => (
-              <button
-                type="button"
-                key={id}
-                aria-pressed={selectedStructure === id}
-                onClick={() => setSelectedStructure(id)}
-                title={name}
-              >
-                {id.toUpperCase()}
-              </button>
-            ))}
-            <span>{structureNames[selectedStructure]}</span>
-          </div>
+          {activeChapter === 0 && (
+            <div className={s.structurePicker} aria-label="Highlight a heart chamber">
+              {Object.entries(structureNames).map(([id, name]) => (
+                <button
+                  type="button"
+                  key={id}
+                  aria-pressed={selectedStructure === id}
+                  onClick={() => setSelectedStructure(id)}
+                  title={name}
+                >
+                  {id.toUpperCase()}
+                </button>
+              ))}
+              <span>{structureNames[selectedStructure]}</span>
+            </div>
+          )}
           <div className={s.sceneProgress} aria-hidden="true">
             {chapters.map((chapter, index) => (
               <span className={index <= activeChapter ? s.progressActive : ""} key={chapter.number} />

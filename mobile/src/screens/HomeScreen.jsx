@@ -123,6 +123,29 @@ export default function HomeScreen({ navigation }) {
         </Text>
         <Text style={h.humanNote}>Coffee optional. Breaks are not.</Text>
       </View>
+      <View style={h.specimen}>
+        <View style={h.specimenCopy}>
+          <View style={h.specimenEyebrow}>
+            <View style={h.liveDot} />
+            <Text style={h.specimenLabel}>SCHEMATIC HEART</Text>
+          </View>
+          <Text style={h.specimenTitle}>See the shape of the system.</Text>
+          <Text style={h.specimenHint}>Swipe to rotate · open Anatomy to explore named parts</Text>
+        </View>
+        <HeartViewer compact interactiveCompact autoRotate={false} height={280} />
+        <View style={h.specimenFoot}>
+          <Text style={h.specimenDisclaimer}>A learning illustration, not a clinical model</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Explore the anatomy models"
+            onPress={() => navigation.navigate("Anatomy")}
+            style={h.specimenAction}
+          >
+            <Text style={h.specimenActionText}>ENTER ANATOMY</Text>
+            <Ionicons name="arrow-forward" size={15} color="#bffff1" />
+          </Pressable>
+        </View>
+      </View>
       <StoryBar navigation={navigation} />
       {storyOfDay.data?.item ? (
         <Pressable
@@ -390,25 +413,6 @@ export default function HomeScreen({ navigation }) {
           ))}
         </ScrollView>
       </View>
-      <View style={h.anatomy}>
-        <View style={{ flex: 1, padding: 20, gap: 10 }}>
-          <Text style={s.pillText}>The anatomy studio</Text>
-          <Text style={[s.title, { fontSize: 25, lineHeight: 30 }]}>
-            See the bigger picture.
-          </Text>
-          <Text style={s.small}>
-            Swipe the model to turn it. Explore every angle.
-          </Text>
-          <Button
-            title="Explore the heart"
-            variant="secondary"
-            onPress={() => navigation.navigate("Anatomy")}
-          />
-        </View>
-        <View style={{ width: 130 }}>
-          <HeartViewer compact interactiveCompact height={220} />
-        </View>
-      </View>
       <View style={s.card}>
         <View style={s.between}>
           <Text style={s.heading}>Daily quests</Text>
@@ -645,11 +649,27 @@ const h = StyleSheet.create({
     fontSize: 10,
     color: colors.purple[100],
   },
-  anatomy: {
-    borderRadius: 20,
-    backgroundColor: colors.anatomy,
-    flexDirection: "row",
-    alignItems: "center",
+  specimen: {
+    minHeight: 402,
     overflow: "hidden",
+    borderRadius: 23,
+    borderWidth: 1,
+    borderColor: "#694b88",
+    backgroundColor: "#21162f",
+    shadowColor: "#251638",
+    shadowOffset: { width: 0, height: 15 },
+    shadowOpacity: 0.25,
+    shadowRadius: 22,
+    elevation: 8,
   },
+  specimenCopy: { paddingTop: 18, paddingHorizontal: 18, gap: 7 },
+  specimenEyebrow: { flexDirection: "row", alignItems: "center", gap: 7 },
+  liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: "#adffe0" },
+  specimenLabel: { color: "#cdb8e0", fontFamily: fonts.bold, fontSize: 9, letterSpacing: 1.35 },
+  specimenTitle: { color: "#fff", fontFamily: fonts.display, fontSize: 22, lineHeight: 27 },
+  specimenHint: { color: "#d1c1dc", fontFamily: fonts.body, fontSize: 10, lineHeight: 15 },
+  specimenFoot: { minHeight: 45, paddingHorizontal: 16, borderTopWidth: 1, borderTopColor: "#ffffff20", flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 7 },
+  specimenDisclaimer: { flex: 1, color: "#ae9fbb", fontFamily: fonts.body, fontSize: 8, lineHeight: 13 },
+  specimenAction: { minHeight: 42, flexDirection: "row", alignItems: "center", gap: 7, paddingHorizontal: 9 },
+  specimenActionText: { color: "#bffff1", fontFamily: fonts.bold, fontSize: 8, letterSpacing: 0.6 },
 });
