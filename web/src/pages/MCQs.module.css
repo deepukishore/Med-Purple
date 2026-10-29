@@ -369,6 +369,37 @@
   font-variant-numeric: tabular-nums;
   font-size: 1.15rem;
 }
+.defibCharge {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin: -5px 0 18px;
+}
+.defibCharge::before {
+  content: "";
+  grid-column: 1;
+  grid-row: 1;
+  height: 6px;
+  border-radius: 99px;
+  background: #eee5f2;
+}
+.defibCharge > span {
+  grid-column: 1;
+  grid-row: 1;
+  width: var(--charge);
+  height: 6px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #d98b4e, #f3d48f);
+  box-shadow: 0 0 12px #f3d48f75;
+  transition: width 250ms linear;
+}
+.defibCharge small {
+  color: #947a4a;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
 .examOptions {
   display: grid;
   gap: 10px;

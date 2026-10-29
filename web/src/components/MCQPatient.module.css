@@ -1,0 +1,211 @@
+.monitor {
+  --rhythm-color: #b9ed9e;
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  min-height: 132px;
+  padding: 18px 24px;
+  margin: 0 0 20px;
+  overflow: hidden;
+  border: 1px solid #392e43;
+  border-radius: 20px;
+  color: #f9f4ff;
+  background:
+    radial-gradient(ellipse at 12% 50%, #51384f 0, transparent 33%),
+    linear-gradient(110deg, #211b2b, #17151d 70%);
+  box-shadow: 0 12px 30px #30213f1c;
+}
+.heartStage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 82px;
+  height: 82px;
+  perspective: 240px;
+}
+.heart {
+  z-index: 1;
+  width: 70px;
+  overflow: visible;
+  filter: drop-shadow(0 8px 8px #f2659c40);
+  transform: rotateY(-12deg) rotateX(5deg);
+  animation: heartBeat 1.25s ease-in-out infinite;
+}
+.heartHalo {
+  position: absolute;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: #e85f8b3b;
+  filter: blur(17px);
+  transition: background 250ms ease, transform 250ms ease;
+}
+.steady {
+  --rhythm-color: #b9ed9e;
+}
+.steady .heartHalo {
+  background: #b9ed9e55;
+}
+.steady .heart {
+  filter: drop-shadow(0 8px 10px #b9ed9e55);
+}
+.arrhythmia {
+  --rhythm-color: #ff9b9b;
+  animation: monitorFlinch 360ms ease-in-out 2;
+}
+.arrhythmia .heart {
+  animation: heartFlinch 520ms ease-out 1, heartBeat 1.25s 520ms ease-in-out infinite;
+}
+.arrhythmia .heartHalo {
+  background: #ff5b8b65;
+}
+.arrhythmia .trace {
+  filter: drop-shadow(2px 0 #53d9ff70) drop-shadow(-2px 0 #ff4d7b70);
+}
+.codeBlue {
+  --rhythm-color: #f6d78b;
+}
+.codeBlue .heart {
+  animation-duration: 0.58s;
+}
+.codeBlue .heartHalo {
+  background: #f6d78b55;
+  transform: scale(1.3);
+}
+.flatline {
+  --rhythm-color: #c5b9d1;
+}
+.flatline .heart {
+  animation: none;
+  filter: grayscale(0.7) drop-shadow(0 5px 5px #8f829f30);
+  transform: rotateY(-12deg) rotateX(5deg) scale(0.91);
+}
+.flatline .heartHalo {
+  background: #95899b24;
+  transform: scale(0.8);
+}
+.revived {
+  --rhythm-color: #d8f6a3;
+  animation: reviveShock 850ms cubic-bezier(0.16, 0.8, 0.3, 1) both;
+}
+.revived .heart {
+  animation: heartRevive 900ms ease-out, heartBeat 1.15s 900ms ease-in-out infinite;
+}
+.revived .heartHalo {
+  background: #d8f6a366;
+  animation: haloShock 900ms ease-out;
+}
+.monitorContent {
+  min-width: 0;
+}
+.monitorHeading,
+.monitorFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.monitorHeading > span,
+.monitorFoot {
+  color: #b8aabd;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+.monitorHeading > strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--rhythm-color);
+  font-size: 10px;
+  white-space: nowrap;
+}
+.monitorHeading > strong i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--rhythm-color);
+  box-shadow: 0 0 9px var(--rhythm-color);
+}
+.trace {
+  display: block;
+  width: 100%;
+  height: 57px;
+  margin: 7px 0 3px;
+}
+.monitorFoot {
+  justify-content: flex-start;
+  gap: 16px;
+  font-size: 8px;
+  color: #96889f;
+}
+.monitorFoot span:last-child {
+  color: #e5d7ed;
+  letter-spacing: 0.08em;
+}
+@keyframes heartBeat {
+  0%, 100% { transform: rotateY(-12deg) rotateX(5deg) scale(1); }
+  13% { transform: rotateY(-12deg) rotateX(5deg) scale(1.08); }
+  25% { transform: rotateY(-12deg) rotateX(5deg) scale(1); }
+  38% { transform: rotateY(-12deg) rotateX(5deg) scale(1.04); }
+  52% { transform: rotateY(-12deg) rotateX(5deg) scale(1); }
+}
+@keyframes heartFlinch {
+  0%, 100% { transform: rotateY(-12deg) rotateX(5deg) translateX(0); }
+  20% { transform: rotateY(-12deg) rotateX(5deg) translateX(-6px) rotate(-5deg); }
+  45% { transform: rotateY(-12deg) rotateX(5deg) translateX(4px) rotate(4deg); }
+  70% { transform: rotateY(-12deg) rotateX(5deg) translateX(-2px); }
+}
+@keyframes monitorFlinch {
+  20%, 60% { transform: translateX(-2px); filter: hue-rotate(-18deg); }
+  40%, 80% { transform: translateX(2px); filter: hue-rotate(18deg); }
+}
+@keyframes reviveShock {
+  0% { box-shadow: 0 0 0 0 #d8f6a300; }
+  35% { box-shadow: 0 0 0 9px #d8f6a340, 0 0 50px #d8f6a333; }
+  100% { box-shadow: 0 12px 30px #30213f1c; }
+}
+@keyframes heartRevive {
+  0% { transform: rotateY(-12deg) rotateX(5deg) scale(0.65); filter: brightness(0.7); }
+  45% { transform: rotateY(-12deg) rotateX(5deg) scale(1.28); filter: brightness(1.5); }
+  100% { transform: rotateY(-12deg) rotateX(5deg) scale(1); filter: brightness(1); }
+}
+@keyframes haloShock {
+  0% { opacity: 0.2; transform: scale(0.5); }
+  45% { opacity: 1; transform: scale(1.8); }
+  100% { opacity: 0.75; transform: scale(1); }
+}
+@media (max-width: 600px) {
+  .monitor {
+    grid-template-columns: 60px minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px;
+    border-radius: 16px;
+  }
+  .heartStage {
+    width: 58px;
+    height: 68px;
+  }
+  .heart {
+    width: 56px;
+  }
+  .monitorHeading > span,
+  .monitorFoot {
+    font-size: 7px;
+  }
+  .monitorHeading > strong {
+    font-size: 8px;
+  }
+  .trace {
+    height: 48px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .monitor,
+  .heart,
+  .heartHalo {
+    animation: none !important;
+    transition: none;
+  }
+}

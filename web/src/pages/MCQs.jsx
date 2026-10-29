@@ -6,6 +6,7 @@ import usePageMeta from "../hooks/usePageMeta";
 import { api, useApp } from "../context/AppContext";
 import Button from "../components/Button";
 import QuestionCard from "../components/QuestionCard";
+import MCQPatient from "../components/MCQPatient";
 import { MCQLevels, MCQXP, MCQAnswerKey } from "../components/MCQJourney";
 import { PageSkeleton, ErrorState, EmptyState } from "../components/States";
 import u from "../components/ui.module.css";
@@ -41,6 +42,7 @@ export default function MCQs() {
     [examIndex, setExamIndex] = useState(0),
     [examSelected, setExamSelected] = useState(null),
     [examResult, setExamResult] = useState(null),
+    [examExpired, setExamExpired] = useState(false),
     [examClock, setExamClock] = useState(Date.now()),
     [examPending, setExamPending] = useState(false),
     [examError, setExamError] = useState(""),
@@ -65,7 +67,10 @@ export default function MCQs() {
     ? Math.max(0, Math.ceil((Date.parse(examSession.expires_at) - examClock) / 1000))
     : 0;
   useEffect(() => {
-    if (examSession && !examResult && examSecondsLeft === 0) completeExam();
+    if (examSession && !examResult && examSecondsLeft === 0) {
+      setExamExpired(true);
+      completeExam();
+    }
   }, [examSession, examResult, examSecondsLeft]);
   useEffect(() => {
     if (finished || round > 1 || index > 0) {
@@ -207,6 +212,25 @@ export default function MCQs() {
   }
   const correct = results.filter((r) => r.correct).length;
   const missed = results.filter((r) => !r.correct);
+  const patientRhythm = examMode && examSession
+    ? examResult
+      ? examExpired
+        ? "flatline"
+        : examResult.passed
+          ? "revived"
+          : "arrhythmia"
+      : examSecondsLeft <= 10
+        ? "codeBlue"
+        : "steady"
+    : finished
+      ? correct / Math.max(results.length, 1) >= 0.7
+        ? "revived"
+        : "steady"
+      : result
+        ? result.correct
+          ? "steady"
+          : "arrhythmia"
+        : "steady";
   const nextDifficulty = { Foundation: "Applied", Applied: "Challenge" }[
     difficulty
   ];
@@ -231,6 +255,7 @@ export default function MCQs() {
       setExamIndex(0);
       setExamSelected(null);
       setExamResult(null);
+      setExamExpired(false);
       setExamClock(Date.now());
       examLock.current = false;
     } catch (error) {
@@ -380,6 +405,7 @@ export default function MCQs() {
           </select>
         </label>
       </div>
+      <MCQPatient rhythm={patientRhythm} exam={examMode} />
       <div ref={sessionAnchor} tabIndex={-1} className={s.sessionAnchor}>
         {examMode ? (
           !examSession ? (
@@ -414,9 +440,25 @@ export default function MCQs() {
                 const question = examSession.items[examIndex];
                 return <>
                   <div className={s.examHead}>
-                    <span>Exam · {examIndex + 1} / {examSession.items.length}</span>
+                    <span>Code Blue · {examIndex + 1} / {examSession.items.length}</span>
                     <strong role="timer">{Math.floor(examSecondsLeft / 60)}:{String(examSecondsLeft % 60).padStart(2, "0")}</strong>
                   </div>
+                  {examSecondsLeft <= 10 && (
+                    <div
+                      className={s.defibCharge}
+                      role="progressbar"
+                      aria-label="Defibrillator charging"
+                      aria-valuemin={0}
+                      aria-valuemax={10}
+                      aria-valuenow={10 - examSecondsLeft}
+                      style={{
+                        "--charge": `${((10 - examSecondsLeft) / 10) * 100}%`,
+                      }}
+                    >
+                      <span />
+                      <small>DEFIBRILLATOR CHARGING</small>
+                    </div>
+                  )}
                   <h2>{question.stem}</h2>
                   <div className={s.examOptions}>
                     {question.options.map((option, optionIndex) => (
