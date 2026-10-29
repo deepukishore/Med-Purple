@@ -14,6 +14,7 @@
   box-shadow: 0 30px 80px #0b061526, inset 0 1px #ffffff13;
 }
 .instrument,
+.explodeFlash,
 .instrumentRing,
 .instrumentRingInner,
 .instrumentAxis,
@@ -32,6 +33,12 @@
     linear-gradient(90deg, #ffffff08 1px, transparent 1px);
   background-size: 68px 68px;
   mask-image: linear-gradient(180deg, #000 0, #0008 45%, transparent 100%);
+}
+.explodeFlash {
+  z-index: 2;
+  inset: 0;
+  background: radial-gradient(ellipse at center, #91fff143, transparent 54%);
+  animation: explodeFlash 220ms ease-out both;
 }
 .instrumentRing,
 .instrumentRingInner {
@@ -98,6 +105,19 @@
   font-weight: 800;
   letter-spacing: 0.2em;
 }
+.pixelShades {
+  position: absolute;
+  z-index: 4;
+  top: 15%;
+  left: 50%;
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.pixelShades svg { width: clamp(48px, 7vw, 74px); filter: drop-shadow(0 2px 3px #09050d); }
+.pixelShades span { color: #e7d6fb; font-size: 7px; font-weight: 800; text-shadow: 0 1px 4px #130e1b; white-space: nowrap; }
 .topline {
   position: absolute;
   z-index: 3;
@@ -186,11 +206,60 @@
   background: #533279;
   transform: translateY(-1px);
 }
+.controls button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
 .controls button:focus-visible,
 .partLink:focus-visible,
-.credit a:focus-visible {
+.credit a:focus-visible,
+.boneDex button:focus-visible {
   outline: 3px solid #76e8ed;
   outline-offset: 3px;
+}
+.boneDex {
+  position: absolute;
+  z-index: 5;
+  top: 106px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: 230px;
+  padding: 7px 9px 7px 12px;
+  border: 1px solid #ffffff24;
+  border-radius: 999px;
+  color: #d9cbe8;
+  background: #171122c9;
+  font-size: 8px;
+  font-weight: 700;
+  backdrop-filter: blur(14px);
+}
+.boneDex strong { color: #fff; }
+.boneDex button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 0 8px;
+  border: 1px solid #78e4e24d;
+  border-radius: 999px;
+  color: #c5f5f0;
+  background: #18282dcc;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.shareStatus {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 .partLink {
   position: absolute;
@@ -210,14 +279,27 @@
 .credit {
   position: absolute;
   z-index: 4;
-  top: 58px;
-  left: 22px;
+  right: 22px;
+  bottom: 17px;
   display: grid;
   gap: 4px;
-  max-width: 175px;
+  max-width: 205px;
   color: #a99bb9;
   font-size: 7px;
   line-height: 1.45;
+  text-align: right;
+}
+.gestureHint {
+  position: absolute;
+  z-index: 4;
+  top: 110px;
+  right: 22px;
+  margin: 0;
+  color: #c8bad7;
+  font-size: 8px;
+  letter-spacing: 0.02em;
+  text-align: right;
+  pointer-events: none;
 }
 .credit a {
   color: #d5c4e5;
@@ -240,21 +322,34 @@
   .instrumentRingInner { width: 74%; }
   .registration { width: 96%; top: 45%; }
   .poster { width: 46%; top: 45%; }
+  .pixelShades { top: 15%; }
   .topline { inset: 16px 15px auto; font-size: 7px; }
-  .credit { top: 46px; left: 16px; max-width: 145px; }
+  .credit { right: 14px; bottom: 13px; max-width: 170px; font-size: 6px; }
+  .gestureHint { top: 48px; right: 0; left: 0; font-size: 7px; text-align: center; }
+  .boneDex { top: 78px; right: 12px; max-width: 185px; gap: 6px; padding: 6px 7px 6px 10px; font-size: 7px; }
+  .boneDex button { min-height: 28px; padding: 0 7px; }
   .specimenCaption { bottom: 72px; left: 14px; max-width: 74%; padding: 11px 12px; }
   .controls { top: auto; right: 12px; bottom: 12px; }
   .controls button { min-height: 42px; padding-inline: 10px; }
-  .partLink { left: 14px; bottom: 19px; }
+  .partLink { left: 14px; bottom: 52px; }
 }
 @media (max-width: 430px) {
   .stage { min-height: 320px; }
   .poster { width: 35%; }
   .controls button { width: 42px; min-width: 42px; padding: 0; font-size: 0; }
   .controls button svg { flex: 0 0 auto; }
+  .credit { right: 64px; left: 14px; max-width: none; text-align: left; }
+  .boneDex button span { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .poster,
   .controls button { transition: none; }
   .controls button:hover { transform: none; }
+  .explodeFlash { display: none; animation: none; }
+}
+
+@keyframes explodeFlash {
+  from { opacity: 0; }
+  35% { opacity: .9; }
+  to { opacity: 0; }
 }

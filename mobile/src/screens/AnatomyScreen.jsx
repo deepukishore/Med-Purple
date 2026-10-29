@@ -20,6 +20,7 @@ export default function AnatomyScreen({ navigation }) {
     [exploded, setExploded] = useState(false),
     [vessels, setVessels] = useState(true),
     [tilt, setTilt] = useState(false),
+    [shakeToExplode, setShakeToExplode] = useState(false),
     [pending, setPending] = useState(false),
     [studied, setStudied] = useState(new Set()),
     [quiz, setQuiz] = useState(false),
@@ -28,6 +29,8 @@ export default function AnatomyScreen({ navigation }) {
   const engine = useRef(),
     focused = useIsFocused(),
     reduced = useReducedMotion();
+  const previousAcceleration = useRef(null),
+    lastShake = useRef(0);
   const { notify } = useApp();
   useEffect(() => {
     if (!tilt || !focused || reduced) return;
@@ -45,6 +48,32 @@ export default function AnatomyScreen({ navigation }) {
     });
     return () => subscription.remove();
   }, [tilt, focused, reduced]);
+  useEffect(() => {
+    if (!shakeToExplode || !focused || reduced || modelId !== "heart") return;
+    DeviceMotion.setUpdateInterval(80);
+    const subscription = DeviceMotion.addListener(({ acceleration }) => {
+      if (!acceleration) return;
+      const current = [acceleration.x || 0, acceleration.y || 0, acceleration.z || 0];
+      const previous = previousAcceleration.current;
+      previousAcceleration.current = current;
+      if (!previous) return;
+      const change = Math.hypot(
+        current[0] - previous[0],
+        current[1] - previous[1],
+        current[2] - previous[2],
+      );
+      const now = Date.now();
+      if (change > 3.4 && now - lastShake.current > 1200) {
+        lastShake.current = now;
+        setExploded((value) => !value);
+        Haptics.selectionAsync().catch(() => {});
+      }
+    });
+    return () => {
+      previousAcceleration.current = null;
+      subscription.remove();
+    };
+  }, [shakeToExplode, focused, reduced, modelId]);
   async function toggleTilt() {
     if (tilt) {
       setTilt(false);
@@ -69,6 +98,32 @@ export default function AnatomyScreen({ navigation }) {
       notify("Tilt control on. Move your phone gently.");
     } catch {
       notify("Motion is unavailable. Touch controls still work.");
+    }
+  }
+  async function toggleShake() {
+    if (shakeToExplode) {
+      setShakeToExplode(false);
+      notify("Shake-to-explode off.");
+      return;
+    }
+    try {
+      if (reduced) {
+        notify("Motion gestures are disabled while Reduce Motion is enabled.");
+        return;
+      }
+      if (!(await DeviceMotion.isAvailableAsync())) {
+        notify("Motion is not available. Use the chamber controls instead.");
+        return;
+      }
+      const permission = await DeviceMotion.requestPermissionsAsync();
+      if (!permission.granted) {
+        notify("Motion permission was not granted. Touch controls still work.");
+        return;
+      }
+      setShakeToExplode(true);
+      notify("Shake-to-explode on. A small shake separates the heart chambers.");
+    } catch {
+      notify("Motion is unavailable. Use the chamber controls instead.");
     }
   }
   if (loading) return <Skeleton />;
@@ -226,6 +281,12 @@ export default function AnatomyScreen({ navigation }) {
             title={tilt ? "Disable tilt control" : "Enable tilt control"}
             variant="secondary"
             onPress={toggleTilt}
+          />
+          <Button
+            title={shakeToExplode ? "Disable shake-to-explode" : "Enable shake-to-explode"}
+            variant="secondary"
+            onPress={toggleShake}
+            disabled={reduced}
           />
           <View style={s.section}>
             <Text style={s.heading}>Explore the structures</Text>

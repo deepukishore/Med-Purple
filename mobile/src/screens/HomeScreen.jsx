@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, ScrollView, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import { DeviceMotion } from "expo-sensors";
+import { useIsFocused } from "@react-navigation/native";
 import { styles as s, colors, fonts } from "../theme";
 import { api, useApp } from "../context/AppContext";
 import useData from "../hooks/useData";
@@ -13,6 +15,7 @@ import QuickAccess from "../components/QuickAccess";
 import HeartViewer from "../components/HeartViewer";
 import StoryBar from "../components/StoryBar";
 import { Skeleton, ErrorState } from "../components/States";
+import useReducedMotion from "../hooks/useReducedMotion";
 const sessions = [
   {
     label: "Question sprint",
@@ -39,6 +42,10 @@ const sessions = [
 ];
 export default function HomeScreen({ navigation }) {
   const [session, setSession] = useState(0);
+  const [tilt, setTilt] = useState(false);
+  const heartEngine = useRef(null);
+  const focused = useIsFocused();
+  const reduced = useReducedMotion();
   const [sprintSize, setSprintSize] = useState(5),
     [sprintSubject, setSprintSubject] = useState("");
   const choice = sessions[session];
@@ -61,6 +68,17 @@ export default function HomeScreen({ navigation }) {
     }
     previousLevel.current = level;
   }, [rewards.data?.level]);
+  useEffect(() => {
+    if (!tilt || !focused || reduced) return undefined;
+    DeviceMotion.setUpdateInterval(40);
+    const subscription = DeviceMotion.addListener(({ rotation }) => {
+      const targets = heartEngine.current?.targets;
+      if (!rotation || !targets) return;
+      targets.x = Math.max(-0.24, Math.min(0.24, rotation.beta * 0.12));
+      targets.y = Math.max(-0.32, Math.min(0.32, rotation.gamma * 0.34));
+    });
+    return () => subscription.remove();
+  }, [tilt, focused, reduced]);
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 60000);
     return () => clearInterval(id);
@@ -106,6 +124,32 @@ export default function HomeScreen({ navigation }) {
     Haptics.selectionAsync().catch(() => {});
     setSprintSubject(subject);
   };
+  async function toggleTilt() {
+    if (tilt) {
+      setTilt(false);
+      notify("Home tilt control off.");
+      return;
+    }
+    try {
+      if (reduced) {
+        notify("Tilt control is disabled while Reduce Motion is enabled.");
+        return;
+      }
+      if (!(await DeviceMotion.isAvailableAsync())) {
+        notify("Device motion is not available. Swipe to rotate the model.");
+        return;
+      }
+      const permission = await DeviceMotion.requestPermissionsAsync();
+      if (!permission.granted) {
+        notify("Motion permission was not granted. Swipe controls still work.");
+        return;
+      }
+      setTilt(true);
+      notify("Tilt control on. Move your phone gently.");
+    } catch {
+      notify("Motion is unavailable. Swipe to rotate the model.");
+    }
+  }
   return (
     <Screen onRefresh={reload} refreshing={loading} stagger>
       <View>
@@ -132,7 +176,19 @@ export default function HomeScreen({ navigation }) {
           <Text style={h.specimenTitle}>See the shape of the system.</Text>
           <Text style={h.specimenHint}>Swipe to rotate · open Anatomy to explore named parts</Text>
         </View>
-        <HeartViewer compact interactiveCompact autoRotate={false} height={280} />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ selected: tilt, disabled: reduced }}
+          disabled={reduced}
+          onPress={toggleTilt}
+          style={h.tiltButton}
+        >
+          <Ionicons name="phone-portrait-outline" size={14} color="#d6c5e7" />
+          <Text style={h.tiltButtonText}>
+            {reduced ? "Tilt off in Reduce Motion" : tilt ? "Tilt control on" : "Enable tilt control"}
+          </Text>
+        </Pressable>
+        <HeartViewer controlsRef={heartEngine} compact interactiveCompact autoRotate={false} height={280} />
         <View style={h.specimenFoot}>
           <Text style={h.specimenDisclaimer}>A learning illustration, not a clinical model</Text>
           <Pressable
@@ -663,6 +719,8 @@ const h = StyleSheet.create({
     elevation: 8,
   },
   specimenCopy: { paddingTop: 18, paddingHorizontal: 18, gap: 7 },
+  tiltButton: { alignSelf: "flex-start", minHeight: 34, flexDirection: "row", alignItems: "center", gap: 6, marginTop: 2, paddingHorizontal: 9, borderRadius: 99, borderWidth: 1, borderColor: "#7f6a91", backgroundColor: "#30233d" },
+  tiltButtonText: { color: "#e5d9ee", fontFamily: fonts.bold, fontSize: 9 },
   specimenEyebrow: { flexDirection: "row", alignItems: "center", gap: 7 },
   liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: "#adffe0" },
   specimenLabel: { color: "#cdb8e0", fontFamily: fonts.bold, fontSize: 9, letterSpacing: 1.35 },

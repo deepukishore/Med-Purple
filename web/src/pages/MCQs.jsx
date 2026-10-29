@@ -13,6 +13,7 @@ import u from "../components/ui.module.css";
 import s from "./MCQs.module.css";
 import { createRequestId } from "../utils/requestId";
 import { sessionSize as parseSessionSize } from "../utils/sessionSize";
+import { emitStudyEvent } from "../utils/studyEvents";
 export default function MCQs() {
   usePageMeta(
     "MCQ bank",
@@ -153,6 +154,10 @@ export default function MCQs() {
         request_id: requestId.current,
       });
       setResult(answer);
+      emitStudyEvent(answer.correct ? "answer-correct" : "answer-wrong", {
+        questionId: q.id,
+        subject: q.subject,
+      });
       setResults((r) => [
         ...r,
         { ...answer, question: q, request_id: requestId.current },
@@ -189,15 +194,18 @@ export default function MCQs() {
         const completed = await api.post("/mcqs/complete", {
           request_ids: results.map((r) => r.request_id),
         });
+      const leveledUp = Boolean(
+        startingProgress.current &&
+          completed.progress.level > startingProgress.current.level,
+      );
         setReward({
           xp: startingProgress.current
             ? completed.progress.xp - startingProgress.current.xp
             : null,
-          leveledUp:
-            startingProgress.current &&
-            completed.progress.level > startingProgress.current.level,
+        leveledUp,
           level: completed.progress.level,
         });
+      if (leveledUp) emitStudyEvent("level-up", { level: completed.progress.level });
         setFinished(true);
         reloadProgress();
       } catch (e) {

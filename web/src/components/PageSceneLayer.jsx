@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import s from "./PageSceneLayer.module.css";
+import { isLowEndDevice } from "../utils/graphics";
 
 const clamp = (value, low, high) => Math.min(Math.max(value, low), high);
 
@@ -15,10 +16,7 @@ export default function PageSceneLayer({ pageRef, pathname, calm }) {
     const host = hostRef.current;
     if (!host) return undefined;
 
-    const lowEnd =
-      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
-      (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
-      navigator.connection?.saveData;
+    const lowEnd = isLowEndDevice();
     const motionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );

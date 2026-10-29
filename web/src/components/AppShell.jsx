@@ -26,6 +26,7 @@ import HelpBot from "./HelpBot";
 import QuickCapture from "./QuickCapture";
 import GuidedTour from "./GuidedTour";
 import { XPBadge } from "./XPLevel";
+import StudyEffects from "./StudyEffects";
 import { useApp } from "../context/AppContext";
 import useData from "../hooks/useData";
 import { PageSkeleton, ErrorState } from "./States";
@@ -213,7 +214,7 @@ export default function AppShell() {
     return <Navigate to="/login" replace />;
   }
   return (
-    <div className={s.shell}>
+    <div className={s.shell} data-app-shell>
       <a className="skip-link" href="#content">
         Skip to content
       </a>
@@ -312,6 +313,7 @@ export default function AppShell() {
           <div className={s.topRight}>
             {user && !loading && <XPBadge />}
             <StudySearch />
+            <StudyEffects calm={calm} />
             <button
               onClick={() => setCalm(!calm)}
               aria-pressed={calm}

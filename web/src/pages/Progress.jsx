@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Trophy, Fire, Lightning, Target } from "@phosphor-icons/react";
 import useData from "../hooks/useData";
 import usePageMeta from "../hooks/usePageMeta";
@@ -7,9 +8,58 @@ import s from "./Studio.module.css";
 export default function Progress() {
   usePageMeta("Progress & rewards");
   const { data, loading, error, reload } = useData("/progress");
+  const [wrappedStatus, setWrappedStatus] = useState("");
   if (loading) return <PageSkeleton />;
   if (error) return <ErrorState message={error} onRetry={reload} />;
   const max = Math.max(1, ...data.activity.map((x) => x.xp || 0));
+  const strongest = [...data.subjects]
+    .filter((subject) => subject.answered > 0)
+    .sort((a, b) => (b.accuracy || 0) - (a.accuracy || 0))[0];
+  const archetype = strongest ? `${strongest.subject} menace` : data.total_answered ? "Steady builder" : "Curious explorer";
+  async function shareWrapped() {
+    const text = `My Med Purple Study Wrapped: ${archetype} · ${data.total_answered} questions · ${data.accuracy}% accuracy · ${data.streak}-day streak · Level ${data.level}.`;
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1000;
+      canvas.height = 560;
+      const context = canvas.getContext("2d");
+      const gradient = context.createLinearGradient(0, 0, 1000, 560);
+      gradient.addColorStop(0, "#241634");
+      gradient.addColorStop(1, "#473065");
+      context.fillStyle = gradient;
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = "#c9f2e7";
+      context.font = "700 30px Manrope, sans-serif";
+      context.fillText("MED PURPLE / STUDY WRAPPED", 70, 82);
+      context.fillStyle = "#fffaf1";
+      context.font = "700 70px Manrope, sans-serif";
+      context.fillText(archetype, 70, 190);
+      context.font = "700 46px Manrope, sans-serif";
+      context.fillText(`${data.total_answered} questions · ${data.accuracy}% accuracy`, 70, 302);
+      context.fillText(`${data.streak}-day streak · Level ${data.level} · ${data.xp} XP`, 70, 384);
+      context.fillStyle = "#d6c4e6";
+      context.font = "500 28px Manrope, sans-serif";
+      context.fillText("A little more understood, one session at a time.", 70, 482);
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+      if (blob && navigator.share && navigator.canShare) {
+        const file = new File([blob], "med-purple-study-wrapped.png", { type: "image/png" });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({ title: "My Med Purple Study Wrapped", text, files: [file] });
+          setWrappedStatus("Study Wrapped card shared.");
+          return;
+        }
+      }
+      if (navigator.share) {
+        await navigator.share({ title: "My Med Purple Study Wrapped", text });
+        setWrappedStatus("Study Wrapped shared.");
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        setWrappedStatus("Study Wrapped summary copied.");
+      } else setWrappedStatus(text);
+    } catch {
+      setWrappedStatus("Sharing was cancelled or unavailable.");
+    }
+  }
   return (
     <div className={s.page}>
       <div className={s.head}>
@@ -33,6 +83,17 @@ export default function Progress() {
           </div>
         ))}
       </div>
+      <section className={s.panel} aria-labelledby="study-wrapped-title">
+        <div className={s.sectionHead}>
+          <div>
+            <h2 id="study-wrapped-title">Your Study Wrapped</h2>
+            <p className={s.muted}>A shareable snapshot of the practice you have actually recorded.</p>
+          </div>
+          <Button small variant="secondary" onClick={shareWrapped}>Make my card</Button>
+        </div>
+        <p className={s.chip} style={{ display: "inline-flex", marginTop: 4 }}>{archetype}</p>
+        <span role="status" aria-live="polite" style={{ marginLeft: 12 }}>{wrappedStatus}</span>
+      </section>
       <section className={s.panel}>
         <div className={s.sectionHead}>
           <h2>Level {data.level} explorer</h2>
@@ -155,11 +216,20 @@ export default function Progress() {
             unlocked
           </span>
         </div>
+        <p className={s.muted}>Earned badges work as stickers: drag one onto your profile area on desktop, or pin it from Profile on touch screens.</p>
         <div className={s.grid}>
           {data.badges.map((b) => (
             <div
               key={b.name}
               className={`${s.badge} ${b.earned ? s.earned : ""}`}
+              draggable={b.earned}
+              onDragStart={(event) => {
+                if (!b.earned) return;
+                event.dataTransfer.setData("application/x-med-purple-badge", b.name);
+                event.dataTransfer.setData("text/plain", b.name);
+                event.dataTransfer.effectAllowed = "copy";
+              }}
+              aria-label={`${b.name}, ${b.earned ? "earned badge sticker, draggable" : "not yet earned"}`}
             >
               <Trophy size={38} weight={b.earned ? "duotone" : "regular"} />
               <h3>{b.name}</h3>

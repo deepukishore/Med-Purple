@@ -88,6 +88,12 @@ export default function Home() {
           <span>SCROLL INTO YOUR NEXT STUDY MOVE</span><ArrowDown size={15} />
         </a>
       </header>
+      <div className={s.ticker} aria-label="Reference anatomy study facts">
+        <span>9 LAYERS</span><i aria-hidden="true">✦</i>
+        <span>2,491 NAMED MESH PARTS</span><i aria-hidden="true">✦</i>
+        <span>TOUCH GRASS AFTER THIS SET</span><i aria-hidden="true">✦</i>
+        <span>ANATOMY, IN MOTION</span>
+      </div>
 
       <section className={s.studyPath} id="study-path" aria-labelledby="study-path-title">
         <div className={s.pathIntro}>

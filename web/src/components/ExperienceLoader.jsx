@@ -29,7 +29,7 @@ export default function ExperienceLoader() {
           <img src="/favicon.svg" width="48" height="48" alt="Med Purple" />
           <i aria-hidden="true" />
         </span>
-        <p>{stage ? "Loading 3D scene..." : "Preparing your experience..."}</p>
+        <p>{stage ? "Warming up the anatomy studio…" : "Preparing your study space…"}</p>
       </div>
     </div>
   );

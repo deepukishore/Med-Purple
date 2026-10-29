@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import * as THREE from "three";
+import { createHeartScene } from "@med-purple/anatomy";
+import { emitStudyEvent } from "../utils/studyEvents";
 import s from "./MCQPatient.module.css";
 
 const rhythms = {
@@ -25,7 +26,7 @@ function ECGTrace({ rhythm }) {
     let frame = 0;
     let width = 0;
     let height = 0;
-    let start = performance.now();
+    const start = performance.now();
 
     function resize() {
       const bounds = canvas.getBoundingClientRect();
@@ -35,24 +36,32 @@ function ECGTrace({ rhythm }) {
       canvas.width = Math.round(width * pixelRatio);
       canvas.height = Math.round(height * pixelRatio);
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-      start = performance.now();
-      draw(start);
+      if (reducedMotion) draw(performance.now());
+      else if (!frame) frame = requestAnimationFrame(draw);
     }
 
     function draw(now) {
+      frame = 0;
       context.clearRect(0, 0, width, height);
       const baseline = height * 0.53;
       const scale = Math.min(height * 0.37, 22);
-      const step =
-        rhythm === "codeBlue"
-          ? 58
-          : rhythm === "arrhythmia"
-            ? 86
-            : 108;
-      const offset =
-        rhythm === "flatline" || reducedMotion
-          ? 0
-          : ((now - start) / (rhythm === "codeBlue" ? 8 : 13)) % step;
+      const step = Math.max(44, Math.min(112, width / 3.5));
+      const rate = rhythms[rhythm]?.rate || 0;
+      const interval = rate ? 60000 / rate : Infinity;
+      const elapsed = reducedMotion ? 0 : Math.max(0, now - start);
+      let offset = 0;
+      if (rate && rhythm === "arrhythmia") {
+        const pairDuration = interval * 2;
+        const pair = Math.floor(elapsed / pairDuration);
+        const withinPair = elapsed % pairDuration;
+        const firstDuration = interval * 0.84;
+        const pairOffset = withinPair < firstDuration
+          ? (withinPair / firstDuration) * step * 0.84
+          : step * 0.84 + ((withinPair - firstDuration) / (interval * 1.16)) * step * 1.16;
+        offset = (pair * step * 2 + pairOffset) % (step * 2);
+      } else if (rate) {
+        offset = ((elapsed / interval) % 1) * step;
+      }
       const tint = rhythms[rhythm] || rhythms.steady;
 
       context.strokeStyle = `${tint.color}35`;
@@ -74,12 +83,12 @@ function ECGTrace({ rhythm }) {
         context.moveTo(0, baseline);
         context.lineTo(width, baseline);
       } else {
-        const startX = -step - offset;
-        const endX = width + step;
+        const arrhythmic = rhythm === "arrhythmia";
+        const startX = (arrhythmic ? -step * 2 : -step) - offset;
+        const endX = width + step * 2;
         for (let x = startX, beat = 0; x <= endX; beat++) {
-          const beatStep =
-            rhythm === "arrhythmia" ? step * (beat % 2 ? 1.14 : 0.86) : step;
-          const variation = rhythm === "arrhythmia" && beat % 2 ? 1.35 : 1;
+          const beatStep = arrhythmic ? step * (beat % 2 ? 1.16 : 0.84) : step;
+          const variation = arrhythmic && beat % 2 ? 1.18 : 1;
           context.moveTo(x, baseline);
           context.lineTo(x + beatStep * 0.2, baseline);
           context.lineTo(x + beatStep * 0.26, baseline - scale * 0.12);
@@ -111,49 +120,43 @@ function ECGTrace({ rhythm }) {
   return <canvas className={s.trace} ref={canvasRef} aria-hidden="true" />;
 }
 
-function HeartOrgan({ rhythm }) {
-  const geometry = useMemo(() => {
-    const shape = new THREE.Shape();
-    shape.moveTo(0, 0.22);
-    shape.bezierCurveTo(0, 0.22, -0.5, 0.82, -0.82, 0.42);
-    shape.bezierCurveTo(-1.25, -0.12, -0.48, -0.74, 0, -1);
-    shape.bezierCurveTo(0.48, -0.74, 1.25, -0.12, 0.82, 0.42);
-    shape.bezierCurveTo(0.5, 0.82, 0, 0.22, 0, 0.22);
-    return new THREE.ExtrudeGeometry(shape, {
-      depth: 0.24,
-      bevelEnabled: true,
-      bevelSegments: 3,
-      steps: 1,
-      bevelSize: 0.08,
-      bevelThickness: 0.08,
-      curveSegments: 12,
+function HeartOrgan() {
+  const heart = useMemo(() => createHeartScene(), []);
+  useEffect(() => () => {
+    heart.dispose();
+    heart.heart.traverse((object) => {
+      object.geometry?.dispose();
+      if (object.material) {
+        for (const material of Array.isArray(object.material) ? object.material : [object.material])
+          material.dispose();
+      }
     });
-  }, []);
-  const color =
-    rhythm === "flatline" ? "#a99dad" : rhythm === "codeBlue" ? "#f4c77c" : "#e85f8b";
+  }, [heart]);
 
   return (
-    <mesh geometry={geometry} scale={0.78}>
-      <meshPhysicalMaterial
-        color={color}
-        emissive={color}
-        emissiveIntensity={rhythm === "steady" ? 0.28 : 0.45}
-        roughness={0.28}
-        metalness={0.08}
-        clearcoat={0.85}
-      />
-    </mesh>
+    <primitive object={heart.heart} position={[0, -0.55, 0]} scale={0.48} />
   );
 }
 
 export default function MCQPatient({ rhythm = "steady", exam = false }) {
   const status = rhythms[rhythm] || rhythms.steady;
+  useEffect(() => {
+    if (rhythm === "flatline") return undefined;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      return undefined;
+    if (rhythm === "codeBlue") emitStudyEvent("defib");
+    const timer = window.setInterval(
+      () => emitStudyEvent("heartbeat", { rhythm }),
+      60000 / (status.rate || rhythms.steady.rate),
+    );
+    return () => window.clearInterval(timer);
+  }, [rhythm, status.rate]);
   return (
     <section
       className={`${s.monitor} ${s[rhythm] || ""}`}
       aria-label="Study session rhythm monitor"
     >
-      <div className={s.heartStage} aria-hidden="true">
+      <div className={s.heartStage} data-heart-stage aria-hidden="true">
         <Canvas
           className={s.heart}
           camera={{ position: [0, 0, 3.3], fov: 42 }}
@@ -163,7 +166,7 @@ export default function MCQPatient({ rhythm = "steady", exam = false }) {
           <ambientLight intensity={1.35} />
           <pointLight position={[-2, 2, 3]} intensity={3} color="#ffe7f1" />
           <pointLight position={[2, -1, 2]} intensity={1.4} color="#b381df" />
-          <HeartOrgan rhythm={rhythm} />
+          <HeartOrgan />
         </Canvas>
         <span className={s.heartHalo} />
       </div>

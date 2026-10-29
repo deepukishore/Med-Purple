@@ -20,13 +20,16 @@ export default function Profile() {
   const [params] = useSearchParams();
   const { user, setUser, notify, changed, initialize } = useApp();
   const { data: featureState, reload: reloadFeatures } = useData("/features");
+  const { data: progressData } = useData("/progress");
   const photoInput = useRef(null);
   const avatarDialog = useRef(null);
+  const pinnedRef = useRef(new Set());
   const [form, setForm] = useState(null),
     [busy, setBusy] = useState(false),
     [avatarBusy, setAvatarBusy] = useState(false),
     [avatarId, setAvatarId] = useState(defaultAvatarId(user.id)),
     [photoUrl, setPhotoUrl] = useState(null),
+    [pinnedStickers, setPinnedStickers] = useState([]),
     [error, setError] = useState(""),
     [confirm, setConfirm] = useState(false);
   useEffect(() => {
@@ -37,8 +40,30 @@ export default function Profile() {
     setAvatarId(featureState.preferences?.avatar_id || defaultAvatarId(user.id));
     setPhotoUrl(featureState.preferences?.avatar_photo_url || null);
   }, [featureState, user.id]);
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(`mp:pinned-stickers:${user.id}`) || "[]");
+      const names = Array.isArray(saved) ? saved.filter((name) => typeof name === "string") : [];
+      pinnedRef.current = new Set(names);
+      setPinnedStickers(names);
+    } catch {
+      pinnedRef.current = new Set();
+      setPinnedStickers([]);
+    }
+  }, [user.id]);
   if (!form) return null;
   const field = (key, value) => setForm((f) => ({ ...f, [key]: value }));
+  function updateSticker(name, toggle = false) {
+    if (!name || !progressData?.badges?.some((badge) => badge.name === name && badge.earned)) return;
+    const next = new Set(pinnedRef.current);
+    if (toggle && next.has(name)) next.delete(name);
+    else next.add(name);
+    pinnedRef.current = next;
+    const names = [...next];
+    setPinnedStickers(names);
+    try { localStorage.setItem(`mp:pinned-stickers:${user.id}`, JSON.stringify(names)); }
+    catch { /* Keep pinned stickers for this session. */ }
+  }
   async function save(e) {
     e.preventDefault();
     setBusy(true);
@@ -158,7 +183,15 @@ export default function Profile() {
           goal below.
         </p>
       )}
-      <section className={a.profileHero} aria-label="Student profile summary">
+      <section
+        className={a.profileHero}
+        aria-label="Student profile summary and badge sticker drop target"
+        onDragOver={(event) => event.preventDefault()}
+        onDrop={(event) => {
+          event.preventDefault();
+          updateSticker(event.dataTransfer.getData("application/x-med-purple-badge") || event.dataTransfer.getData("text/plain"));
+        }}
+      >
         {photoUrl ? (
           <img className={a.profilePhoto} src={profilePhotoSrc(photoUrl)} alt={`${user.name}'s profile photo`} />
         ) : (
@@ -174,6 +207,11 @@ export default function Profile() {
             {user.is_guest ? "Guest student profile" : user.email}
             {user.graduation_year ? ` / Class of ${user.graduation_year}` : ""}
           </small>
+          {pinnedStickers.length > 0 && (
+            <div className={a.pinnedStickers} aria-label="Pinned badge stickers">
+              {pinnedStickers.map((name) => <span className={a.sticker} key={name}>{name}</span>)}
+            </div>
+          )}
         </div>
         <button
           type="button"
@@ -186,6 +224,27 @@ export default function Profile() {
           Edit avatar
         </button>
       </section>
+      {!!progressData?.badges?.some((badge) => badge.earned) && (
+        <section className={a.stickerShelf} aria-labelledby="sticker-shelf-title">
+          <div>
+            <h2 id="sticker-shelf-title">Badge stickers</h2>
+            <p>Pin an earned badge here, or drag one from Progress onto your profile area. On touch screens, tap to pin.</p>
+          </div>
+          <div className={a.stickerList}>
+            {progressData.badges.filter((badge) => badge.earned).map((badge) => (
+              <button
+                className={`${a.sticker} ${pinnedStickers.includes(badge.name) ? a.stickerPinned : ""}`}
+                key={badge.name}
+                type="button"
+                aria-pressed={pinnedStickers.includes(badge.name)}
+                onClick={() => updateSticker(badge.name, true)}
+              >
+                {badge.name} · {pinnedStickers.includes(badge.name) ? "Pinned" : "Pin to profile"}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
       <dialog
         ref={avatarDialog}
         className={a.avatarDialog}

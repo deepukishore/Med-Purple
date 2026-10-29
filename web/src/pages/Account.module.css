@@ -326,6 +326,37 @@
 }
 .editAvatarButton:hover { border-color: var(--purple-400); background: var(--purple-50); }
 .editAvatarButton:focus-visible { outline: 2px solid var(--purple-600); outline-offset: 2px; }
+.profileHero[aria-label*="drop target"] { border: 2px dashed #ddc8f3; }
+.stickerShelf {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 26px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+}
+.stickerShelf h2 { margin: 0 0 5px; font-size: 18px; }
+.stickerShelf p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.stickerList, .pinnedStickers { display: flex; flex-wrap: wrap; gap: 8px; }
+.pinnedStickers { margin-top: 10px; }
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 11px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  color: #6540a9;
+  background: #f0e6ff;
+  box-shadow: 0 4px 12px #23153635;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+}
+button.sticker { cursor: pointer; }
+.sticker:focus-visible { outline: 3px solid #9270eb; outline-offset: 2px; }
+.stickerPinned { color: #33421d; background: #e9f2cf; }
 .avatarDialog {
   width: min(560px, calc(100vw - 28px));
   max-width: none;

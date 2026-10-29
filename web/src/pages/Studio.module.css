@@ -100,8 +100,10 @@
 }
 .stat strong {
   display: block;
+  font-family: "Arial Rounded MT Bold", ui-rounded, system-ui, sans-serif;
   font-size: 30px;
   letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
   margin: 6px 0;
 }
 .stat span {
@@ -588,6 +590,13 @@
   transform: rotateY(360deg);
   transition: transform 650ms ease;
 }
+.badge.earned[draggable="true"] {
+  border: 2px solid #fff;
+  box-shadow: 0 8px 18px #39264f24, inset 0 1px 0 white;
+  cursor: grab;
+  user-select: none;
+}
+.badge.earned[draggable="true"]:active { cursor: grabbing; }
 @media (prefers-reduced-motion: reduce) {
   .badge,
   .badge.earned:hover svg {

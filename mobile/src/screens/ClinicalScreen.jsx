@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Screen from "../components/Screen";
 import Button from "../components/Button";
 import useData from "../hooks/useData";
+import PatientMonitor from "../components/PatientMonitor";
 import { api } from "../context/AppContext";
 import { colors, styles as s } from "../theme";
 
@@ -171,23 +172,7 @@ export default function ClinicalScreen({ navigation }) {
           <Ionicons name="pulse-outline" size={22} color={colors.purple[600]} />
         </View>
         <Text style={s.small}>Read the ECG before choosing the finding.</Text>
-        <View
-          style={{
-            minHeight: 120,
-            borderRadius: 16,
-            backgroundColor: "#29183e",
-            alignItems: "center",
-            justifyContent: "center",
-            overflow: "hidden",
-          }}
-        >
-          <Text style={{ color: "#dfff91", fontSize: 22, letterSpacing: 2 }}>
-            〰 ──╱╲╱╲────
-          </Text>
-          <Text style={{ color: "#e6d9f1", fontSize: 10, marginTop: 5 }}>
-            ECG / CASE 04
-          </Text>
-        </View>
+        <PatientMonitor />
         <Text style={s.heading}>What is the most likely rhythm?</Text>
         <View style={[s.row, { flexWrap: "wrap" }]}>
           {ecgAnswers.map((item) =>

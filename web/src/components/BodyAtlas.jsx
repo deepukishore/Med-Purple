@@ -3,6 +3,8 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { isLowEndDevice } from "../utils/graphics";
 import s from "./BodyAtlas.module.css";
 
 const systems = [
@@ -67,25 +69,43 @@ export default function BodyAtlas() {
   }, [catalog, initialLayer]);
   useEffect(() => {
     const el = host.current;
+    const lowEnd = isLowEndDevice();
     let renderer;
+    let environmentTarget;
+    let pmremGenerator;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer = new THREE.WebGLRenderer({ antialias: !lowEnd, alpha: true });
     } catch {
       setFailure(
         "3D rendering is unavailable. Try a browser with WebGL enabled.",
       );
       return;
     }
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(devicePixelRatio, lowEnd ? 1 : 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.enabled = !lowEnd;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     el.appendChild(renderer.domElement);
     const scene = new THREE.Scene();
+    if (!lowEnd) {
+      try {
+        pmremGenerator = new THREE.PMREMGenerator(renderer);
+        const room = new RoomEnvironment();
+        environmentTarget = pmremGenerator.fromScene(room, 0.04);
+        scene.environment = environmentTarget.texture;
+        scene.environmentIntensity = 0.6;
+        room.dispose();
+        pmremGenerator.dispose();
+        pmremGenerator = null;
+      } catch {
+        pmremGenerator?.dispose();
+        pmremGenerator = null;
+      }
+    }
     scene.add(new THREE.HemisphereLight(0xffffff, 0x6d5a81, 2.5));
     const key = new THREE.DirectionalLight(0xffffff, 3);
     key.position.set(3, 4, 5);
-    key.castShadow = true;
+    key.castShadow = !lowEnd;
     key.shadow.mapSize.set(512, 512);
     key.shadow.bias = -0.00015;
     scene.add(key);
@@ -110,6 +130,8 @@ export default function BodyAtlas() {
     controls.autoRotateSpeed = 0.8;
     const draco = new DRACOLoader();
     draco.setDecoderPath("/atlas/draco/");
+    draco.setDecoderConfig({ type: lowEnd ? "js" : "wasm" });
+    draco.setWorkerLimit(lowEnd ? 1 : 2);
     const loader = new GLTFLoader();
     loader.setDRACOLoader(draco);
     async function loadBodyParts(id) {
@@ -202,7 +224,8 @@ export default function BodyAtlas() {
               const upstream = object.material;
               object.material = new THREE.MeshStandardMaterial({
                 color: systems.find((system) => system.id === id).color,
-                roughness: 0.65,
+                roughness: 0.56,
+                metalness: 0.025,
                 side: THREE.DoubleSide,
               });
               object.castShadow = true;
@@ -430,6 +453,9 @@ export default function BodyAtlas() {
       observer.disconnect();
       controls.dispose();
       draco.dispose();
+      scene.environment = null;
+      environmentTarget?.dispose();
+      pmremGenerator?.dispose();
       floor.geometry.dispose();
       floor.material.dispose();
       el.removeEventListener("pointerdown", down);
