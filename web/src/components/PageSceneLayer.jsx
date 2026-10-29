@@ -139,21 +139,83 @@ export default function PageSceneLayer({ pageRef, pathname, calm }) {
     fillLight.position.set(3, -1, 2);
     scene.add(fillLight);
 
+    const heartShape = new THREE.Shape();
+    const heartScale = 0.044;
+    for (let step = 0; step <= 120; step++) {
+      const angle = (step / 120) * Math.PI * 2;
+      const x = 16 * Math.sin(angle) ** 3 * heartScale;
+      const y =
+        (13 * Math.cos(angle) -
+          5 * Math.cos(angle * 2) -
+          2 * Math.cos(angle * 3) -
+          Math.cos(angle * 4)) *
+        heartScale;
+      if (step === 0) heartShape.moveTo(x, y);
+      else heartShape.lineTo(x, y);
+    }
+    heartShape.closePath();
+    const heartGeometry = new THREE.ExtrudeGeometry(heartShape, {
+      depth: 0.22,
+      bevelEnabled: true,
+      bevelSegments: 5,
+      steps: 1,
+      bevelSize: 0.07,
+      bevelThickness: 0.065,
+      curveSegments: 32,
+    });
+    heartGeometry.center();
     const core = new THREE.Mesh(
-      new THREE.SphereGeometry(0.74, 48, 36),
+      heartGeometry,
       new THREE.MeshPhysicalMaterial({
-        color: purple500,
-        emissive: purple400,
-        emissiveIntensity: 0.12,
+        color: new THREE.Color("#bd668c"),
+        emissive: purple800,
+        emissiveIntensity: 0.16,
         specularColor: purple100,
-        specularIntensity: 0.32,
-        roughness: 0.24,
-        metalness: 0.1,
-        clearcoat: 0.8,
-        clearcoatRoughness: 0.16,
+        specularIntensity: 0.52,
+        roughness: 0.26,
+        metalness: 0.04,
+        clearcoat: 1,
+        clearcoatRoughness: 0.12,
       }),
     );
     group.add(core);
+
+    const coronaryMaterial = new THREE.MeshStandardMaterial({
+      color: new THREE.Color("#f5c2cf"),
+      emissive: new THREE.Color("#e07da1"),
+      emissiveIntensity: 0.12,
+      roughness: 0.3,
+      metalness: 0.02,
+    });
+    const coronaryPaths = [
+      [
+        [-0.18, 0.2, 0.17],
+        [-0.08, 0.08, 0.2],
+        [0.02, -0.04, 0.2],
+        [0.18, -0.2, 0.17],
+      ],
+      [
+        [-0.08, 0.08, 0.2],
+        [-0.18, 0.02, 0.2],
+        [-0.25, -0.08, 0.17],
+      ],
+      [
+        [0.02, -0.04, 0.2],
+        [0.04, 0.1, 0.2],
+        [0.11, 0.2, 0.17],
+      ],
+    ];
+    coronaryPaths.forEach((points) => {
+      const curve = new THREE.CatmullRomCurve3(
+        points.map(([x, y, z]) => new THREE.Vector3(x, y, z)),
+      );
+      group.add(
+        new THREE.Mesh(
+          new THREE.TubeGeometry(curve, 24, 0.012, 7, false),
+          coronaryMaterial,
+        ),
+      );
+    });
 
     const orbitMaterial = new THREE.MeshStandardMaterial({
       color: purple200,

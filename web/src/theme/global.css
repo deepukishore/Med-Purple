@@ -24,6 +24,18 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+/* The study desk has a little physicality: warm paper, soft studio light,
+   and a barely-there drafting grid to make the 3D anatomy feel at home. */
+body {
+  background-image:
+    radial-gradient(ellipse at 10% 0%, #e8d8ffb0, transparent 36rem),
+    radial-gradient(ellipse at 100% 45%, #f0e6fb85, transparent 40rem),
+    linear-gradient(#77639a08 1px, transparent 1px),
+    linear-gradient(90deg, #77639a08 1px, transparent 1px);
+  background-size: auto, auto, 34px 34px, 34px 34px;
+  background-attachment: fixed;
+}
 body,
 #root {
   min-width: 320px;
@@ -259,6 +271,38 @@ summary {
 :is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"]) {
   --brand-card-line: #e5d9ef;
 }
+
+/* Cards read like little study objects, with a soft top highlight and a
+   restrained lift when the pointer gets near. */
+:is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"]) {
+  transform-style: preserve-3d;
+  transition:
+    transform 240ms var(--ease),
+    box-shadow 240ms var(--ease),
+    border-color 240ms var(--ease);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  :is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"]):hover {
+    transform: perspective(1100px) rotateX(var(--depth-tilt-x, 0deg)) rotateY(var(--depth-tilt-y, 0deg)) translateY(-3px);
+    box-shadow: 0 18px 34px #38235418, inset 0 1px 0 #ffffffc2;
+  }
+}
+:is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"]) > :is(h1,h2,h3,svg,[class*="icon"],[class*="Icon"]) {
+  transform: translateZ(8px);
+}
+
+button:not(:disabled):hover,
+a[class*="button"]:hover,
+a[class*="Button"]:hover {
+  filter: saturate(1.08);
+}
+.main {
+  perspective: 1600px;
+}
+.topbar {
+  background: #fffdf9d9;
+  box-shadow: 0 8px 28px #3323460b, inset 0 -1px 0 #ffffffb8;
+}
 :is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"]) {
   border-color: var(--brand-card-line, #e5d9ef);
   box-shadow:
@@ -278,6 +322,13 @@ summary {
   select,
   textarea {
     font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"]),
+  :is([class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"]):hover {
+    transform: none;
   }
 }
 @media (max-width: 760px) {

@@ -97,7 +97,7 @@ export default function Home() {
           <h1>
             Welcome back, <span>{d.user.name.split(" ")[0]}.</span>
           </h1>
-          <p>Your progress, your pace. Let’s make today count.</p>
+          <p>Your progress, your pace. Go be annoyingly good at medicine today.</p>
         </div>
         <Link to="/progress" className={s.streak}>
           <CalendarCheck size={22} weight="light" />

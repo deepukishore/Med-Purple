@@ -164,6 +164,45 @@ export default function AppShell() {
       });
     };
   }, [pathname, calm]);
+  useEffect(() => {
+    const main = document.querySelector("main");
+    if (
+      !main ||
+      window.matchMedia("(hover: none), (prefers-reduced-motion: reduce)").matches
+    )
+      return undefined;
+    const selector =
+      '[class*="card"], [class*="Card"], [class*="panel"], [class*="Panel"], [class*="tile"], [class*="Tile"]';
+    let active = null;
+    const reset = () => {
+      if (!active) return;
+      active.style.removeProperty("--depth-tilt-x");
+      active.style.removeProperty("--depth-tilt-y");
+      active = null;
+    };
+    const move = (event) => {
+      if (event.pointerType !== "mouse") return;
+      const target = event.target.closest?.(selector);
+      if (!target || !main.contains(target)) {
+        reset();
+        return;
+      }
+      if (active !== target) reset();
+      active = target;
+      const bounds = target.getBoundingClientRect();
+      const x = (event.clientX - bounds.left) / Math.max(bounds.width, 1) - 0.5;
+      const y = (event.clientY - bounds.top) / Math.max(bounds.height, 1) - 0.5;
+      target.style.setProperty("--depth-tilt-x", `${-y * 2.4}deg`);
+      target.style.setProperty("--depth-tilt-y", `${x * 2.4}deg`);
+    };
+    main.addEventListener("pointermove", move, { passive: true });
+    main.addEventListener("pointerleave", reset);
+    return () => {
+      main.removeEventListener("pointermove", move);
+      main.removeEventListener("pointerleave", reset);
+      reset();
+    };
+  }, [pathname]);
   if (
     pathname === "/" &&
     !loading &&
