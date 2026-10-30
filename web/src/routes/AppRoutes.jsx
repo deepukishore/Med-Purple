@@ -29,6 +29,8 @@ const Home = lazy(() => import("../pages/Home")),
   Resources = lazy(() => import("../pages/Resources")),
   Legal = lazy(() => import("../pages/Legal")),
   About = lazy(() => import("../pages/About")),
+  AnatomyAnimationLibrary = lazy(() => import("../pages/AnatomyAnimationLibrary")),
+  AnatomyAnimationPlayer = lazy(() => import("../pages/AnatomyAnimationPlayer")),
   LegalCentre = lazy(() => import("../pages/LegalCentre")),
   NotFound = lazy(() => import("../pages/NotFound"));
 function RouteEffects() {
@@ -105,6 +107,8 @@ export default function AppRoutes() {
             <Route path="preferences" element={<Preferences />} />
             <Route path="captures" element={<Captures />} />
             <Route path="anatomy" element={<Anatomy />} />
+            <Route path="anatomy-videos" element={<AnatomyAnimationLibrary />} />
+            <Route path="anatomy-videos/:lessonId" element={<AnatomyAnimationPlayer />} />
             <Route path="profile" element={<Profile />} />
             <Route path="notes" element={<Notes />} />
             <Route path="flashcards" element={<Flashcards />} />

@@ -62,7 +62,7 @@ export default function QuickCapture() {
   }
   return (
     <>
-      <button className={s.fab} onClick={openCapture} aria-label="Quick capture"><Plus size={18} /> <span>Capture</span></button>
+      <button className={s.fab} data-player-overlay="capture" onClick={openCapture} aria-label="Quick capture"><Plus size={18} /> <span>Capture</span></button>
       {open && <div className={s.backdrop} role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
         <form className={s.modal} onSubmit={save} aria-label="Quick capture form">
           <div className={s.head}><div><span className={s.eyebrow}>INBOX IT NOW. SORT IT LATER.</span><h2>Quick capture</h2></div><button type="button" className={s.close} onClick={() => setOpen(false)} aria-label="Close capture"><X size={20} /></button></div>

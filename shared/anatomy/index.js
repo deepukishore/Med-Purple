@@ -1,5 +1,11 @@
 import * as THREE from "three";
 export { referenceModels, createReferenceScene } from "./referenceModels.js";
+export {
+  anatomyLessonReferences,
+  getAnatomyLesson,
+  playableAnatomyLessons,
+  plannedAnatomyLessons,
+} from "./animationLessons.js";
 // Original schematic geometry: no patient data or third-party mesh assets.
 // Camera faces the anterior surface; anatomical right is viewer-left.
 export function createHeartScene() {

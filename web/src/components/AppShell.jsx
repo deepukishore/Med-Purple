@@ -18,6 +18,7 @@ import {
   Toolbox,
   ListChecks,
   Note,
+  Cube,
 } from "@phosphor-icons/react";
 import Logo from "./Logo";
 import StudySearch from "./StudySearch";
@@ -44,6 +45,8 @@ const links = [
   ["/learn", "Revision toolkit", Books],
   ["/medbytes", "MedBytes", PlayCircle],
   ["/exam-prep", "Exam prep", Target],
+  ["/anatomy", "Anatomy atlas", Cube],
+  ["/anatomy-videos", "3D Anatomy", PlayCircle],
   ["/clinical", "Clinical lab", Stethoscope],
   ["/study-tools", "Study tools", ListChecks],
   ["/toolbox", "Reference toolbox", Toolbox],
@@ -66,7 +69,11 @@ export default function AppShell() {
   const { data: featureState } = useData("/features");
   const translate = (label) => translations[featureState?.preferences?.language]?.[label] || label;
   const { pathname } = useLocation();
-  const dedicatedScene = ["/", "/about", "/anatomy"].includes(pathname);
+  const anatomyPlayer = pathname.startsWith("/anatomy-videos/");
+  const dedicatedScene = ["/", "/about", "/anatomy"].includes(pathname) || pathname.startsWith("/anatomy-videos");
+  const breadcrumbTitle = pathname.startsWith("/anatomy-videos")
+    ? "3D Anatomy"
+    : links.find((x) => x[0] === pathname)?.[1] || pathname.slice(1).replaceAll("-", " ") || "Study desk";
   const [menu, setMenu] = useState(false);
   const closeButton = useRef(null);
   const pageMotionRef = useRef(null);
@@ -214,7 +221,7 @@ export default function AppShell() {
     return <Navigate to="/login" replace />;
   }
   return (
-    <div className={s.shell} data-app-shell>
+    <div className={`${s.shell} ${anatomyPlayer ? s.anatomyPlayerShell : ""}`} data-app-shell>
       <a className="skip-link" href="#content">
         Skip to content
       </a>
@@ -305,9 +312,7 @@ export default function AppShell() {
           <span className={s.breadcrumb}>
             MED PURPLE <span>/</span>{" "}
             <b>
-              {translate(links.find((x) => x[0] === pathname)?.[1] ||
-                pathname.slice(1).replaceAll("-", " ") ||
-                "Study desk")}
+              {translate(breadcrumbTitle)}
             </b>
           </span>
           <div className={s.topRight}>

@@ -24,6 +24,7 @@ export default function HelpBot() {
       <button
         ref={launcher}
         className={s.launcher}
+        data-player-overlay="help"
         aria-label="Open Med Purple help chat"
         aria-haspopup="dialog"
         onClick={() => dialog.current.showModal()}

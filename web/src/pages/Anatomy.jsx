@@ -42,6 +42,7 @@ export default function Anatomy() {
         >
           Tissues & histology
         </button>
+        <Button small variant="secondary" to="/anatomy-videos">Guided 3D lessons</Button>
       </div>
       {tab === "atlas" ? (
         <BodyAtlas />

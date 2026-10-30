@@ -422,6 +422,7 @@
   color: #e6cfff;
   border-color: #6d507c;
 }
+.anatomyPlayerShell :global([data-player-overlay]) { display: none; }
 .sidebar .close {
   color: #e8d9f3;
 }
