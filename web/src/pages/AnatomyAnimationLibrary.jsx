@@ -54,7 +54,7 @@ export default function AnatomyAnimationLibrary() {
         </div>
         <div className={s.heroArt} role="img" aria-label="Rendered skeletal and cardiovascular atlas layers">
           <img src="/anatomy-previews/body-systems.webp" alt="" />
-          <span className={s.heroMarker}>ANATOMY / IN MOTION</span>
+          <span className={s.heroMarker}>ATLAS / LAYER STUDY</span>
           <span className={s.heroRing} aria-hidden="true" />
         </div>
       </header>

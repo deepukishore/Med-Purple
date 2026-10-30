@@ -31,7 +31,7 @@
 .lessonGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
 .lessonCard { min-width: 0; overflow: hidden; border: 1px solid #e3d9ea; border-radius: 18px; background: #fffdfa; box-shadow: 0 12px 28px #35283b0a; }
 .previewLink { position: relative; display: block; height: clamp(220px,28vw,330px); overflow: hidden; background: #191420; }
-.preview { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 450ms ease; }
+.preview { display: block; width: 100%; height: 100%; object-fit: contain; background: #191420; transition: transform 450ms ease; }
 .previewLink:hover .preview { transform: scale(1.025); }
 .previewBadge,.previewDuration { position: absolute; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #ffffff38; border-radius: 999px; background: #16111ecb; color: #f6effb; backdrop-filter: blur(8px); }
 .previewBadge { top: 13px; left: 13px; padding: 7px 10px; font-size: .56rem; font-weight: 850; letter-spacing: .1em; }

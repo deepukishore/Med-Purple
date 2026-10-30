@@ -43,6 +43,7 @@
 .lessonHead p { max-width: 760px; margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
 .durationPill { flex: 0 0 auto; border: 1px solid #ded0e8; border-radius: 999px; padding: 10px 14px; color: #624773; background: #fffdfc; font-size: 0.7rem; font-weight: 800; }
 .objectives { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 18px; border-block: 1px solid #e8deed; padding: 12px 0; }
+.objectivesMobile { display: none; }
 .objectives > span { margin-right: 3px; }
 .objectives p { margin: 0; color: #594b62; font-size: 0.72rem; }
 .objectives p::before { content: "•"; color: #8a65bd; margin-right: 7px; }
@@ -135,7 +136,13 @@
 }
 @media (max-width: 760px) {
   .lessonHead { align-items: flex-start; flex-direction: column; gap: 10px; }
-  .objectives { align-items: flex-start; flex-direction: column; gap: 7px; }
+  .objectivesDesktop { display: none; }
+  .objectivesMobile { display: flex; align-items: stretch; flex-direction: column; gap: 0; margin: 0 0 10px; padding: 0; }
+  .objectivesMobile summary { list-style: none; padding: 10px 12px; color: #694b76; font-size: 0.62rem; font-weight: 850; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+  .objectivesMobile summary::-webkit-details-marker { display: none; }
+  .objectivesMobile summary::after { content: "+"; float: right; font-size: 0.9rem; line-height: 1; }
+  .objectivesMobile[open] summary::after { content: "−"; }
+  .objectivesMobile p { padding: 0 12px 10px; }
   .stageAndInfo { display: flex; flex-direction: column; }
   .stageColumn { padding: 10px; }
   .stage { height: min(68vw, 300px); min-height: 270px; border-radius: 14px; }

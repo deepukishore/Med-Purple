@@ -422,6 +422,9 @@
   color: #e6cfff;
   border-color: #6d507c;
 }
+@media (max-width: 760px) {
+  .touchSceneShell :global([data-player-overlay]) { display: none; }
+}
 .anatomyPlayerShell :global([data-player-overlay]) { display: none; }
 .sidebar .close {
   color: #e8d9f3;

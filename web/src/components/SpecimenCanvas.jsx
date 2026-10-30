@@ -74,8 +74,8 @@ export default function SpecimenCanvas({
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(33, 1, 0.1, 80);
-    camera.position.set(0, 0.08, 5.9);
-    camera.lookAt(0, 0, 0);
+    camera.position.set(0, 0.2, 6.8);
+    camera.lookAt(0, 0.12, 0);
     scene.add(new THREE.HemisphereLight(0xf6efff, 0x241338, 2.15));
     const key = new THREE.DirectionalLight(0xfff4e8, 3.1);
     key.position.set(4, 5, 5);
@@ -553,7 +553,8 @@ export default function SpecimenCanvas({
     const reset = () => {
       target.x = 0;
       target.y = -0.24;
-      camera.position.set(0, 0.08, 5.9);
+      camera.position.set(0, 0.2, 6.8);
+      camera.lookAt(0, 0.12, 0);
       restoreSelection();
       identify.current?.(null);
       wake();

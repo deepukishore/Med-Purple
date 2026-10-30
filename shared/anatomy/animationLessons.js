@@ -301,7 +301,7 @@ export const playableAnatomyLessons = [
         title: "Follow the great-vessel connections",
         start: 20,
         end: 27,
-        from: frame([0.07, 1.32, 0.34], [0.025, 1.32, 0.02], { cardiovascular: 0.88, organ: 1 }, heartValveIds),
+        from: frame([0.07, 1.32, 0.34], [0.025, 1.32, 0.02], { cardiovascular: 0.88, organ: 1 }, heartVesselIds),
         to: frame([0.03, 1.15, 1.22], [0.02, 1.13, 0.02], { cardiovascular: 1, organ: 0.2 }, heartVesselIds),
         highlightIds: [
           "cardiovascular:Superior vena cava",

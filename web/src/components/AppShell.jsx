@@ -70,6 +70,7 @@ export default function AppShell() {
   const translate = (label) => translations[featureState?.preferences?.language]?.[label] || label;
   const { pathname } = useLocation();
   const anatomyPlayer = pathname.startsWith("/anatomy-videos/");
+  const touchScene = ["/", "/about", "/anatomy", "/anatomy-videos"].includes(pathname);
   const dedicatedScene = ["/", "/about", "/anatomy"].includes(pathname) || pathname.startsWith("/anatomy-videos");
   const breadcrumbTitle = pathname.startsWith("/anatomy-videos")
     ? "3D Anatomy"
@@ -221,7 +222,7 @@ export default function AppShell() {
     return <Navigate to="/login" replace />;
   }
   return (
-    <div className={`${s.shell} ${anatomyPlayer ? s.anatomyPlayerShell : ""}`} data-app-shell>
+    <div className={`${s.shell} ${anatomyPlayer ? s.anatomyPlayerShell : ""} ${touchScene ? s.touchSceneShell : ""}`} data-app-shell>
       <a className="skip-link" href="#content">
         Skip to content
       </a>

@@ -591,6 +591,19 @@ function AnatomyAnimationPlayerView({ lesson }) {
           setHighlights,
           annotationLayout,
         };
+        if (import.meta.env.DEV) window.__mpAnatomyDebug = () => {
+          renderer.render(scene, camera);
+          return {
+            camera: camera.position.toArray(),
+            layers: Object.fromEntries(lesson.assets.map((asset) => [asset.id, {
+              rootVisible: layerRoots.get(asset.id)?.visible,
+              opacity: layerMaterials.get(asset.id)?.opacity,
+              count: [...objectsById.values()].flat().filter((item) => item.userData.layer === asset.id).length,
+              visible: [...objectsById.values()].flat().filter((item) => item.userData.layer === asset.id && item.visible).length,
+            }])),
+            rendered: true,
+          };
+        };
         applyTime(timeRef.current, true);
         setReady(true);
         setLoadProgress(100);
@@ -598,7 +611,7 @@ function AnatomyAnimationPlayerView({ lesson }) {
         const animate = (now) => {
           raf = requestAnimationFrame(animate);
           if (disposed || !visible || document.hidden) return;
-          const delta = last ? Math.min((now - last) / 1000, 0.05) : 0;
+          const delta = last ? Math.min((now - last) / 1000, 0.12) : 0;
           last = now;
           if (playingRef.current && !exploreRef.current) {
             const next = timeRef.current + delta * speedRef.current;
