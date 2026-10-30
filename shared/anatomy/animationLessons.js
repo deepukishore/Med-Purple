@@ -79,6 +79,56 @@ const heartOrientationIds = [
   "cardiovascular:Pulmonary trunk",
   "cardiovascular:Ascending aorta",
 ];
+const flowStructureNames = [
+  ...heartCardiovascularNames,
+  "Left pulmonary artery",
+  "Right pulmonary artery",
+  "Left superior pulmonary vein",
+  "Left inferior pulmonary vein",
+  "Right superior pulmonary vein",
+  "Right inferior pulmonary vein",
+];
+const elbowBoneNames = [
+  "Humerus.l", "Radius.l", "Ulna.l",
+  "Distal phalanx of fifth finger of hand.l", "Distal phalanx of first finger of hand.l",
+  "Distal phalanx of fourth finger of hand.l", "Distal phalanx of second finger of hand.l",
+  "Distal phalanx of third finger of hand.l", "Middle phalanx of fifth finger of hand.l",
+  "Middle phalanx of fourth finger of hand.l", "Middle phalanx of second finger of hand.l",
+  "Middle phalanx of third finger of hand.l", "Proximal phalanx of fifth finger of hand.l",
+  "Proximal phalanx of first finger of hand.l", "Proximal phalanx of fourth finger of hand.l",
+  "Proximal phalanx of second finger of hand.l", "Proximal phalanx of third finger of hand.l",
+  ...["First", "Second", "Third", "Fourth", "Fifth"].map((finger) => `${finger} metacarpal bone.l`),
+];
+const forearmMotionNames = [
+  "Radius.l", "Ulna.l",
+  "Brachioradialis muscle.l", "Flexor carpi radialis.l",
+  "Humeral head of flexor carpi ulnaris.l", "Ulnar head of flexor carpi ulnaris.l",
+  "Humero-ulnar head of flexor digitorum superficialis.l", "Radial head of flexor digitorum superficialis.l",
+  "Extensor carpi radialis brevis.l", "Extensor carpi radialis longus.l",
+  "Humeral head of extensor carpi ulnaris.l", "Ulnar head of extensor carpi ulnaris.l",
+  ...elbowBoneNames.filter((name) => /finger|metacarpal/.test(name)),
+];
+const elbowMuscleNames = [
+  "Acromial part of deltoid muscle.l", "Clavicular part of deltoid muscle.l",
+  "Scapular spinal part of deltoid muscle.l", "Long head of biceps brachii.l",
+  "Short head of biceps brachii.l", "Brachialis muscle.l",
+  "Lateral head of triceps brachii.l", "Long head of triceps brachii.l",
+  "Medial head of triceps brachii.l", ...forearmMotionNames.slice(2),
+];
+const elbowJointNames = [
+  "Articular capsule of elbow joint.l", "Radial collateral ligament.l", "Ulnar collateral ligament.l",
+];
+const thoraxSkeletonNames = [
+  "Body of sternum", "Manubrium of sternum", "First rib.l", "First rib.r", "Second rib.l", "Second rib.r",
+  "Third rib.l", "Third rib.r", "Fourth rib.l", "Fourth rib.r", "Fifth rib.l", "Fifth rib.r",
+  "Sixth rib.l", "Sixth rib.r", "Seventh rib.l", "Seventh rib.r", "Eighth rib.l", "Eighth rib.r",
+  "Ninth rib.l", "Ninth rib.r", "Tenth rib.l", "Tenth rib.r", "Eleventh rib.l", "Eleventh rib.r",
+  "Twelfth rib.l", "Twelfth rib.r",
+];
+const thoraxVesselNames = [
+  "Right atrium", "Left atrium", "Right ventricle", "Left ventricle", "Superior vena cava",
+  "Inferior vena cava (thoracic part)", "Pulmonary trunk", "Ascending aorta", "Thoracic aorta",
+];
 const heartReviewIds = [
   ...heartChamberIds,
   "cardiovascular:Superior vena cava",
@@ -345,13 +395,160 @@ export const playableAnatomyLessons = [
     modelNote: "The selected cardiovascular GLB and BodyParts3D parts are static atlas meshes. Supplied meshes include the SVC, thoracic and abdominal IVC parts, pulmonary trunk, four chamber names and selected valve parts. Pulmonary veins and other details are omitted; valve geometry is partial. There is no rig, beating animation or hemodynamic simulation.",
     preview: "/anatomy-previews/heart-anatomy.webp",
   },
+  {
+    id: "blood-circulation",
+    version: "1.0.0",
+    status: "ready",
+    mode: "structure-focus",
+    narrationTrack: null,
+    title: "Follow one circuit of blood",
+    subtitle: "Trace the pulmonary and systemic circuits through supplied vessel meshes and schematic exchange beds.",
+    system: "Cardiovascular",
+    topic: "Pulmonary and systemic flow",
+    searchTerms: ["blood flow", "pulmonary circulation", "systemic circulation", "pulmonary artery", "pulmonary vein", "capillary"],
+    duration: 48,
+    startState: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.86 }, ["cardiovascular:Superior vena cava", "cardiovascular:Inferior vena cava (thoracic part)", "cardiovascular:Inferior vena cava (abdominal part)", "cardiovascular:Right atrium"]),
+    endState: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, flowStructureNames.map((name) => `cardiovascular:${name}`)),
+    cameraViews: {
+      anterior: { label: "Anterior", position: [0.03, 1.32, 0.64], target: [0.02, 1.30, 0.02] },
+      oblique: { label: "3/4 view", position: [0.32, 1.36, 0.56], target: [0.02, 1.30, 0.02] },
+    },
+    assets: [{ id: "cardiovascular", type: "gltf", src: "/atlas/cardiovascular.glb", label: "Named cardiovascular structures", structureNames: flowStructureNames }],
+    flowRoute: [
+      { label: "Right atrium", position: [-0.015, 1.295, 0.045], oxygenation: "low", structureId: "cardiovascular:Right atrium" },
+      { label: "Right ventricle", position: [0.025, 1.285, 0.052], oxygenation: "low", structureId: "cardiovascular:Right ventricle" },
+      { label: "Pulmonary trunk and arteries", position: [0.03, 1.35, 0.045], oxygenation: "low", structureId: "cardiovascular:Pulmonary trunk" },
+      { label: "Pulmonary capillary bed · schematic", position: [0.20, 1.43, 0.02], oxygenation: "low", structureId: null },
+      { label: "Pulmonary veins", position: [0.12, 1.40, -0.035], oxygenation: "high", structureId: "cardiovascular:Left superior pulmonary vein" },
+      { label: "Left atrium", position: [0.02, 1.30, -0.005], oxygenation: "high", structureId: "cardiovascular:Left atrium" },
+      { label: "Left ventricle", position: [0.045, 1.28, 0.04], oxygenation: "high", structureId: "cardiovascular:Left ventricle" },
+      { label: "Aorta", position: [0.01, 1.34, 0.02], oxygenation: "high", structureId: "cardiovascular:Ascending aorta" },
+      { label: "Systemic capillary beds · schematic", position: [-0.20, 1.08, 0.02], oxygenation: "high", structureId: null },
+      { label: "Venae cavae", position: [-0.02, 1.22, 0.02], oxygenation: "low", structureId: "cardiovascular:Inferior vena cava (thoracic part)" },
+      { label: "Right atrium", position: [-0.015, 1.295, 0.045], oxygenation: "low", structureId: "cardiovascular:Right atrium" },
+    ],
+    learningObjectives: [
+      "Trace blood through the pulmonary circuit from the right ventricle to the left atrium.",
+      "Trace blood through the systemic circuit from the left ventricle and back to the right atrium.",
+      "Explain where oxygenation changes and why pulmonary arteries and veins are named by direction, not oxygen content.",
+    ],
+    chapters: [
+      { id: "systemic-return", title: "Return to the right atrium", start: 0, end: 6, from: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.86 }, ["cardiovascular:Superior vena cava", "cardiovascular:Inferior vena cava (thoracic part)", "cardiovascular:Inferior vena cava (abdominal part)", "cardiovascular:Right atrium"]), to: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.9 }, ["cardiovascular:Superior vena cava", "cardiovascular:Inferior vena cava (thoracic part)", "cardiovascular:Inferior vena cava (abdominal part)", "cardiovascular:Right atrium"]), flowFrom: 9, flowTo: 10, highlightIds: ["cardiovascular:Superior vena cava", "cardiovascular:Inferior vena cava (thoracic part)", "cardiovascular:Right atrium"], annotations: [{ structureId: "cardiovascular:Right atrium", label: "Right atrium" }], caption: "Systemic venous return reaches the right atrium through the superior and inferior venae cavae. The marker and connecting route are schematic.", subtitle: { start: 0.2, end: 5.8, text: "Venae cavae return relatively oxygen-poor blood to the right atrium." }, narration: { start: 0.2, end: 5.8, text: "Venae cavae return relatively oxygen-poor blood to the right atrium." } },
+      { id: "right-heart", title: "Move through the right heart", start: 6, end: 12, from: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.9 }, ["cardiovascular:Right atrium", "cardiovascular:Right ventricle"]), to: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, ["cardiovascular:Right atrium", "cardiovascular:Right ventricle"]), flowFrom: 0, flowTo: 1, highlightIds: ["cardiovascular:Right atrium", "cardiovascular:Right ventricle"], annotations: [{ structureId: "cardiovascular:Right ventricle", label: "Right ventricle" }], caption: "The right atrium passes blood to the right ventricle. The connecting valve is not shown as a complete moving valve in these assets.", subtitle: { start: 6.2, end: 11.8, text: "Right atrium → right ventricle; the valve is not animated here." }, narration: { start: 6.2, end: 11.8, text: "Right atrium to right ventricle; valve motion is not simulated." } },
+      { id: "pulmonary-outflow", title: "Travel to the lungs", start: 12, end: 18, from: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, ["cardiovascular:Right ventricle", "cardiovascular:Pulmonary trunk", "cardiovascular:Bifurcation of pulmonary trunk", "cardiovascular:Left pulmonary artery", "cardiovascular:Right pulmonary artery"]), to: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, ["cardiovascular:Right ventricle", "cardiovascular:Pulmonary trunk", "cardiovascular:Bifurcation of pulmonary trunk", "cardiovascular:Left pulmonary artery", "cardiovascular:Right pulmonary artery"]), flowFrom: 1, flowTo: 3, highlightIds: ["cardiovascular:Right ventricle", "cardiovascular:Pulmonary trunk", "cardiovascular:Bifurcation of pulmonary trunk", "cardiovascular:Left pulmonary artery", "cardiovascular:Right pulmonary artery"], annotations: [{ structureId: "cardiovascular:Pulmonary trunk", label: "Pulmonary trunk" }, { structureId: "cardiovascular:Left pulmonary artery", label: "Pulmonary artery" }], caption: "The right ventricle sends blood into the pulmonary trunk, which divides toward the lungs. Pulmonary arteries carry relatively oxygen-poor blood.", subtitle: { start: 12.2, end: 17.8, text: "Pulmonary arteries lead away from the heart to the lungs." }, narration: { start: 12.2, end: 17.8, text: "The pulmonary trunk divides into arteries that carry blood to the lungs." } },
+      { id: "pulmonary-exchange", title: "Exchange gases in the lungs", start: 18, end: 24, from: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, ["cardiovascular:Left pulmonary artery", "cardiovascular:Right pulmonary artery"]), to: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, ["cardiovascular:Left pulmonary artery", "cardiovascular:Right pulmonary artery"]), flowFrom: 3, flowTo: 4, highlightIds: [], annotations: [], caption: "At pulmonary capillaries, carbon dioxide leaves blood and oxygen enters. The capillary bed is a schematic teaching waypoint, not supplied geometry.", subtitle: { start: 18.2, end: 23.8, text: "Gas exchange changes blood oxygenation in pulmonary capillaries." }, narration: { start: 18.2, end: 23.8, text: "In the lung capillaries, carbon dioxide leaves and oxygen enters the blood." } },
+      { id: "pulmonary-return", title: "Return to the left atrium", start: 24, end: 30, from: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, ["cardiovascular:Left superior pulmonary vein", "cardiovascular:Left inferior pulmonary vein", "cardiovascular:Right superior pulmonary vein", "cardiovascular:Right inferior pulmonary vein", "cardiovascular:Left atrium"]), to: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, ["cardiovascular:Left superior pulmonary vein", "cardiovascular:Left inferior pulmonary vein", "cardiovascular:Right superior pulmonary vein", "cardiovascular:Right inferior pulmonary vein", "cardiovascular:Left atrium"]), flowFrom: 4, flowTo: 5, highlightIds: ["cardiovascular:Left superior pulmonary vein", "cardiovascular:Left inferior pulmonary vein", "cardiovascular:Right superior pulmonary vein", "cardiovascular:Right inferior pulmonary vein", "cardiovascular:Left atrium"], annotations: [{ structureId: "cardiovascular:Left superior pulmonary vein", label: "Pulmonary vein" }, { structureId: "cardiovascular:Left atrium", label: "Left atrium" }], caption: "Pulmonary veins return oxygen-rich blood from the lungs to the left atrium. The supplied model includes named pulmonary veins.", subtitle: { start: 24.2, end: 29.8, text: "Pulmonary veins carry oxygen-rich blood back to the left atrium." }, narration: { start: 24.2, end: 29.8, text: "Pulmonary veins return oxygenated blood to the left atrium." } },
+      { id: "left-heart", title: "Move through the left heart", start: 30, end: 36, from: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, ["cardiovascular:Left atrium", "cardiovascular:Left ventricle"]), to: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, ["cardiovascular:Left atrium", "cardiovascular:Left ventricle"]), flowFrom: 5, flowTo: 6, highlightIds: ["cardiovascular:Left atrium", "cardiovascular:Left ventricle"], annotations: [{ structureId: "cardiovascular:Left atrium", label: "Left atrium" }, { structureId: "cardiovascular:Left ventricle", label: "Left ventricle" }], caption: "The left atrium passes blood to the left ventricle, which pumps into the systemic circuit.", subtitle: { start: 30.2, end: 35.8, text: "Left atrium → left ventricle → aorta." }, narration: { start: 30.2, end: 35.8, text: "The left ventricle pumps oxygen-rich blood into the aorta." } },
+      { id: "systemic-outflow", title: "Deliver blood to the body", start: 36, end: 42, from: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, ["cardiovascular:Left ventricle", "cardiovascular:Ascending aorta", "cardiovascular:Thoracic aorta"]), to: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, ["cardiovascular:Left ventricle", "cardiovascular:Ascending aorta", "cardiovascular:Thoracic aorta"]), flowFrom: 6, flowTo: 8, highlightIds: ["cardiovascular:Left ventricle", "cardiovascular:Ascending aorta", "cardiovascular:Thoracic aorta"], annotations: [{ structureId: "cardiovascular:Ascending aorta", label: "Aorta" }], caption: "The aorta distributes blood to systemic tissues. The peripheral capillary bed and connecting course are schematic teaching links, not mapped asset geometry.", subtitle: { start: 36.2, end: 41.8, text: "Systemic capillaries exchange oxygen and nutrients with tissues." }, narration: { start: 36.2, end: 41.8, text: "The aorta sends blood through systemic arteries to tissue capillaries." } },
+      { id: "close-the-loop", title: "Return through systemic veins", start: 42, end: 48, from: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, ["cardiovascular:Superior vena cava", "cardiovascular:Inferior vena cava (thoracic part)", "cardiovascular:Inferior vena cava (abdominal part)", "cardiovascular:Right atrium"]), to: frame([0.03, 1.32, 0.64], [0.02, 1.30, 0.02], { cardiovascular: 0.94 }, flowStructureNames.map((name) => `cardiovascular:${name}`)), flowFrom: 8, flowTo: 10, highlightIds: ["cardiovascular:Superior vena cava", "cardiovascular:Inferior vena cava (thoracic part)", "cardiovascular:Right atrium"], annotations: [{ structureId: "cardiovascular:Superior vena cava", label: "Vena cava" }, { structureId: "cardiovascular:Right atrium", label: "Cycle repeats" }], caption: "After systemic exchange, blood returns through veins to the venae cavae and right atrium. The loop repeats; this marker is illustrative, not a flow or pressure simulation.", subtitle: { start: 42.2, end: 47.8, text: "Veins return relatively oxygen-poor blood to the right atrium." }, narration: { start: 42.2, end: 47.8, text: "Systemic venous return completes the circuit at the right atrium." } },
+    ],
+    knowledgeCheck: { label: "Test the circulation pathway", href: "/mcqs?subject=Physiology" },
+    references: [
+      { label: "OpenStax · Heart anatomy and circuits", href: "https://openstax.org/books/anatomy-and-physiology-2e/pages/19-1-heart-anatomy" },
+      { label: "OpenStax · Circulatory pathways", href: "https://openstax.org/books/anatomy-and-physiology-2e/pages/20-5-circulatory-pathways" },
+      { label: "Atlas asset attribution and licenses", href: "/atlas/ATTRIBUTION.md" },
+    ],
+    modelNote: "Named heart chambers, great vessels and pulmonary arteries/veins come from the supplied static cardiovascular mesh. The pulmonary and systemic capillary beds and their connecting route are schematic waypoints. The moving marker teaches route order only; it is not a flow, oxygenation, pressure or patient simulation.",
+    preview: "/anatomy-previews/blood-circulation.webp",
+  },
+  {
+    id: "muscle-joints",
+    version: "1.0.0",
+    status: "ready",
+    mode: "structure-focus",
+    narrationTrack: null,
+    title: "Elbow flexion, simplified",
+    subtitle: "See the forearm hinge against named muscle and elbow-joint reference meshes.",
+    system: "Musculoskeletal",
+    topic: "Elbow movement",
+    searchTerms: ["muscle", "biceps", "triceps", "elbow", "flexion", "radius", "ulna", "joint"],
+    duration: 32,
+    startState: frame([0.55, 1.17, 1.55], [0.21, 1.12, -0.02], { skeletal: 0.95, muscular: 0.84, joints: 0.5 }),
+    endState: frame([0.55, 1.17, 1.55], [0.21, 1.12, -0.02], { skeletal: 0.95, muscular: 0.84, joints: 0.5 }),
+    cameraViews: { elbow: { label: "Elbow", position: [0.55, 1.17, 1.55], target: [0.21, 1.12, -0.02] } },
+    assets: [
+      { id: "skeletal", type: "gltf", src: "/atlas/skeletal.glb", label: "Left arm bones", structureNames: elbowBoneNames },
+      { id: "muscular", type: "gltf", src: "/atlas/muscular.glb", label: "Left arm muscles", structureNames: elbowMuscleNames },
+      { id: "joints", type: "gltf", src: "/atlas/joints.glb", label: "Left elbow joint reference", structureNames: elbowJointNames },
+    ],
+    motions: [{ id: "elbow-flexion", axis: [0, 0, 1], pivot: [0.22, 1.09, -0.03], structureIds: forearmMotionNames.map((name) => `${(name === "Radius.l" || name === "Ulna.l" || name.includes("phalanx") || name.includes("metacarpal")) ? "skeletal" : "muscular"}:${name}`).concat(elbowBoneNames.filter((name) => /finger|metacarpal/.test(name)).map((name) => `skeletal:${name}`)) }],
+    learningObjectives: [
+      "Identify the supplied humerus, radius, ulna, elbow capsule and collateral ligaments.",
+      "Describe elbow flexion and extension as simplified hinge-like motion in this demonstration.",
+      "Explain that highlighted biceps and triceps meshes do not deform or contract in this static atlas.",
+    ],
+    chapters: [
+      { id: "orient-elbow", title: "Orient to the elbow", start: 0, end: 6, from: frame([0.55, 1.17, 1.55], [0.21, 1.12, -0.02], { skeletal: 0.95, muscular: 0.84, joints: 0.5 }), to: frame([0.55, 1.17, 1.55], [0.21, 1.12, -0.02], { skeletal: 0.95, muscular: 0.84, joints: 0.5 }), motion: { "elbow-flexion": [0, 0] }, highlightIds: ["skeletal:Humerus.l", "skeletal:Radius.l", "skeletal:Ulna.l", "joints:Articular capsule of elbow joint.l"], annotations: [{ structureId: "skeletal:Humerus.l", label: "Humerus" }, { structureId: "skeletal:Radius.l", label: "Radius" }, { structureId: "joints:Articular capsule of elbow joint.l", label: "Elbow capsule" }], caption: "A close view of named left-arm bones and supplied elbow tissues. The joint capsule and collateral ligament meshes stay static.", subtitle: { start: 0.2, end: 5.8, text: "Start with the humerus, radius, ulna and static elbow reference meshes." }, narration: { start: 0.2, end: 5.8, text: "Start with the named bones and elbow joint reference meshes." } },
+      { id: "muscle-context", title: "Locate the muscle groups", start: 6, end: 12, from: frame([0.55, 1.17, 1.55], [0.21, 1.12, -0.02], { skeletal: 0.55, muscular: 0.96, joints: 0.5 }), to: frame([0.55, 1.17, 1.55], [0.21, 1.12, -0.02], { skeletal: 0.55, muscular: 0.96, joints: 0.5 }), motion: { "elbow-flexion": [0, 0] }, highlightIds: ["muscular:Long head of biceps brachii.l", "muscular:Short head of biceps brachii.l", "muscular:Lateral head of triceps brachii.l", "skeletal:Radius.l"], annotations: [{ structureId: "muscular:Long head of biceps brachii.l", label: "Biceps brachii · static mesh" }, { structureId: "muscular:Lateral head of triceps brachii.l", label: "Triceps · static mesh" }], caption: "The biceps and triceps are shown as static source meshes. Their highlights identify structures; they do not depict contraction or force.", subtitle: { start: 6.2, end: 11.8, text: "Muscle highlights identify anatomy, not a simulated contraction." }, narration: { start: 6.2, end: 11.8, text: "The biceps and triceps meshes remain static reference anatomy." } },
+      { id: "flexion-demo", title: "Flex the forearm · simplified", start: 12, end: 20, from: frame([0.55, 1.17, 1.55], [0.21, 1.12, -0.02], { skeletal: 0.85, muscular: 0.9, joints: 0.38 }), to: frame([0.55, 1.17, 1.55], [0.21, 1.12, -0.02], { skeletal: 0.85, muscular: 0.9, joints: 0.38 }), motion: { "elbow-flexion": [0, 1.05] }, highlightIds: ["skeletal:Radius.l", "skeletal:Ulna.l", "muscular:Long head of biceps brachii.l", "muscular:Brachialis muscle.l", "joints:Articular capsule of elbow joint.l"], annotations: [{ structureId: "skeletal:Radius.l", label: "Forearm meshes rotate as one" }, { structureId: "muscular:Long head of biceps brachii.l", label: "Biceps · highlighted only" }], caption: "A procedural hinge rotates grouped radius, ulna, hand and forearm-muscle meshes around an approximate elbow pivot. This is a simplified rigid-group illustration, not a rig, measured range of motion, or force simulation.", subtitle: { start: 12.2, end: 19.8, text: "Simplified elbow flexion: the grouped forearm meshes rotate as one rigid unit." }, narration: { start: 12.2, end: 19.8, text: "The forearm group rotates around an approximate elbow pivot; the muscles do not deform." } },
+      { id: "extension-demo", title: "Extend to the start position", start: 20, end: 26, from: frame([0.55, 1.17, 1.55], [0.21, 1.12, -0.02], { skeletal: 0.85, muscular: 0.9, joints: 0.38 }), to: frame([0.55, 1.17, 1.55], [0.21, 1.12, -0.02], { skeletal: 0.95, muscular: 0.84, joints: 0.5 }), motion: { "elbow-flexion": [1.05, 0] }, highlightIds: ["skeletal:Radius.l", "skeletal:Ulna.l", "muscular:Lateral head of triceps brachii.l"], annotations: [{ structureId: "skeletal:Ulna.l", label: "Return to extension" }, { structureId: "muscular:Lateral head of triceps brachii.l", label: "Triceps · static mesh" }], caption: "The rigid group returns toward the atlas pose. The supplied muscles and elbow tissues remain undeformed throughout.", subtitle: { start: 20.2, end: 25.8, text: "Return the forearm group to its original reference pose." }, narration: { start: 20.2, end: 25.8, text: "This is a teaching hinge only; no muscle shortening is modeled." } },
+      { id: "review-movement", title: "Review the simplified movement", start: 26, end: 32, from: frame([0.55, 1.17, 1.55], [0.21, 1.12, -0.02], { skeletal: 0.95, muscular: 0.84, joints: 0.5 }), to: frame([0.55, 1.17, 1.55], [0.21, 1.12, -0.02], { skeletal: 0.95, muscular: 0.84, joints: 0.5 }), motion: { "elbow-flexion": [0, 0] }, highlightIds: ["skeletal:Humerus.l", "skeletal:Radius.l", "skeletal:Ulna.l", "muscular:Long head of biceps brachii.l", "muscular:Lateral head of triceps brachii.l", "joints:Articular capsule of elbow joint.l"], annotations: [{ structureId: "joints:Articular capsule of elbow joint.l", label: "Static joint reference" }], caption: "Replay the hinge and inspect the named meshes. The atlas has no motion rig; this single-joint display is deliberately simplified.", subtitle: { start: 26.2, end: 31.8, text: "Review the bones, muscle references and static elbow tissues." }, narration: { start: 26.2, end: 31.8, text: "Use the quiz to review the structures and the limits of this simplified hinge." } },
+    ],
+    knowledgeCheck: { label: "Test muscle and joint anatomy", href: "/mcqs?subject=Anatomy" },
+    references: [
+      { label: "OpenStax · Skeletal muscle and movement", href: "https://openstax.org/books/anatomy-and-physiology-2e/pages/10-2-skeletal-muscle" },
+      { label: "OpenStax · Joints", href: "https://openstax.org/books/anatomy-and-physiology-2e/pages/9-1-classification-of-joints" },
+      { label: "Atlas asset attribution and licenses", href: "/atlas/ATTRIBUTION.md" },
+    ],
+    modelNote: "The source GLBs contain no skeletal rig or animation clips. This original procedural hinge groups supplied forearm/hand and selected forearm muscle meshes around an approximate elbow pivot. It is deliberately simplified: no muscle deformation, tendon force, measured range of motion, patient motion, or clinical validation is represented.",
+    preview: "/anatomy-previews/muscle-joints.webp",
+  },
+  {
+    id: "thoracic-relationships",
+    version: "1.0.0",
+    status: "ready",
+    mode: "layer-reveal",
+    narrationTrack: null,
+    title: "Inside the thorax: layers and relationships",
+    subtitle: "Open a focused view from the rib cage to the mediastinum and diaphragm.",
+    system: "Thorax",
+    topic: "Regional anatomy and dissection",
+    searchTerms: ["thorax", "mediastinum", "sternum", "ribs", "heart", "esophagus", "trachea", "diaphragm", "dissection"],
+    duration: 36,
+    startState: frame([0.05, 1.34, 0.78], [0, 1.28, 0], { skeletal: 0.82, muscular: 0.05, organ: 0.02, cardiovascular: 0.03 }, thoraxSkeletonNames.map((name) => `skeletal:${name}`)),
+    endState: frame([0.05, 1.34, 0.78], [0, 1.28, 0], { skeletal: 0.2, muscular: 0.68, organ: 0.75, cardiovascular: 0.88 }, [
+      ...thoraxSkeletonNames.map((name) => `skeletal:${name}`),
+      ...thoraxVesselNames.map((name) => `cardiovascular:${name}`),
+      "muscular:Diaphragm", "BodyParts3D:organ:FJ2541", "BodyParts3D:organ:FJ2563",
+    ]),
+    cameraViews: { thorax: { label: "Thorax", position: [0.05, 1.34, 0.78], target: [0, 1.28, 0] } },
+    assets: [
+      { id: "skeletal", type: "gltf", src: "/atlas/skeletal.glb", label: "Rib cage and sternum", structureNames: thoraxSkeletonNames },
+      { id: "cardiovascular", type: "gltf", src: "/atlas/cardiovascular.glb", label: "Heart chambers and great vessels", structureNames: thoraxVesselNames },
+      { id: "muscular", type: "gltf", src: "/atlas/muscular.glb", label: "Diaphragm", structureNames: ["Diaphragm"] },
+      { id: "organ", type: "bodyparts3d", src: "/atlas/bp-organ", label: "Trachea and esophagus", sourceIds: ["FJ2541", "FJ2563"] },
+    ],
+    learningObjectives: [
+      "Relate the heart to the central mediastinum within the thorax.",
+      "Identify the rib cage, sternum, trachea, esophagus, great vessels and diaphragm in supplied meshes.",
+      "Describe the diaphragm as the boundary between thoracic and abdominal cavities.",
+    ],
+    chapters: [
+      { id: "thoracic-frame", title: "Begin with the thoracic frame", start: 0, end: 7, from: frame([0.05, 1.34, 0.78], [0, 1.28, 0], { skeletal: 0.82, muscular: 0.05, organ: 0.02, cardiovascular: 0.03 }, thoraxSkeletonNames.map((name) => `skeletal:${name}`)), to: frame([0.05, 1.34, 0.78], [0, 1.28, 0], { skeletal: 0.82, muscular: 0.05, organ: 0.02, cardiovascular: 0.03 }, thoraxSkeletonNames.map((name) => `skeletal:${name}`)), highlightIds: ["skeletal:Body of sternum", "skeletal:Manubrium of sternum", "skeletal:Fourth rib.l"], annotations: [{ structureId: "skeletal:Body of sternum", label: "Sternum" }, { structureId: "skeletal:Fourth rib.l", label: "Rib cage" }], caption: "The sternum and ribs form the visible anterior thoracic framework. The lesson reveals only supplied named atlas meshes.", subtitle: { start: 0.2, end: 6.8, text: "Start with the sternum and rib cage enclosing the thorax." }, narration: { start: 0.2, end: 6.8, text: "First orient to the sternum and ribs that frame the thoracic cavity." } },
+      { id: "open-mediastinum", title: "Reveal the mediastinal structures", start: 7, end: 14, from: frame([0.05, 1.34, 0.78], [0, 1.28, 0], { skeletal: 0.52, muscular: 0.05, organ: 0.08, cardiovascular: 0.78 }, [...thoraxSkeletonNames.map((name) => `skeletal:${name}`), ...thoraxVesselNames.map((name) => `cardiovascular:${name}`)]), to: frame([0.05, 1.34, 0.78], [0, 1.28, 0], { skeletal: 0.52, muscular: 0.05, organ: 0.08, cardiovascular: 0.78 }, [...thoraxSkeletonNames.map((name) => `skeletal:${name}`), ...thoraxVesselNames.map((name) => `cardiovascular:${name}`)]), highlightIds: ["cardiovascular:Right atrium", "cardiovascular:Left ventricle", "cardiovascular:Ascending aorta"], annotations: [{ structureId: "cardiovascular:Right atrium", label: "Heart in mediastinum" }, { structureId: "cardiovascular:Ascending aorta", label: "Great vessel" }], caption: "The heart lies centrally in the mediastinum. The atlas provides heart chambers and selected great vessels; surrounding lungs are not included in this lesson scene.", subtitle: { start: 7.2, end: 13.8, text: "The heart occupies the mediastinum between the pleural cavities." }, narration: { start: 7.2, end: 13.8, text: "Now reveal the heart and great vessels at the center of the thorax." } },
+      { id: "posterior-relations", title: "Compare the airway and food passage", start: 14, end: 21, from: frame([0.28, 1.36, 0.82], [0, 1.28, 0], { skeletal: 0.35, muscular: 0.04, organ: 0.72, cardiovascular: 0.58 }, ["BodyParts3D:organ:FJ2541", "BodyParts3D:organ:FJ2563", "cardiovascular:Right atrium", "cardiovascular:Left atrium", "cardiovascular:Pulmonary trunk", "cardiovascular:Ascending aorta", "skeletal:Body of sternum"]), to: frame([0.28, 1.36, 0.82], [0, 1.28, 0], { skeletal: 0.35, muscular: 0.04, organ: 0.72, cardiovascular: 0.58 }, ["BodyParts3D:organ:FJ2541", "BodyParts3D:organ:FJ2563", "cardiovascular:Right atrium", "cardiovascular:Left atrium", "cardiovascular:Pulmonary trunk", "cardiovascular:Ascending aorta", "skeletal:Body of sternum"]), highlightIds: ["BodyParts3D:organ:FJ2541", "BodyParts3D:organ:FJ2563"], annotations: [{ structureId: "BodyParts3D:organ:FJ2541", label: "Trachea" }, { structureId: "BodyParts3D:organ:FJ2563", label: "Esophagus" }], caption: "The trachea lies anterior to the esophagus. Their supplied meshes are shown with selected central heart structures for regional orientation.", subtitle: { start: 14.2, end: 20.8, text: "The esophagus runs posterior to the trachea through the mediastinum." }, narration: { start: 14.2, end: 20.8, text: "Compare the paired relationships: trachea anterior, esophagus posterior." } },
+      { id: "diaphragm-boundary", title: "Find the thoracic floor", start: 21, end: 28, from: frame([0.05, 1.2, 0.94], [0, 1.08, 0], { skeletal: 0.3, muscular: 0.68, organ: 0.38, cardiovascular: 0.3 }, ["muscular:Diaphragm", "skeletal:Body of sternum", "skeletal:Twelfth rib.l", "skeletal:Twelfth rib.r", "cardiovascular:Inferior vena cava (thoracic part)"]), to: frame([0.05, 1.2, 0.94], [0, 1.08, 0], { skeletal: 0.3, muscular: 0.68, organ: 0.38, cardiovascular: 0.3 }, ["muscular:Diaphragm", "skeletal:Body of sternum", "skeletal:Twelfth rib.l", "skeletal:Twelfth rib.r", "cardiovascular:Inferior vena cava (thoracic part)"]), highlightIds: ["muscular:Diaphragm"], annotations: [{ structureId: "muscular:Diaphragm", label: "Diaphragm" }], caption: "The diaphragm forms the floor of the thoracic cavity and separates it from the abdominopelvic cavity. Its mesh is static here.", subtitle: { start: 21.2, end: 27.8, text: "The diaphragm separates thoracic and abdominal cavities." }, narration: { start: 21.2, end: 27.8, text: "The diaphragm forms the thoracic floor and the roof of the abdominal cavity." } },
+      { id: "regional-review", title: "Review the regional relationships", start: 28, end: 36, from: frame([0.05, 1.34, 0.78], [0, 1.28, 0], { skeletal: 0.2, muscular: 0.68, organ: 0.75, cardiovascular: 0.88 }, [
+        ...thoraxSkeletonNames.map((name) => `skeletal:${name}`), ...thoraxVesselNames.map((name) => `cardiovascular:${name}`),
+        "muscular:Diaphragm", "BodyParts3D:organ:FJ2541", "BodyParts3D:organ:FJ2563",
+      ]), to: frame([0.05, 1.34, 0.78], [0, 1.28, 0], { skeletal: 0.2, muscular: 0.68, organ: 0.75, cardiovascular: 0.88 }, [
+        ...thoraxSkeletonNames.map((name) => `skeletal:${name}`), ...thoraxVesselNames.map((name) => `cardiovascular:${name}`),
+        "muscular:Diaphragm", "BodyParts3D:organ:FJ2541", "BodyParts3D:organ:FJ2563",
+      ]), highlightIds: ["skeletal:Body of sternum", "cardiovascular:Left atrium", "BodyParts3D:organ:FJ2541", "BodyParts3D:organ:FJ2563", "muscular:Diaphragm"], annotations: [{ structureId: "skeletal:Body of sternum", label: "Anterior frame" }, { structureId: "cardiovascular:Left atrium", label: "Mediastinal heart" }, { structureId: "muscular:Diaphragm", label: "Thoracic floor" }], caption: "Review the available structures in context. This is a layer reveal, not surgical dissection; lungs, pleura and several intervening tissues are absent from this selected scene.", subtitle: { start: 28.2, end: 35.8, text: "Review the frame, mediastinal contents and diaphragm." }, narration: { start: 28.2, end: 35.8, text: "Replay the sequence or explore the selected meshes in 3D." } },
+    ],
+    knowledgeCheck: { label: "Test thoracic relationships", href: "/mcqs?subject=Anatomy" },
+    references: [
+      { label: "OpenStax · Anatomical terminology and body cavities", href: "https://openstax.org/books/anatomy-and-physiology-2e/pages/1-6-anatomical-terminology" },
+      { label: "OpenStax · Heart anatomy", href: "https://openstax.org/books/anatomy-and-physiology-2e/pages/19-1-heart-anatomy" },
+      { label: "OpenStax · Respiratory structures", href: "https://openstax.org/books/anatomy-and-physiology-2e/pages/22-1-organs-and-structures-of-the-respiratory-system" },
+      { label: "Atlas asset attribution and licenses", href: "/atlas/ATTRIBUTION.md" },
+    ],
+    modelNote: "This regional layer reveal uses the supplied named sternum/rib meshes, selected static heart and great-vessel meshes, diaphragm mesh, and BodyParts3D trachea (FJ2541) and esophagus (FJ2563). It is not a surgical dissection. The lungs, pleura and many intervening tissues are absent; no unknown mesh is labeled as anatomy.",
+    preview: "/anatomy-previews/thoracic-relationships.webp",
+  },
 ];
 
-export const plannedAnatomyLessons = [
-  { id: "blood-circulation", title: "Blood circulation", system: "Cardiovascular", topic: "Flow pathway", status: "planned", duration: null, requirement: "Needs a reviewed route path and authored flow markers; the atlas meshes alone do not encode flow direction." },
-  { id: "muscle-joints", title: "Skeletal muscle and joints", system: "Musculoskeletal", topic: "Movement", status: "planned", duration: null, requirement: "Supplied muscle, bone and joint meshes have no rig or animation clips. Add a reviewed rig or label any hinge demonstration as simplified." },
-  { id: "anatomical-relationships", title: "Anatomical dissection and relationships", system: "Whole body", topic: "Regional anatomy", status: "planned", duration: null, requirement: "Needs a reviewed neighboring-structure relation map and authored dissection sequence." },
-];
+export const plannedAnatomyLessons = [];
 
 export const anatomyLessonReferences = {
   skeletal: "skeletal",

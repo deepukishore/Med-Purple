@@ -99,10 +99,10 @@ export default function AnatomyAnimationLibrary() {
       </section>
 
       <section className={s.pipeline} aria-labelledby="pipeline-title">
-        <div className={s.pipelineHead}><span className={s.eyebrow}>NEXT IN THE PIPELINE</span><h2 id="pipeline-title">More scenes are being prepared.</h2><p>These lessons need reviewed path data or motion assets before they can be presented as complete animations.</p></div>
-        <div className={s.pipelineList}>{plannedAnatomyLessons.map((lesson, index) => <article key={lesson.id} className={s.pipelineItem}><span>0{index + 3}</span><div><small>{lesson.system} · {lesson.topic}</small><h3>{lesson.title}</h3><p>{lesson.requirement}</p></div><b>In production</b></article>)}</div>
+        <div className={s.pipelineHead}><span className={s.eyebrow}>FUTURE CAPABILITIES</span><h2 id="pipeline-title">Build on the 3D lesson set.</h2><p>All five starter lessons are ready. Future expansions can add fuller lung and pleural relationships, a rigged elbow model and recorded narration.</p></div>
+        <div className={s.pipelineList}>{plannedAnatomyLessons.map((lesson, index) => <article key={lesson.id} className={s.pipelineItem}><span>{String(playableAnatomyLessons.length + index + 1).padStart(2, "0")}</span><div><small>{lesson.system} · {lesson.topic}</small><h3>{lesson.title}</h3><p>{lesson.requirement}</p></div><b>In production</b></article>)}</div>
       </section>
-      <aside className={s.scopeNote}><span>MODEL SCOPE</span><p>The current source GLBs are named static meshes. These lessons animate layer visibility, camera and highlights; they do not invent motion clips, rigs or physiological simulation.</p><Link to="/anatomy">Explore the complete anatomy atlas <ArrowUpRight size={15} /></Link></aside>
+      <aside className={s.scopeNote}><span>MODEL SCOPE</span><p>The source GLBs contain no rigs or clips. The elbow lesson uses an explicitly simplified rigid hinge, and the circulation lesson uses a schematic route marker. Neither depicts validated physiological motion.</p><Link to="/anatomy">Explore the complete anatomy atlas <ArrowUpRight size={15} /></Link></aside>
     </main>
   );
 }

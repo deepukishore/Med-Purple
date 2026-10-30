@@ -54,11 +54,20 @@ function stable(value) {
   return value;
 }
 
-assert.equal(playableAnatomyLessons.length, 2, "first collection should have two complete lessons");
+assert.ok(playableAnatomyLessons.length >= 2, "at least the initial two anatomy lessons are required");
+assert.equal(new Set(playableAnatomyLessons.map((lesson) => lesson.id)).size, playableAnatomyLessons.length, "lesson IDs must be unique");
 for (const lesson of playableAnatomyLessons) {
   assert.ok(lesson.version && lesson.duration > 0 && lesson.assets.length, `${lesson.id}: missing version, duration or assets`);
   assert.ok(lesson.knowledgeCheck?.href?.startsWith("/mcqs?"), `${lesson.id}: knowledge-check route is required`);
   assert.ok(lesson.references?.length, `${lesson.id}: authoritative references are required`);
+  for (const motion of lesson.motions || []) {
+    assert.ok(motion.id && motion.axis?.length === 3 && motion.pivot?.length === 3, `${lesson.id}: incomplete procedural motion definition`);
+    for (const id of motion.structureIds) assertStructureExists(lesson, id);
+  }
+  for (const node of lesson.flowRoute || []) {
+    assert.ok(node.label && node.position?.length === 3, `${lesson.id}: invalid flow-route waypoint`);
+    if (node.structureId) assertStructureExists(lesson, node.structureId);
+  }
   assert.deepEqual(stable(lesson.startState), stable(lesson.chapters[0].from), `${lesson.id}: startState does not match first chapter`);
   assert.deepEqual(stable(lesson.endState), stable(lesson.chapters.at(-1).to), `${lesson.id}: endState does not match final chapter`);
   assert.equal(lesson.chapters[0].start, 0, `${lesson.id}: timeline must begin at zero`);
@@ -77,6 +86,14 @@ for (const lesson of playableAnatomyLessons) {
     }
     for (const id of chapter.highlightIds) assertStructureExists(lesson, id);
     for (const annotation of chapter.annotations) assertStructureExists(lesson, annotation.structureId);
+    if (chapter.motion) for (const [id, range] of Object.entries(chapter.motion)) {
+      assert.ok(lesson.motions?.some((motion) => motion.id === id), `${lesson.id}/${chapter.id}: unknown motion ${id}`);
+      assert.ok(range.length === 2 && range.every(Number.isFinite), `${lesson.id}/${chapter.id}: invalid motion range`);
+    }
+    if (chapter.flowFrom !== undefined || chapter.flowTo !== undefined) {
+      assert.ok(Number.isInteger(chapter.flowFrom) && Number.isInteger(chapter.flowTo), `${lesson.id}/${chapter.id}: flow segment needs integer endpoints`);
+      assert.ok(lesson.flowRoute?.[chapter.flowFrom] && lesson.flowRoute?.[chapter.flowTo], `${lesson.id}/${chapter.id}: flow segment is outside route`);
+    }
   }
   console.log(`${lesson.id}: ${lesson.chapters.length} chapters, ${lesson.assets.length} asset groups, ${lesson.duration}s; structure references verified`);
 }

@@ -208,6 +208,10 @@ function AnatomyAnimationPlayerView({ lesson }) {
     const objectsById = new Map();
     const anchorsById = new Map();
     const loadedRoots = [];
+    const motionObjectBases = new Map();
+    let flowMarker = null;
+    const flowMaterials = [];
+    const flowLines = [];
     const filteredMeshMaterial = new THREE.MeshBasicMaterial({ visible: false });
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
@@ -232,6 +236,45 @@ function AnatomyAnimationPlayerView({ lesson }) {
       }
       const root = layerRoots.get(layerId);
       if (root) root.visible = value > 0.012;
+    };
+
+    const applyMotion = (chapter, ease) => {
+      for (const motion of lesson.motions || []) {
+        const range = chapter.motion?.[motion.id] || [0, 0];
+        const angle = THREE.MathUtils.lerp(range[0], range[1], ease);
+        const pivot = new THREE.Vector3(...motion.pivot);
+        const rotation = new THREE.Matrix4().makeRotationFromQuaternion(
+          new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(...motion.axis).normalize(), angle),
+        );
+        const transform = new THREE.Matrix4().makeTranslation(pivot.x, pivot.y, pivot.z)
+          .multiply(rotation)
+          .multiply(new THREE.Matrix4().makeTranslation(-pivot.x, -pivot.y, -pivot.z));
+        for (const id of motion.structureIds) {
+          for (const object of objectsById.get(id) || []) {
+            const base = motionObjectBases.get(object);
+            if (!base) continue;
+            const local = base.parentInverse.clone().multiply(transform.clone().multiply(base.world));
+            local.decompose(object.position, object.quaternion, object.scale);
+            object.updateMatrix();
+          }
+        }
+      }
+    };
+
+    const applyFlow = (chapter, phase) => {
+      if (!flowMarker || !lesson.flowRoute || !Number.isInteger(chapter.flowFrom) || !Number.isInteger(chapter.flowTo)) return;
+      const from = lesson.flowRoute[chapter.flowFrom];
+      const to = lesson.flowRoute[chapter.flowTo];
+      if (!from || !to) return;
+      flowLines.forEach((line, index) => {
+        line.visible = index >= Math.min(chapter.flowFrom, chapter.flowTo)
+          && index < Math.max(chapter.flowFrom, chapter.flowTo);
+      });
+      flowMarker.position.lerpVectors(new THREE.Vector3(...from.position), new THREE.Vector3(...to.position), phase);
+      const color = new THREE.Color(from.oxygenation === "high" ? "#ef6a83" : "#58b7e8");
+      color.lerp(new THREE.Color(to.oxygenation === "high" ? "#ef6a83" : "#58b7e8"), phase);
+      flowMarker.material.color.copy(color);
+      flowMarker.material.emissive.copy(color).multiplyScalar(0.32);
     };
 
     const setHighlights = (ids) => {
@@ -380,6 +423,8 @@ function AnatomyAnimationPlayerView({ lesson }) {
         controls.target.copy(pose.target);
       }
       const ease = immediate || reducedRef.current ? phase : smooth(phase);
+      applyMotion(chapter, ease);
+      applyFlow(chapter, phase);
       for (const asset of lesson.assets) {
         const fromValue = chapter.from.layers[asset.id] ?? 0;
         const toValue = chapter.to.layers[asset.id] ?? 0;
@@ -486,6 +531,29 @@ function AnatomyAnimationPlayerView({ lesson }) {
       const rim = new THREE.PointLight(0x8e72ff, 15, 5);
       rim.position.set(1.4, 1.8, -0.1);
       scene.add(rim);
+      if (lesson.flowRoute?.length > 1) {
+        for (let index = 1; index < lesson.flowRoute.length; index += 1) {
+          const from = lesson.flowRoute[index - 1];
+          const to = lesson.flowRoute[index];
+          const oxygenated = from.oxygenation === "high" && to.oxygenation === "high";
+          const geometry = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(...from.position), new THREE.Vector3(...to.position),
+          ]);
+          const material = new THREE.LineBasicMaterial({ color: oxygenated ? "#ef6a83" : "#58b7e8", transparent: true, opacity: 0.44, depthWrite: false });
+          const line = new THREE.Line(geometry, material);
+          line.visible = false;
+          scene.add(line);
+          flowLines.push(line);
+          flowMaterials.push(material);
+        }
+        flowMarker = new THREE.Mesh(
+          new THREE.SphereGeometry(0.009, lowEnd ? 10 : 16, lowEnd ? 8 : 12),
+          new THREE.MeshStandardMaterial({ color: "#58b7e8", emissive: "#245070", emissiveIntensity: 0.65, roughness: 0.28, metalness: 0.02 }),
+        );
+        flowMarker.name = "Illustrative blood-flow marker";
+        flowMarker.renderOrder = 4;
+        scene.add(flowMarker);
+      }
       camera.position.set(...lesson.startState.camera.position);
       camera.lookAt(...lesson.startState.camera.target);
       controls = new OrbitControls(camera, renderer.domElement);
@@ -572,6 +640,19 @@ function AnatomyAnimationPlayerView({ lesson }) {
         }
         if (disposed) return;
         scene.updateMatrixWorld(true);
+        for (const motion of lesson.motions || []) {
+          for (const id of motion.structureIds) {
+            for (const object of objectsById.get(id) || []) {
+              object.updateWorldMatrix(true, false);
+              const parent = object.parent;
+              parent?.updateWorldMatrix(true, false);
+              motionObjectBases.set(object, {
+                world: object.matrixWorld.clone(),
+                parentInverse: parent ? parent.matrixWorld.clone().invert() : new THREE.Matrix4(),
+              });
+            }
+          }
+        }
         for (const [id, objects] of objectsById) {
           const object = objects[0];
           const bounds = new THREE.Box3().setFromObject(object);
@@ -688,6 +769,10 @@ function AnatomyAnimationPlayerView({ lesson }) {
         for (const material of layerMaterials.values()) material.dispose();
         for (const material of highlightMaterials.values()) material.dispose();
         filteredMeshMaterial.dispose();
+        flowLines.forEach((line) => line.geometry.dispose());
+        flowMaterials.forEach((material) => material.dispose());
+        flowMarker?.geometry.dispose();
+        flowMarker?.material.dispose();
         environment?.dispose();
         pmrem?.dispose();
         renderer?.dispose();
@@ -779,7 +864,7 @@ function AnatomyAnimationPlayerView({ lesson }) {
 
       <section className={s.playerFrame} aria-label={`${lesson.title} 3D anatomy player`}>
         <div className={s.playerTop}>
-          <div className={s.playerIdentity}><span className={s.statusDot} /><span>ANATOMY STUDIO</span><i>/</i><b>{lesson.id === "body-systems" ? "LAYER REVEAL" : "HEART ATLAS"}</b></div>
+          <div className={s.playerIdentity}><span className={s.statusDot} /><span>ANATOMY STUDIO</span><i>/</i><b>{lesson.system.toUpperCase()} ATLAS</b></div>
           <div className={s.modeSwitch} role="group" aria-label="Viewing mode">
             <button type="button" aria-pressed={!explore} onClick={() => setExplore(false)}>Guided</button>
             <button type="button" aria-pressed={explore} onClick={() => setExplore(true)}>Explore</button>
@@ -788,7 +873,7 @@ function AnatomyAnimationPlayerView({ lesson }) {
         <div className={s.stageAndInfo}>
           <div className={s.stageColumn}>
             <div className={s.stage} ref={stageRef}>
-              <div className={s.stageHeader}><span>{lesson.mode === "layer-reveal" ? "REFERENCE BODY / LAYER STUDY" : "CARDIAC REGION / SOURCE-MESH VIEW"}</span><span>{ready ? "SCENE READY" : loadError ? "SCENE LIMITED" : "PREPARING SCENE"}</span></div>
+              <div className={s.stageHeader}><span>{lesson.system.toUpperCase()} / {lesson.mode === "layer-reveal" ? "LAYER STUDY" : "SOURCE-MESH VIEW"}</span><span>{ready ? "SCENE READY" : loadError ? "SCENE LIMITED" : "PREPARING SCENE"}</span></div>
               <div className={s.canvasHost} ref={hostRef} role="application" aria-label="Interactive 3D anatomy model. Drag to orbit, use a trackpad or pinch to zoom, and select a named structure." tabIndex={0} />
               <svg className={s.annotationLines} aria-hidden="true" viewBox={`0 0 ${Math.max(1, hostRef.current?.clientWidth || 1)} ${Math.max(1, hostRef.current?.clientHeight || 1)}`} preserveAspectRatio="none">
                 {annotationPositions.map((annotation) => <g key={annotation.structureId}><line x1={annotation.anchorX} y1={annotation.anchorY} x2={annotation.lineX} y2={annotation.labelY} /><circle cx={annotation.anchorX} cy={annotation.anchorY} r="3.5" /></g>)}
