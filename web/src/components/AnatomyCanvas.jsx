@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createHeartScene, createReferenceScene } from "@med-purple/anatomy";
+import { isLowEndDevice } from "../utils/graphics";
 export default function AnatomyCanvas({
   selected,
   onSelect,
@@ -21,6 +22,10 @@ export default function AnatomyCanvas({
     const el = host.current;
     let renderer, raf, model;
     setFailed(false);
+    if (isLowEndDevice()) {
+      setFailed(true);
+      return undefined;
+    }
     try {
       model =
         modelId === "heart"
@@ -212,9 +217,11 @@ export default function AnatomyCanvas({
   return (
     <div
       ref={host}
-      role="application"
+      role={failed ? "img" : "application"}
       aria-label={
-        compact
+        failed
+          ? `Static ${modelId} anatomy view. Use the structure list to study.`
+          : compact
           ? "Interactive schematic 3D heart preview. Drag to rotate, pinch to zoom, or focus this model and use arrow keys. Press R to reset."
           : `Interactive ${modelId} model. Drag to rotate, pinch or scroll to zoom. Arrow keys rotate; plus and minus zoom; R resets.`
       }
@@ -246,18 +253,17 @@ export default function AnatomyCanvas({
       }}
     >
       {failed && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 20,
-            display: "grid",
-            placeContent: "center",
-            textAlign: "center",
-          }}
-        >
-          <strong>3D is unavailable on this device.</strong>
-          <p>You can still study every structure using the list.</p>
-        </div>
+        <>
+          <img
+            src={`/anatomy-previews/${modelId === "heart" ? "heart-anatomy" : "body-systems"}.webp`}
+            alt=""
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
+          />
+          <div style={{ position: "absolute", inset: 20, display: "grid", placeContent: "end center", textAlign: "center", pointerEvents: "none" }}>
+            <strong>Static anatomy view.</strong>
+            <p>Use the structure list to keep studying.</p>
+          </div>
+        </>
       )}
     </div>
   );

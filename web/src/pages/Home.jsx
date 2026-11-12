@@ -46,7 +46,7 @@ export default function Home() {
       <header className={s.opening}>
         <div className={s.openingLayout}>
           <div className={s.openingCopy}>
-            <span className={s.openingKicker}><i /> MED PURPLE / ANATOMY IN MOTION</span>
+            <span className={s.openingKicker}><i /> Med Purple, anatomy in motion</span>
             <h1>See the body.<br /><em>Know why.</em></h1>
             <p>
               Step into a medical study space made for looking closer, testing what you know, and keeping the ideas that matter.
@@ -82,10 +82,10 @@ export default function Home() {
               </button>
             )}
           </div>
-          <HomeSpecimenStage className={s.openingStage} />
+          <HomeSpecimenStage className={s.openingStage} progress={record} />
         </div>
         <a className={s.scrollCue} href="#study-path">
-          <span>SCROLL INTO YOUR NEXT STUDY MOVE</span><ArrowDown size={15} />
+          <span>Scroll into your next study move</span><ArrowDown size={15} />
         </a>
       </header>
       <div className={s.ticker} aria-label="Reference anatomy study facts">
@@ -98,7 +98,7 @@ export default function Home() {
       <section className={s.studyPath} id="study-path" aria-labelledby="study-path-title">
         <div className={s.pathIntro}>
           <div>
-            <span className={s.sectionKicker}>A STUDY SESSION, IN THREE MOVES</span>
+            <span className={s.sectionKicker}>A study session, in three moves</span>
             <h2 id="study-path-title">Look closer.<br /><em>Bring it back.</em></h2>
           </div>
           <p>Move from an anatomical view to a real question, then save a prompt for the next time you sit down.</p>
@@ -131,20 +131,20 @@ export default function Home() {
 
       <section className={s.practiceScene} aria-labelledby="practice-title">
         <div className={s.practiceIntro}>
-          <span className={s.sectionKicker}>ACTIVE RECALL / LIVE QUESTION</span>
+          <span className={s.sectionKicker}>Active recall, live question</span>
           <h2 id="practice-title">Make the idea<br /><em>come back to you.</em></h2>
           <p>Choose an answer, submit it, and read the explanation. Your response is recorded in your practice history.</p>
           <Link to="/mcqs" className={s.textRoute}>Browse question practice <ArrowRight size={16} /></Link>
         </div>
         <div className={s.questionStage}>
-          <span className={s.stageIndex}>PRACTICE WINDOW / 01</span>
+          <span className={s.stageIndex}>Practice window 1</span>
           <QuickRecall onCompleted={() => { dashboard.reload(); progress.reload(); }} />
         </div>
       </section>
 
       <section className={s.learningRecord} aria-labelledby="learning-record-title">
         <div className={s.recordHeading}>
-          <span className={s.sectionKicker}>YOUR STUDY RECORD / REAL ACTIVITY</span>
+          <span className={s.sectionKicker}>Your study record</span>
           <h2 id="learning-record-title">A little progress,<br /><em>made visible.</em></h2>
           <p>Keep going from the practice already recorded for you. These totals come from your saved study history.</p>
           <Link to="/progress" className={s.textRoute}>Open study history <ArrowUpRight size={16} /></Link>
@@ -152,14 +152,14 @@ export default function Home() {
         <div className={s.recordInstrument}>
           <div className={s.recordArc} aria-hidden="true"><span /></div>
           <div className={s.recordData}>
-            <div><span>ANSWERS</span><strong>{record ? totalAnswered.toLocaleString() : "—"}</strong></div>
-            <div><span>ACCURACY</span><strong>{record && totalAnswered ? `${record.accuracy}%` : "—"}</strong></div>
-            <div><span>STREAK</span><strong>{record?.streak ?? "—"}<small>{record ? " days" : ""}</small></strong></div>
+            <div><span>Answers</span><strong>{record ? totalAnswered.toLocaleString() : "—"}</strong></div>
+            <div><span>Accuracy</span><strong>{record && totalAnswered ? `${record.accuracy}%` : "—"}</strong></div>
+            <div><span>Streak</span><strong>{record?.streak ?? "—"}<small>{record ? " days" : ""}</small></strong></div>
           </div>
           <div className={s.recordFocus}>
             <span className={s.recordFocusIcon}>{weakest ? <Target size={18} /> : <Sparkle size={18} />}</span>
             <div>
-              <span>{weakest ? "LOWEST RECORDED SUBJECT" : "FIRST STUDY MOVE"}</span>
+              <span>{weakest ? "Lowest recorded subject" : "First study move"}</span>
               <strong>{weakest ? weakest.subject : "Start with one question set"}</strong>
             </div>
             <Link to={nextPath} aria-label={weakest ? `Continue ${weakest.subject}` : "Start a five question set"}><ArrowUpRight size={18} /></Link>
@@ -171,7 +171,7 @@ export default function Home() {
       <section className={s.medbyteScene} aria-labelledby="medbyte-title">
         <div className={s.lessonNumber} aria-hidden="true">MP / 03</div>
         <div className={s.lessonCopy}>
-          <span className={s.sectionKicker}>A SHORT CHANGE OF PACE / MEDBYTES</span>
+          <span className={s.sectionKicker}>A short change of pace, MedBytes</span>
           {lesson ? (
             <>
               <h2 id="medbyte-title">{lesson.title}</h2>
@@ -191,7 +191,7 @@ export default function Home() {
         <div className={s.lessonStage} aria-hidden="true">
           <span className={s.lessonScan} />
           <span className={s.lessonPlate}><PlayCircle size={50} weight="light" /></span>
-          <span className={s.lessonMeasure}>CONCEPT / 03 MIN</span>
+          <span className={s.lessonMeasure}>{lesson?.duration_seconds ? `${Math.ceil(lesson.duration_seconds / 60)} min` : "Play a lesson"}</span>
           <span className={s.lessonRule} />
         </div>
       </section>
@@ -199,23 +199,23 @@ export default function Home() {
       <section className={s.continueSection} aria-labelledby="continue-title">
         <div className={s.continueHead}>
           <div>
-            <span className={s.sectionKicker}>KEEP THE STUDY MOVING</span>
+            <span className={s.sectionKicker}>Keep the study moving</span>
             <h2 id="continue-title">Your next move is ready.</h2>
           </div>
           <Link to="/learn">All study tools <ArrowUpRight size={16} /></Link>
         </div>
         <div className={s.continueLine}>
           <Link to={nextPath} className={s.continueLead}>
-            <span>CONTINUE LEARNING</span>
+            <span>Continue learning</span>
             <strong>{weakest ? weakest.subject : "Build your practice baseline"}</strong>
             <small>{weakest ? `${weakest.accuracy}% across ${weakest.answered} answered ${weakest.answered === 1 ? "question" : "questions"}` : "A five-question set gives your progress a starting point."}</small>
             <b>{nextLabel} <ArrowRight size={16} /></b>
           </Link>
           <Link to="/flashcards" className={s.continueNode}>
-            <span><Stack size={19} /></span><small>RECALL</small><strong>Review a card</strong><ArrowUpRight size={16} />
+            <span><Stack size={19} /></span><small>Recall</small><strong>Review a card</strong><ArrowUpRight size={16} />
           </Link>
           <Link to="/notes" className={s.continueNode}>
-            <span><BookOpenText size={19} /></span><small>ORGANISE</small><strong>Open notes</strong><ArrowUpRight size={16} />
+            <span><BookOpenText size={19} /></span><small>Organise</small><strong>Open notes</strong><ArrowUpRight size={16} />
           </Link>
           {d && (
             <div className={s.goalDial} aria-label={`${completedGoals} of ${goals.length} recorded daily goals completed`}>
@@ -228,7 +228,7 @@ export default function Home() {
 
       <StoryBar />
       <footer className={s.homeFooter}>
-        <span>MED PURPLE / EDUCATION AND REVISION</span>
+        <span>Med Purple, education and revision</span>
         <Link to="/about">The story behind the study space <ArrowUpRight size={15} /></Link>
         <span className={s.footerNote}>Clinical information should be checked against current authoritative sources.</span>
       </footer>

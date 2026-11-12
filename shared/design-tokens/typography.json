@@ -2,12 +2,13 @@
   "body": "Manrope",
   "display": "DM Serif Display",
   "sizes": {
-    "caption": 12,
+    "caption": 13,
     "small": 14,
     "body": 16,
     "subheading": 20,
     "heading": 28,
-    "hero": 42
+    "hero": 44,
+    "display": 56
   },
   "weights": {
     "regular": 400,
@@ -16,5 +17,9 @@
     "bold": 700,
     "extrabold": 800
   },
-  "lineHeight": 1.55
+  "lineHeight": 1.55,
+  "tracking": {
+    "display": -0.035,
+    "body": 0
+  }
 }

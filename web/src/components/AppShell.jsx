@@ -11,6 +11,7 @@ import {
   List,
   X,
   Moon,
+  Sun,
   ChatsCircle,
   Info,
   Target,
@@ -32,6 +33,7 @@ import { useApp } from "../context/AppContext";
 import useData from "../hooks/useData";
 import { PageSkeleton, ErrorState } from "./States";
 import s from "./AppShell.module.css";
+import { applyTheme } from "../theme";
 import policies from "../../../shared/legal.json";
 const PageSceneLayer = lazy(() => import("./PageSceneLayer"));
 const publicPaths = [
@@ -103,6 +105,14 @@ export default function AppShell() {
       return false;
     }
   });
+  const [dark, setDark] = useState(() => {
+    try {
+      const saved = localStorage.getItem("mp:theme");
+      return saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    } catch {
+      return false;
+    }
+  });
   useEffect(() => {
     setMenu(false);
   }, [pathname]);
@@ -114,6 +124,11 @@ export default function AppShell() {
       localStorage.setItem("mp:large", String(large));
     } catch {}
   }, [calm, large]);
+  useEffect(() => {
+    applyTheme(dark ? "dark" : "light");
+    try { localStorage.setItem("mp:theme", dark ? "dark" : "light"); }
+    catch { /* The current theme remains active for this session. */ }
+  }, [dark]);
   useEffect(() => {
     const close = (event) => {
       if (event.key === "Escape") setMenu(false);
@@ -320,6 +335,16 @@ export default function AppShell() {
             {user && !loading && <XPBadge />}
             <StudySearch />
             <StudyEffects calm={calm} />
+            <button
+              onClick={() => setDark((value) => !value)}
+              aria-pressed={dark}
+              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+              title={dark ? "Switch to light mode" : "Switch to dark mode"}
+              className={s.preference}
+            >
+              {dark ? <Sun size={17} /> : <Moon size={17} />}
+              <span>{dark ? "Light mode" : "Dark mode"}</span>
+            </button>
             <button
               onClick={() => setCalm(!calm)}
               aria-pressed={calm}

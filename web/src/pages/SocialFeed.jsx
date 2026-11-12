@@ -13,6 +13,10 @@ import {
   ChatCircleDots,
   ThumbsUp,
   Sparkle,
+  Brain,
+  HandsClapping,
+  Fire,
+  Confetti,
 } from "@phosphor-icons/react";
 import useData from "../hooks/useData";
 import usePageMeta from "../hooks/usePageMeta";
@@ -40,7 +44,7 @@ export function Author({ item }) {
       <span>
         <strong>{item.author}</strong>
         <small>
-          Level {item.author_level} · {item.author_xp} XP
+          Level {item.author_level}, {item.author_xp} XP
         </small>
       </span>
     </Link>
@@ -48,9 +52,11 @@ export function Author({ item }) {
 }
 
 function PostReactions({ item, disabled, onReact }) {
+  const icons = { love: Heart, laugh: Sparkle, brain: Brain, clap: HandsClapping, fire: Fire, celebrate: Confetti };
   return (
     <div className={s.postReactions} role="group" aria-label="React to this post">
       {POST_REACTIONS.map(({ id, emoji, label }) => {
+        const Icon = icons[id] || Sparkle;
         const count = item.reaction_counts?.[id] || 0;
         const active = item.my_reactions?.includes(id) || false;
         return (
@@ -62,7 +68,7 @@ function PostReactions({ item, disabled, onReact }) {
             aria-pressed={active}
             onClick={() => onReact(item, id, !active)}
           >
-            <span aria-hidden="true">{emoji}</span>
+            <Icon size={17} aria-hidden="true" />
             {count > 0 && <small>{count}</small>}
           </button>
         );
@@ -72,10 +78,12 @@ function PostReactions({ item, disabled, onReact }) {
 }
 
 function CommunityPulse() {
-  const [joined, setJoined] = useState("Anatomy focus room");
-  const [following, setFollowing] = useState(new Set(["Aarav"]));
-  const [seconds, setSeconds] = useState(42 * 60 + 18);
-  const [liveCount, setLiveCount] = useState(18);
+  const [joined, setJoined] = useState("");
+  const [roomName, setRoomName] = useState("");
+  const [following, setFollowing] = useState(new Set());
+  const [seconds, setSeconds] = useState(0);
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [liveCount, setLiveCount] = useState(null);
   const [messagesOpen, setMessagesOpen] = useState(false);
   const [topicOpen, setTopicOpen] = useState(false);
   const [pollOpen, setPollOpen] = useState(false);
@@ -88,11 +96,15 @@ function CommunityPulse() {
   useEffect(() => {
     const community = featureState?.community;
     if (!community) return;
-    if (community.joined_room) setJoined(community.joined_room);
+    if (community.joined_room) {
+      setJoined(community.joined_room);
+      setRoomName(community.joined_room.replaceAll("-", " "));
+    }
     if (Array.isArray(community.followed_people))
       setFollowing(new Set(community.followed_people));
   }, [featureState]);
   useEffect(() => {
+    if (!joined) return undefined;
     const configured = import.meta.env.VITE_API_URL || "";
     const origin = configured.startsWith("http")
       ? configured.replace(/^http/, "ws").replace(/\/api\/v1\/?$/, "")
@@ -106,6 +118,10 @@ function CommunityPulse() {
       socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
         if (message.type === "presence") setLiveCount(message.participants);
+        if (message.type === "timer") {
+          setSeconds(message.remaining || 0);
+          setTimerRunning(Boolean(message.running));
+        }
       };
       const ping = setInterval(
         () =>
@@ -123,6 +139,7 @@ function CommunityPulse() {
     }
   }, [joined]);
   useEffect(() => {
+    if (!joined) return undefined;
     let active = true;
     const load = () =>
       api
@@ -137,57 +154,52 @@ function CommunityPulse() {
     };
   }, [joined]);
   useEffect(() => {
-    const timer = setInterval(
-      () => setSeconds((value) => (value ? value - 1 : 50 * 60)),
-      1000,
-    );
+    if (!timerRunning) return undefined;
+    if (seconds <= 0) {
+      socketRef.current?.readyState === WebSocket.OPEN &&
+        socketRef.current.send(JSON.stringify({ type: "stop_timer" }));
+      setTimerRunning(false);
+      return undefined;
+    }
+    const timer = setInterval(() => setSeconds((value) => Math.max(0, value - 1)), 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [timerRunning, seconds]);
   const persistCommunity = (next) =>
     api.patch("/features", { community: next }).catch(() => {});
-  const toggleFollow = (name) =>
-    setFollowing((items) => {
-      const next = new Set(items);
-      next.has(name) ? next.delete(name) : next.add(name);
-      persistCommunity({ joined_room: joined, followed_people: [...next] });
-      return next;
-    });
+  const enterRoom = (event) => {
+    event.preventDefault();
+    const room = roomName.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    if (!room) return;
+    setJoined(room);
+    setLiveCount(null);
+    setRoomMessages([]);
+    persistCommunity({ joined_room: room, followed_people: [...following] });
+  };
   return (
-    <section className={s.pulse} aria-label="Community study tools">
+    <section className={s.pulse} data-room={joined ? "joined" : "none"} aria-label="Community study tools">
       <div className={s.pulseIntro}>
-        <span className={s.eyebrow}>FIND YOUR PEOPLE</span>
-        <h2>Study better, together.</h2>
+        <h2>Study alongside your group.</h2>
         <p>
-          Drop into a room, find your year group, or follow the people whose
-          explanations make things click.
+          Enter a room name to see who is there, share messages, and start a focus timer.
         </p>
-        <div className={s.roomTimer}>
+        {joined && <div className={s.roomTimer}>
           <Timer size={18} />
-          <strong>
-            {String(Math.floor(seconds / 60)).padStart(2, "0")}:
-            {String(seconds % 60).padStart(2, "0")}
-          </strong>
-          <span>shared focus timer</span>
-          <button
-            className={s.timerButton}
-            onClick={() =>
-              socketRef.current?.readyState === WebSocket.OPEN &&
-              socketRef.current.send(
-                JSON.stringify({ type: "start_timer", seconds: 300 }),
-              )
-            }
-          >
-            Start 5m
-          </button>
-        </div>
+          <strong>{String(Math.floor(seconds / 60)).padStart(2, "0")}:{String(seconds % 60).padStart(2, "0")}</strong>
+          <span>{timerRunning ? "Focus timer" : "Timer ready"}</span>
+          <button className={s.timerButton} disabled={timerRunning || socketRef.current?.readyState !== WebSocket.OPEN} onClick={() => socketRef.current?.send(JSON.stringify({ type: "start_timer", seconds: 300 }))}>Start 5 minutes</button>
+          {liveCount !== null && <small>{liveCount} {liveCount === 1 ? "student" : "students"} here</small>}
+        </div>}
       </div>
       <div className={s.pulseColumn}>
         <div className={s.pulseHead}>
-          <h3>Live study rooms</h3>
-          <span className={s.live}>
-            <i /> {liveCount} studying now
-          </span>
+          <h3>Join a study room</h3>
         </div>
+        <form className={s.roomEntry} onSubmit={enterRoom}>
+          <label htmlFor="study-room-name">Room name</label>
+          <input id="study-room-name" value={roomName} onChange={(event) => setRoomName(event.target.value)} placeholder="For example, anatomy revision" maxLength={80} />
+          <button type="submit" disabled={!roomName.trim()}>{joined ? "Switch room" : "Join room"}</button>
+          {joined && <p>Connected to {roomName || joined.replaceAll("-", " ")}.</p>}
+        </form>
         {["Anatomy focus room", "Pharm sprint · 2nd year"].map(
           (room, index) => (
             <button
@@ -265,7 +277,7 @@ function CommunityPulse() {
           onClick={() => setMessagesOpen((value) => !value)}
         >
           <ChatCircleDots size={17} />{" "}
-          {messagesOpen ? "Close messages" : "Open messages"} <span>2 new</span>
+          {messagesOpen ? "Close messages" : "Open messages"} <span>{roomMessages.length} messages</span>
         </button>
         {messagesOpen && (
           <div className={s.messagePanel}>
@@ -434,7 +446,6 @@ export default function SocialFeed({ doubts = false }) {
     <div className={s.page}>
       <header className={s.head}>
         <div>
-          <span className={s.eyebrow}>LEARN TOGETHER. GROW TOGETHER.</span>
           <h1>
             {doubts
               ? "Every doubt deserves an answer."

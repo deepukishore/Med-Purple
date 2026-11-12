@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Trophy, Target, BookOpen } from "@phosphor-icons/react";
+import { Trophy, Target, BookOpen, Sparkle } from "@phosphor-icons/react";
 import useData from "../hooks/useData";
 import usePageMeta from "../hooks/usePageMeta";
 import { api, useApp } from "../context/AppContext";
@@ -653,7 +653,9 @@ export default function MCQs() {
                     {reward.xp !== null && `+${reward.xp} XP this round`}
                     {reward.leveledUp && (
                       <span className={s.levelUpConfetti} aria-hidden="true">
-                        💊　🧬　🩺
+                        <Sparkle size={18} weight="fill" />
+                        <Sparkle size={24} weight="fill" />
+                        <Sparkle size={16} weight="fill" />
                       </span>
                     )}
                   </div>

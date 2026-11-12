@@ -105,8 +105,8 @@ function Feed({ subject, exam, onOptions }) {
   return (
     <>
       <p className={s.watchCount}>
-        <Timer size={17} /> {watched} videos explored today · Keep scrolling to
-        explore more
+        <Timer size={17} /> {watched} videos explored today. Keep scrolling to
+        explore more.
       </p>
       {!items.length ? (
         loading ? (
@@ -145,9 +145,9 @@ function Feed({ subject, exam, onOptions }) {
           >
             {items[active + 1] && (
               <div className={s.nextReelPeek} aria-hidden="true">
-                <span>UP NEXT · {items[active + 1].subject}</span>
+                <span>Coming up, {items[active + 1].subject}</span>
                 <strong>{items[active + 1].title}</strong>
-                <small>A little more anatomy, just ahead.</small>
+                <small>Next video in the feed.</small>
               </div>
             )}
             <div className={s.reel} key={items[active].feedKey}>
@@ -174,7 +174,7 @@ function Feed({ subject, exam, onOptions }) {
             </div>
           </div>
           <nav className={s.reelNav} aria-label="Video navigation">
-            <span className={s.reelLabel}>ONE BYTE AT A TIME</span>
+            <span className={s.reelLabel}>One byte at a time</span>
             <button
               aria-label="Previous video"
               disabled={active === 0}

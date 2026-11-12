@@ -1,12 +1,13 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { ArrowCounterClockwise, ArrowsOutSimple, Eye, Pause, Play, ShareNetwork } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, ArrowUpRight, ArrowsOutSimple, Eye, Pause, Play, ShareNetwork } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import { emitStudyEvent } from "../utils/studyEvents";
+import { isLowEndDevice } from "../utils/graphics";
 import s from "./HomeSpecimenStage.module.css";
 
 const SpecimenCanvas = lazy(() => import("./SpecimenCanvas"));
 
-export default function HomeSpecimenStage({ className = "" }) {
+export default function HomeSpecimenStage({ className = "", progress }) {
   const stage = useRef(null);
   const controls = useRef(null);
   const flashTimer = useRef(0);
@@ -44,6 +45,10 @@ export default function HomeSpecimenStage({ className = "" }) {
   useEffect(() => {
     const node = stage.current;
     if (!node) return undefined;
+    if (isLowEndDevice()) {
+      setStatus("unavailable");
+      return undefined;
+    }
     if (!("IntersectionObserver" in window)) {
       setStarted(true);
       return undefined;
@@ -95,7 +100,7 @@ export default function HomeSpecimenStage({ className = "" }) {
       gradient.addColorStop(1, "#10141e");
       context.fillStyle = gradient;
       context.fillRect(0, 0, card.width, card.height);
-      context.strokeStyle = "#71e9e2";
+      context.strokeStyle = "#b497d5";
       context.lineWidth = 3;
       context.beginPath();
       context.arc(810, 280, 152, 0, Math.PI * 2);
@@ -148,23 +153,31 @@ export default function HomeSpecimenStage({ className = "" }) {
       </div>
       {impactFlash && <span className={s.explodeFlash} aria-hidden="true" />}
       <div className={s.topline}>
-        <span>REFERENCE SPECIMEN / 01</span>
-        <span className={s.live}><i /> {status === "ready" ? "MODEL READY" : status === "unavailable" ? "STATIC VIEW" : "ON-DEMAND LOAD"}</span>
+        <span>Reference specimen 01</span>
+        <span className={s.live}><i /> {status === "ready" ? "Model ready" : status === "unavailable" ? "Static view" : "Loading on demand"}</span>
       </div>
+      {(progress?.level !== undefined || progress?.xp !== undefined) && (
+        <div className={s.progressPin} aria-label="Your study progress">
+          {progress.level !== undefined && <strong>Level {progress.level}</strong>}
+          {progress.xp !== undefined && <span>{progress.xp.toLocaleString()} XP</span>}
+        </div>
+      )}
       <div className={`${s.poster} ${status === "ready" ? s.posterReady : ""}`} aria-hidden="true">
-        <svg viewBox="0 0 260 560" fill="none">
+        {status === "unavailable" ? (
+          <img src="/anatomy-previews/body-systems.webp" width="768" height="768" alt="" />
+        ) : <svg viewBox="0 0 260 560" fill="none">
           <path d="M130 22c-35 0-54 29-48 63 4 23 16 39 31 46v30c-24 9-49 24-63 48-16 29-13 69-8 104l11 78c2 15 23 14 25 0l8-62 12-52 5 95-5 118c0 18 25 18 27 0l9-109 8 109c2 18 27 18 27 0l-5-118 5-95 12 52 8 62c2 14 23 15 25 0l11-78c5-35 8-75-8-104-14-24-39-39-63-48v-30c15-7 27-23 31-46 6-34-13-63-48-63Z" stroke="currentColor" strokeWidth="2" />
           <path d="M82 166h96M69 215l61 24 61-24M77 246l53 18 53-18M75 278l55 17 55-17M79 309l51 14 51-14M91 344l39 7 39-7M130 161v192M76 185l-33 85 17 70M184 185l33 85-17 70M91 354l-17 87 12 89M169 354l17 87-12 89M130 46v91M96 72h68" stroke="currentColor" strokeWidth="1.5" />
           <circle cx="130" cy="78" r="24" stroke="currentColor" strokeWidth="1.5" />
           <path d="M113 76h34M130 54v46" stroke="currentColor" strokeWidth="1.2" />
-        </svg>
-        <span>PREPARING THE SKELETAL REFERENCE</span>
+        </svg>}
+        <span>Preparing the skeletal reference</span>
       </div>
       {skullSelected && (
         <div className={s.pixelShades} aria-hidden="true">
           <svg viewBox="0 0 96 30" fill="none">
             <path d="M3 4h31l4 5 4-5h31l5 6-3 15H52l-7-8-7 8H9L5 10Z" fill="#17131e" stroke="#fff" strokeWidth="3" />
-            <path d="M12 10h22v8H12zM58 10h22v8H58z" fill="#79e4db" />
+            <path d="M12 10h22v8H12zM58 10h22v8H58z" fill="#b497d5" />
             <path d="M34 13h28" stroke="#fff" strokeWidth="3" />
           </svg>
           <span>No brain, still passing anatomy.</span>
@@ -186,7 +199,7 @@ export default function HomeSpecimenStage({ className = "" }) {
         </Suspense>
       )}
       <div className={s.specimenCaption}>
-        <span className={s.captionEyebrow}>{part ? "IDENTIFIED MESH PART" : "SKELETAL SYSTEM / LAYER 01"}</span>
+          <span className={s.captionEyebrow}>{part ? "Identified mesh part" : "Skeletal system · layer 01"}</span>
         <strong>{part?.name || "Human skeletal system"}</strong>
           <span className={s.captionCopy}>
           {skullSelected ? "No brain, still passing anatomy." : part ? "Name shown as supplied with this reference model." : "Adult male reference anatomy; named parts may be subdivisions."}
@@ -194,7 +207,7 @@ export default function HomeSpecimenStage({ className = "" }) {
       </div>
       {part && (
         <Link className={s.partLink} to={target}>
-          Explore this part in the atlas <span aria-hidden="true">↗</span>
+          Explore this part in the atlas <ArrowUpRight size={15} aria-hidden="true" />
         </Link>
       )}
       {status !== "unavailable" && (

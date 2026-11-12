@@ -1,0 +1,22 @@
+[
+  {
+    "date": "2026-11-12",
+    "mode": "redesign",
+    "depth": "full",
+    "scope": "app",
+    "shape": "app screen",
+    "theme": "Hum adapted as purple field notebook (deal 1/3)",
+    "axes": "light / rounded serif display / purple signal",
+    "hero": "settled: live skeletal atlas with current study progress",
+    "nav": "fixed study rail",
+    "footer": "mobile study navigation",
+    "imagery": "bundled anatomy references and app content",
+    "photos": [],
+    "entry": "specimen atlas",
+    "fingerprint": "interactive skeletal atlas with progress pin",
+    "sections": ["Home", "MCQs", "MedBytes", "Anatomy", "Community", "Doubts", "Stories"],
+    "signature": "interactive skeletal atlas",
+    "waived": [],
+    "prompt": "Full Med Purple app redesign; preserve routes, APIs, data models and working logic."
+  }
+]

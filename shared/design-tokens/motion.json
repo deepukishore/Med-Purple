@@ -1,23 +1,27 @@
 {
   "spring": {
-    "stiffness": 230,
-    "damping": 24,
-    "mass": 0.8
+    "stiffness": 260,
+    "damping": 28,
+    "mass": 0.72
   },
   "gentleSpring": {
-    "stiffness": 110,
-    "damping": 19,
-    "mass": 1
+    "stiffness": 150,
+    "damping": 24,
+    "mass": 0.9
   },
   "duration": {
-    "fast": 160,
-    "normal": 280,
-    "slow": 600
-  },
-  "depth": {
-    "shadow": "#6742e824",
-    "shadowSoft": "#7955ff18"
+    "micro": 140,
+    "fast": 180,
+    "normal": 260,
+    "slow": 420,
+    "celebration": 1200
   },
   "ease": [0.22, 1, 0.36, 1],
-  "tiltDegrees": 4
+  "easeIn": [0.4, 0, 1, 1],
+  "easeInOut": [0.65, 0, 0.35, 1],
+  "tiltDegrees": 3,
+  "depth": {
+    "shadow": "rgba(39,30,48,.08)",
+    "shadowSoft": "rgba(39,30,48,.05)"
+  }
 }

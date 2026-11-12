@@ -1,0 +1,20 @@
+{
+  "scanned": "2026-11-12",
+  "findings": {
+    "fonts": "Manrope and DM Serif Display in web/src/theme/global.css; Manrope in shared/design-tokens/typography.json",
+    "palette": "Purple and warm-paper values in shared/design-tokens/colors.json; CSS fallbacks in tokens.css",
+    "motion": "Shared duration and easing tokens in shared/design-tokens/motion.json; CSS module animations and reduced-motion rules",
+    "spacing": "Shared spacing, radii, and elevation in shared/design-tokens/spacing.json",
+    "framework": "React and Vite workspace; CSS modules; existing three.js and @react-three/fiber"
+  },
+  "preserve": [
+    "Existing routes, APIs, data models, and working study interactions",
+    "Real study records and bundled anatomy reference imagery",
+    "Purple as the brand color"
+  ],
+  "introduce": [
+    "Purple field notebook visual system",
+    "Shared type, color, spacing, and motion tokens",
+    "Responsive paper surfaces, accessible focus states, and low-end 3D fallbacks"
+  ]
+}

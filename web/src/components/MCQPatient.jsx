@@ -5,11 +5,11 @@ import { emitStudyEvent } from "../utils/studyEvents";
 import s from "./MCQPatient.module.css";
 
 const rhythms = {
-  steady: { label: "Rhythm steady", color: "#b9ed9e", rate: 72 },
-  arrhythmia: { label: "Rhythm interrupted", color: "#ff9b9b", rate: 118 },
-  codeBlue: { label: "Code Blue · charging", color: "#f6d78b", rate: 142 },
-  flatline: { label: "Time expired", color: "#c5b9d1", rate: 0 },
-  revived: { label: "Patient revived", color: "#d8f6a3", rate: 86 },
+  steady: { label: "In practice", color: "#b9ed9e" },
+  arrhythmia: { label: "Review this answer", color: "#ff9b9b" },
+  codeBlue: { label: "Time almost up", color: "#f6d78b" },
+  flatline: { label: "Time expired", color: "#c5b9d1" },
+  revived: { label: "Practice complete", color: "#d8f6a3" },
 };
 
 function ECGTrace({ rhythm }) {
@@ -180,8 +180,8 @@ export default function MCQPatient({ rhythm = "steady", exam = false }) {
         </div>
         <ECGTrace rhythm={rhythm} />
         <div className={s.monitorFoot}>
-          <span>LEARNING RHYTHM</span>
-          <span>{status.rate ? `${status.rate} BPM` : "— BPM"}</span>
+          <span>STUDY STATUS</span>
+          <span>{status.label}</span>
         </div>
       </div>
     </section>

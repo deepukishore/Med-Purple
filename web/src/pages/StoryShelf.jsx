@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { BookmarkSimple, Eye, Flag, Plus, ShareNetwork, X } from "@phosphor-icons/react";
+import { BookmarkSimple, Eye, Flag, Plus, ShareNetwork, X, Lightbulb, Brain, Fire, HandsClapping } from "@phosphor-icons/react";
 import { api, useApp } from "../context/AppContext";
 import useData from "../hooks/useData";
 import s from "./Social.module.css";
@@ -26,10 +26,10 @@ const stickerTypes = [
   ["streak", "Study streak"],
 ];
 const reactions = [
-  ["helpful", "💡 Helpful"],
-  ["learned", "🧠 Learned"],
-  ["fire", "🔥 Great explanation"],
-  ["motivated", "👏 Motivated me"],
+  ["helpful", "Helpful", Lightbulb],
+  ["learned", "Learned", Brain],
+  ["fire", "Great explanation", Fire],
+  ["motivated", "Motivated me", HandsClapping],
 ];
 
 const initialDraft = () => ({
@@ -416,7 +416,6 @@ export default function StoryShelf() {
     <section className={s.storyHub} aria-label="Study stories">
       <div className={s.storyHubHead}>
         <div>
-          <span className={s.eyebrow}>STUDY, SHARE, REMEMBER</span>
           <h2>Stories for your next study break</h2>
           <p>Quick quizzes, mnemonics and explainers from your study community.</p>
         </div>
@@ -428,7 +427,7 @@ export default function StoryShelf() {
       <div className={s.storyFilters}>
         <label>
           Filter by subject
-          <input value={subject} onChange={(event) => setSubject(event.target.value)} placeholder="All subjects · e.g. Anatomy" />
+          <input value={subject} onChange={(event) => setSubject(event.target.value)} placeholder="All subjects, for example anatomy" />
         </label>
         <button type="button" onClick={() => setSubject("")}>All</button>
         {["Anatomy", "Physiology", "Medicine", "NEET PG"].map((tag) => (
@@ -443,7 +442,7 @@ export default function StoryShelf() {
         {feed.error && <button onClick={feed.reload}>Could not load stories · Retry</button>}
         {!feed.loading && !items.length && <span className={s.storyEmpty}>No live stories for this subject yet. Share the first useful tip.</span>}
         {items.map((item) => (
-          <button className={s.storyCard} key={item.id} onClick={() => openStory(item)}>
+          <button className={`${s.storyCard} ${item.seen ? s.storySeen : s.storyUnseen}`} key={item.id} onClick={() => openStory(item)}>
             <span className={s.storyAvatar}>{item.creator?.[0] || "S"}</span>
             <span className={s.storyType}>{item.kind.replaceAll("_", " ")}</span>
             <strong>{item.creator}</strong>
@@ -465,7 +464,7 @@ export default function StoryShelf() {
             <small key={entry.user_id}>{index + 1}. {entry.name} · {entry.score} helpful interactions</small>
           ))}
           {!leaderboard.data?.items?.length && <small>Share a story to start this week’s board.</small>}
-          <small>Your story creator streak: {creatorStreak.data?.story_streak || 0} days</small>
+          <small>Your story creator streak: {creatorStreak.loading ? "Loading" : creatorStreak.error ? "Unavailable" : creatorStreak.data?.story_streak ?? "—"} {creatorStreak.loading || creatorStreak.error ? "" : "days"}</small>
         </section>
       </div>
       <details className={s.storyMine}>
@@ -661,12 +660,12 @@ export default function StoryShelf() {
               <button disabled={!answer.trim() || working} onClick={() => respond(sticker.type === "question_box" ? "question_box" : sticker.type, { answer })}>{sticker.type === "doubt" ? "Reply to doubt" : "Send question"}</button>
               {selected.mine && selected.responses?.map((item) => <blockquote key={item.id}>{item.author}: {item.answer}</blockquote>)}
             </> : null}
-            {sticker.type === "countdown" && <p className={s.storyCountdown}>⏳ {sticker.prompt} {sticker.target_at ? `· ${new Date(sticker.target_at).toLocaleDateString()}` : ""}</p>}
-            {sticker.data?.mcqs_today !== undefined && <p className={s.storyStat}>📈 Finished {sticker.data.mcqs_today} MCQs today</p>}
-            {sticker.data?.streak_days !== undefined && <p className={s.storyStat}>🔥 {sticker.data.streak_days}-day study streak</p>}
+            {sticker.type === "countdown" && <p className={s.storyCountdown}>{sticker.prompt}{sticker.target_at ? `, ${new Date(sticker.target_at).toLocaleDateString()}` : ""}</p>}
+            {sticker.data?.mcqs_today !== undefined && <p className={s.storyStat}>Finished {sticker.data.mcqs_today} MCQs today</p>}
+            {sticker.data?.streak_days !== undefined && <p className={s.storyStat}>Study streak: {sticker.data.streak_days} days</p>}
             {selected.kind === "study_with_me" && <div className={s.storyTimer}><strong>{String(Math.floor(timeLeft / 60)).padStart(2, "0")}:{String(timeLeft % 60).padStart(2, "0")}</strong><span>shared focus timer</span>{!selected.mine && <button disabled={!!alreadyAnswered.join} onClick={() => respond("join")}>{alreadyAnswered.join ? "Joined" : "Join session"}</button>}</div>}
             {selected.kind === "diagram" && slide.media_url && !selected.mine && <button onClick={() => save("note")}><BookmarkSimple /> Save sketch to notes</button>}
-            {!selected.mine && <div className={s.storyReactions}>{reactions.map(([key, label]) => <button key={key} aria-pressed={selected.my_reactions?.includes(key)} onClick={() => react(key)}>{label} · {selected.reactions?.[key] || 0}</button>)}</div>}
+            {!selected.mine && <div className={s.storyReactions}>{reactions.map(([key, label, Icon]) => <button key={key} aria-label={`${label}, ${selected.reactions?.[key] || 0}`} aria-pressed={selected.my_reactions?.includes(key)} onClick={() => react(key)}><Icon size={16} aria-hidden="true" /> {label} <span>{selected.reactions?.[key] || 0}</span></button>)}</div>}
             {selected.mine && <section className={s.storyInsights}><strong><Eye size={17} /> {selected.views} viewers</strong>{selected.viewers?.map((viewer) => <small key={viewer.user_id}>{viewer.name}</small>)}<strong>Answer breakdown</strong>{selected.responses?.map((item) => <small key={item.id}>{item.author}: {item.answer || (item.correct ? "Correct" : "Incorrect")}</small>)}{selected.flags?.map((flag) => <small key={flag.flag + flag.details}><Flag size={15} /> {flag.flag}: {flag.details} ({flag.count})</small>)}</section>}
             {!selected.mine && <div className={s.storySafetyActions}>
               <button onClick={() => run(() => api.post(`/stories/${selected.id}/flags`, { flag: "wrong_info", details: "Potentially incorrect study information" }))}><Flag size={15} /> Report incorrect info</button>

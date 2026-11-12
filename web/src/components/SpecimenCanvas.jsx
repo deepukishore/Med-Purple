@@ -83,10 +83,10 @@ export default function SpecimenCanvas({
     const violetRim = new THREE.DirectionalLight(0x9b67ff, 3.7);
     violetRim.position.set(-4, 2, -3);
     scene.add(violetRim);
-    const cyanRim = new THREE.PointLight(0x61e7ed, 1.7, 8);
-    cyanRim.position.set(3, -1, 1.5);
-    scene.add(cyanRim);
-    const pointerLightTarget = cyanRim.position.clone();
+    const purpleRim = new THREE.PointLight(0xb497d5, 1.25, 8);
+    purpleRim.position.set(3, -1, 1.5);
+    scene.add(purpleRim);
+    const pointerLightTarget = purpleRim.position.clone();
 
     const platform = new THREE.Group();
     for (const [radius, opacity, color] of [
@@ -168,8 +168,8 @@ export default function SpecimenCanvas({
       const delta = previousTime ? Math.min((time - previousTime) / 1000, 0.05) : 0;
       previousTime = time;
       let moving = false;
-      if (cyanRim.position.distanceToSquared(pointerLightTarget) > 0.0004) {
-        cyanRim.position.lerp(pointerLightTarget, 0.16);
+      if (purpleRim.position.distanceToSquared(pointerLightTarget) > 0.0004) {
+        purpleRim.position.lerp(pointerLightTarget, 0.16);
         moving = true;
       }
       if (scanning) {

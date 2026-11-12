@@ -1,3 +1,4 @@
+/* Hallmark · Home specimen stage · live atlas with progress pin and low-power fallback · v2.0.0 */
 .stage {
   position: relative;
   min-width: 0;
@@ -353,4 +354,115 @@
   from { opacity: 0; }
   35% { opacity: .9; }
   to { opacity: 0; }
+}
+.progressPin { position: absolute; z-index: 4; top: 55px; left: 22px; display: grid; gap: 3px; padding: 10px 13px; border: 1px solid var(--line); border-radius: var(--radius-control); color: var(--ink); background: var(--surface); box-shadow: 0 3px 0 rgba(39,30,48,.1); font-size: 12px; }
+.progressPin strong { font-size: 14px; }
+.progressPin span { color: var(--purple-700); font-variant-numeric: tabular-nums; }
+.poster > img { width: 100%; max-height: 55vh; object-fit: contain; border-radius: var(--radius-card); }
+@media (max-width: 760px) { .progressPin { top: 54px; left: 14px; } }
+@media (prefers-reduced-motion: reduce) { .progressPin { transition: none; } }
+
+/* Hallmark · purple field notebook · open specimen table, low contrast-free materials */
+.stage {
+  min-height: min(66vh, 700px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-hero);
+  color: var(--ink);
+  background: var(--purple-50);
+  box-shadow: var(--shadow-raised);
+}
+.instrument {
+  background-image:
+    linear-gradient(var(--purple-200) 1px, transparent 1px),
+    linear-gradient(90deg, var(--purple-200) 1px, transparent 1px);
+  background-size: 56px 56px;
+  opacity: .28;
+  mask-image: linear-gradient(180deg, #000 0, #0007 52%, transparent 100%);
+}
+.instrumentRing,
+.instrumentRingInner {
+  border-color: #70479f30;
+  box-shadow: none;
+}
+.instrumentRingInner { border-color: #70479f22; }
+.instrumentAxis,
+.instrumentFloor { border-color: #70479f24; }
+.registration { stroke: #70479f36; }
+.explodeFlash {
+  background: radial-gradient(ellipse at center, #b497d555, transparent 58%);
+}
+.poster { color: #70479f60; }
+.poster svg { filter: none; }
+.poster > span {
+  color: var(--purple-700);
+  letter-spacing: .12em;
+}
+.posterReady { opacity: 0; }
+.topline { color: var(--purple-700); letter-spacing: .08em; }
+.live { color: var(--success); }
+.live i {
+  background: var(--success);
+  box-shadow: none;
+}
+.specimenCaption {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-low);
+  backdrop-filter: none;
+}
+.captionEyebrow { color: var(--purple-700); letter-spacing: .08em; }
+.specimenCaption strong { color: var(--ink); }
+.captionCopy { color: var(--muted); }
+.controls button,
+.boneDex,
+.boneDex button {
+  border-color: var(--line);
+  border-radius: var(--radius-control);
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 2px 0 rgba(39, 30, 48, .08);
+  backdrop-filter: none;
+}
+.controls button:hover {
+  border-color: var(--purple-400);
+  color: var(--purple-900);
+  background: var(--purple-100);
+}
+.boneDex { color: var(--muted); }
+.boneDex strong { color: var(--ink); }
+.boneDex button { color: var(--purple-700); }
+.partLink,
+.credit a { color: var(--purple-700); }
+.partLink { text-decoration-color: #70479f66; }
+.credit { color: var(--muted); }
+.gestureHint { color: var(--purple-700); }
+.controls button:focus-visible,
+.partLink:focus-visible,
+.credit a:focus-visible,
+.boneDex button:focus-visible {
+  outline-color: var(--purple-700);
+}
+.pixelShades svg { filter: none; }
+.pixelShades span { color: var(--purple-800); text-shadow: none; }
+.progressPin {
+  box-shadow: var(--shadow-low);
+}
+@media (max-width: 760px) {
+  .stage { border-radius: var(--radius-card); }
+  .controls { bottom: 22px; }
+}
+@media (max-width: 430px) {
+  .specimenCaption {
+    top: auto;
+    bottom: 72px;
+    left: 12px;
+    max-width: min(72%, 260px);
+  }
+}
+@media (min-width: 761px) and (max-width: 850px) {
+  .progressPin { top: 110px; left: 18px; }
+}
+@media (prefers-reduced-motion: reduce), (hover: none) {
+  .poster { transition: none; }
 }

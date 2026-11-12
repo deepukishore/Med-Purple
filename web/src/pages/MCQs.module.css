@@ -1,3 +1,4 @@
+/* Hallmark · MCQs · playful app screen · correct, incorrect, reward and retry states · v2.0.0 */
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;
@@ -752,4 +753,56 @@
   .questionFoot > small {
     max-width: none;
   }
+}
+
+.levelCard, .xpCard, .summary > :global(section), .tip, .question, .examPanel, .reviewItem, .complete {
+  border-color: var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: none;
+}
+.levelCard { min-height: 148px; padding: 18px; background: var(--surface); }
+.levelCard:hover { border-color: var(--purple-400); transform: translateY(-2px); }
+.levelCard strong { color: var(--ink); }
+.levelTop { color: var(--purple-700); font-size: 14px; letter-spacing: 0; }
+.activeLevel { color: var(--paper-raised); background: var(--purple-800); border-color: var(--purple-800); box-shadow: 0 5px 0 #39244f; }
+.activeLevel strong { color: inherit; }
+.activeLevel .levelTop { color: #e9dff2; }
+.activeLevel small { color: #e4d8ed; }
+.modes { gap: 8px; }
+.mode { border: 1px solid var(--line); border-radius: var(--radius-control); color: var(--muted); background: var(--surface); }
+.selectedMode { border-color: var(--purple-700); color: var(--paper-raised); background: var(--purple-800); }
+.question { padding: clamp(20px, 3vw, 30px); border-top-width: 1px; transform-style: flat; transition: border-color var(--dur-short) var(--ease-out), box-shadow var(--dur-short) var(--ease-out); }
+.question:hover { border-color: var(--line); box-shadow: var(--shadow-low); }
+.stem { color: var(--ink); font-size: clamp(18px, 1.7vw, 22px); line-height: 1.5; }
+.counter, .questionTags { color: var(--muted); }
+.option, .examOption, .examOptionSelected { min-height: 54px; border-radius: var(--radius-control); transition: transform var(--dur-micro) var(--ease-out), background-color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out); }
+.option { font-size: 16px; }
+.option:not(:disabled):hover { transform: translateY(-1px); border-color: var(--purple-400); box-shadow: none; }
+.letter { border-radius: 10px; color: var(--purple-800); background: var(--paper); }
+.chosen { background: #eee8f3; border-color: var(--purple-700); box-shadow: inset 0 0 0 1px var(--purple-700); }
+.chosen .letter { color: var(--paper-raised); background: var(--purple-700); border-color: var(--purple-700); }
+.correct { color: #194c30; background: var(--success-tint); border-color: var(--success); }
+.incorrect { color: #842d3a; background: var(--danger-tint); border-color: var(--danger); }
+.feedback { border-radius: var(--radius-card); color: var(--ink); background: #eee8f3; animation-duration: var(--dur-short); }
+.feedbackReveal { animation: feedbackReveal var(--dur-short) var(--ease-out) both; }
+.xpCard, .examPanel, .reviewItem, .complete { background: var(--surface); }
+.xpHeading > strong, .summaryNumber { color: var(--purple-800); }
+.xpIcon { color: var(--purple-900); background: var(--accent); }
+.reward { border-radius: var(--radius-control); color: var(--purple-900); background: var(--accent); }
+.levelUpReward { animation-duration: var(--dur-celebration); }
+.levelUpConfetti { display: flex; align-items: center; justify-content: center; gap: 12px; color: var(--purple-700); animation-duration: var(--dur-celebration); }
+.examOptionSelected { border-color: var(--purple-700); background: #eee8f3; box-shadow: inset 0 0 0 1px var(--purple-700); }
+.examOption span { color: var(--purple-700); }
+.defibCharge > span { background: var(--purple-600); box-shadow: none; }
+.defibCharge small { color: var(--purple-800); font-size: 13px; letter-spacing: 0; }
+.complete { padding: 36px 24px; }
+@media (max-width: 600px) {
+  .levels { grid-template-columns: minmax(0, 1fr); }
+  .levelCard { min-height: 0; }
+  .question { padding: 18px 14px; }
+  .questionFoot { align-items: stretch; flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .levelUpReward, .levelUpConfetti, .feedbackReveal { animation: none; }
+  .levelCard:hover, .option:not(:disabled):hover { transform: none; }
 }

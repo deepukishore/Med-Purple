@@ -1,7 +1,51 @@
+/* Hallmark · Anatomy · playful app screen · atlas, labeled structures and organ studies · v2.0.0 */
 .studio {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 290px;
   gap: 24px;
+}
+
+.studyModePicker { border-color: var(--line); border-radius: var(--radius-control); background: var(--purple-50); }
+.studyModePicker button { min-height: 44px; border-radius: 11px; color: var(--muted); font-size: 14px; font-weight: 600; transition: color var(--dur-short) var(--ease-out), background-color var(--dur-short) var(--ease-out); }
+.studyModePicker button[aria-pressed="true"] { color: var(--purple-900); background: var(--surface); border-color: var(--line); box-shadow: 0 3px 0 rgba(71,47,91,.08); }
+.modelPicker button { min-height: 72px; border-radius: var(--radius-card); }
+.modelPicker button:hover { border-color: var(--purple-400); transform: translateY(-1px); }
+.modelPicker button[aria-pressed="true"] { color: var(--purple-900); background: var(--purple-50); border-color: var(--purple-600); box-shadow: inset 0 0 0 1px var(--purple-600); }
+.stage { min-height: 560px; border-radius: var(--radius-hero); background: var(--purple-50); box-shadow: 0 6px 0 rgba(71,47,91,.08); }
+.stageHeader h2, .info h2 { color: var(--ink); }
+.stageHeader p, .info p { color: var(--muted); }
+.orientation { border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--surface); box-shadow: none; }
+.tools button, .tools select { border: 1px solid var(--line); border-radius: var(--radius-control); color: var(--ink); background: var(--surface); box-shadow: 0 3px 0 rgba(71,47,91,.08); }
+.tools button:hover { border-color: var(--purple-400); transform: translateY(-1px); }
+.tools button[aria-pressed="true"] { color: var(--paper-raised); background: var(--purple-800); border-color: var(--purple-800); }
+.hint { color: var(--muted); font-size: 14px; }
+.inspector { gap: 16px; }
+.groupLabel { color: var(--muted); font-size: 14px; font-weight: 700; }
+.structure { min-height: 44px; border-radius: var(--radius-control); font-size: 14px; transition: color var(--dur-short) var(--ease-out), background-color var(--dur-short) var(--ease-out); }
+.structure:hover { background: var(--purple-50); }
+.selected { color: var(--purple-900); border-color: var(--purple-200); background: var(--purple-50); box-shadow: none; }
+.info { border-color: var(--line); border-radius: var(--radius-card); background: var(--surface); }
+.info p { font-size: 15px; line-height: 1.65; }
+.info h3 { font-size: 16px; }
+.info a { color: var(--purple-700); font-size: 14px; }
+.quiz { border-color: var(--line); border-radius: var(--radius-card); background: var(--purple-50); }
+.quiz p { color: var(--muted); font-size: 15px; }
+.scope { color: var(--muted); font-size: 14px; }
+.stage :global(button):focus-visible, .structure:focus-visible, .modelPicker button:focus-visible, .studyModePicker button:focus-visible { outline: 3px solid var(--purple-600); outline-offset: 3px; }
+@media (max-width: 760px) {
+  .stage { min-height: 470px; border-radius: var(--radius-card); }
+  .tools { justify-content: flex-start; }
+  .list { grid-template-columns: minmax(0, 1fr); }
+  .structure { font-size: 14px; }
+}
+@media (max-width: 390px) {
+  .modelPicker { grid-template-columns: minmax(0, 1fr); }
+  .stage { min-height: 430px; }
+  .tools { padding-inline: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studyModePicker button, .modelPicker button, .structure, .tools button { transition: none; }
+  .modelPicker button:hover, .tools button:hover { transform: none; }
 }
 .modelPicker {
   display: grid;
@@ -356,4 +400,46 @@
   .list {
     grid-template-columns: 1fr;
   }
+}
+
+.studyModePicker { border-color: var(--line); border-radius: var(--radius-control); background: var(--purple-50); }
+.studyModePicker button { min-height: 44px; border-radius: 11px; color: var(--muted); font-size: 14px; font-weight: 600; transition: color var(--dur-short) var(--ease-out), background-color var(--dur-short) var(--ease-out); }
+.studyModePicker button[aria-pressed="true"] { color: var(--purple-900); background: var(--surface); border-color: var(--line); box-shadow: 0 3px 0 rgba(71,47,91,.08); }
+.modelPicker button { min-height: 72px; border-radius: var(--radius-card); }
+.modelPicker button:hover { border-color: var(--purple-400); transform: translateY(-1px); }
+.modelPicker button[aria-pressed="true"] { color: var(--purple-900); background: var(--purple-50); border-color: var(--purple-600); box-shadow: inset 0 0 0 1px var(--purple-600); }
+.stage { min-height: 560px; border-radius: var(--radius-hero); background: var(--purple-50); box-shadow: 0 6px 0 rgba(71,47,91,.08); }
+.stageHeader h2, .info h2 { color: var(--ink); }
+.stageHeader p, .info p { color: var(--muted); }
+.orientation { border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--surface); box-shadow: none; }
+.tools button, .tools select { border: 1px solid var(--line); border-radius: var(--radius-control); color: var(--ink); background: var(--surface); box-shadow: 0 3px 0 rgba(71,47,91,.08); }
+.tools button:hover { border-color: var(--purple-400); transform: translateY(-1px); }
+.tools button[aria-pressed="true"] { color: var(--paper-raised); background: var(--purple-800); border-color: var(--purple-800); }
+.hint, .scope { color: var(--muted); font-size: 14px; }
+.inspector { gap: 16px; }
+.groupLabel { color: var(--muted); font-size: 14px; font-weight: 700; }
+.structure { min-height: 44px; border-radius: var(--radius-control); font-size: 14px; transition: color var(--dur-short) var(--ease-out), background-color var(--dur-short) var(--ease-out); }
+.structure:hover { background: var(--purple-50); }
+.selected { color: var(--purple-900); border-color: var(--purple-200); background: var(--purple-50); box-shadow: none; }
+.info { border-color: var(--line); border-radius: var(--radius-card); background: var(--surface); }
+.info p { font-size: 15px; line-height: 1.65; }
+.info h3 { font-size: 16px; }
+.info a { color: var(--purple-700); font-size: 14px; }
+.quiz { border-color: var(--line); border-radius: var(--radius-card); background: var(--purple-50); }
+.quiz p { color: var(--muted); font-size: 15px; }
+.stage :global(button):focus-visible, .structure:focus-visible, .modelPicker button:focus-visible, .studyModePicker button:focus-visible { outline: 3px solid var(--purple-600); outline-offset: 3px; }
+@media (max-width: 760px) {
+  .stage { min-height: 470px; border-radius: var(--radius-card); }
+  .tools { justify-content: flex-start; }
+  .list { grid-template-columns: minmax(0, 1fr); }
+  .structure { font-size: 14px; }
+}
+@media (max-width: 390px) {
+  .modelPicker { grid-template-columns: minmax(0, 1fr); }
+  .stage { min-height: 430px; }
+  .tools { padding-inline: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studyModePicker button, .modelPicker button, .structure, .tools button { transition: none; }
+  .modelPicker button:hover, .tools button:hover { transform: none; }
 }

@@ -1,3 +1,4 @@
+/* Hallmark · MedBytes · playful app screen · reel advances on a short spring-like settle · v2.0.0 */
 .feed {
   display: grid;
   gap: 32px;
@@ -717,6 +718,86 @@
 .page .theater {
   flex: 1;
   min-height: 330px;
+}
+
+.page { height: auto; min-height: 0; gap: 0; }
+.pageHead { margin-bottom: 22px; }
+.pageHead h1 { font-size: clamp(30px, 3vw, 42px); }
+.pageHead p { margin-top: 8px; color: var(--muted); font-size: 16px; }
+.filters { align-items: end; margin-bottom: 18px; }
+.filters label { gap: 6px; color: var(--ink); font-size: 14px; font-weight: 600; }
+.filters select { min-height: 44px; border-radius: var(--radius-control); }
+.watchCount { margin-bottom: 14px; color: var(--muted); font-size: 14px; }
+.theater {
+  min-height: min(680px, 74dvh);
+  padding: 18px;
+  gap: 20px;
+  border-radius: var(--radius-hero);
+  background: var(--purple-50);
+  box-shadow: 0 6px 0 rgba(71,47,91,.08);
+}
+.stageGlow { display: none; }
+.theater .feed { width: min(100%, 400px); perspective: none; }
+.nextReelPeek {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 5px 0 rgba(71,47,91,.08);
+  transform: translateX(12px) scale(.97);
+}
+.nextReelPeek span, .nextReelPeek small { color: var(--muted); font-size: 13px; letter-spacing: 0; }
+.nextReelPeek strong { color: var(--ink); }
+.theater .reel { animation: reelEnter var(--dur-short) var(--ease-out); }
+.immersive {
+  height: min(660px, 72dvh);
+  min-height: 480px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 7px 0 rgba(71,47,91,.12);
+}
+.immersive:hover { border-color: var(--line); box-shadow: 0 7px 0 rgba(71,47,91,.12); }
+.immersive .clipBody { padding: 14px 18px; color: var(--ink); background: var(--surface); }
+.topic, .immersive .topic { color: var(--purple-700); font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+.immersive .clipTitle { margin-bottom: 8px; color: var(--ink); font-size: 19px; line-height: 1.25; }
+.immersive .creator { color: var(--muted); font-size: 13px; }
+.immersive .creator b { color: var(--ink); font-size: 14px; }
+.immersive .actions button { min-height: 40px; border-radius: var(--radius-control); font-size: 12px; }
+.immersive .laterButton { min-height: 40px; border-radius: var(--radius-control); font-size: 12px; }
+.immersive .creatorHint { color: var(--muted); font-size: 12px; }
+.immersive .quiz { border-color: var(--line); border-radius: var(--radius-control); background: var(--paper); }
+.immersive .quiz summary { min-height: 36px; font-size: 13px; }
+.immersive .transcript, .immersive .transcript summary { color: var(--muted); font-size: 13px; }
+.immersive .transcript[open] { color: var(--ink); background: var(--surface); box-shadow: 0 -6px 16px rgba(39,30,48,.08); }
+.immersive .transcript a { color: var(--purple-700); }
+.reelNav { width: 92px; color: var(--ink); }
+.reelLabel { font-size: 13px; line-height: 1.4; letter-spacing: 0; }
+.reelNav button { width: 44px; height: 44px; border-radius: 14px; border: 1px solid var(--line); color: var(--purple-800); background: var(--surface); box-shadow: 0 4px 0 rgba(71,47,91,.1); transition: transform var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out); }
+.reelNav button:hover:not(:disabled) { transform: translateY(-2px); color: var(--purple-900); background: var(--surface); }
+.reelNav button:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+.reelNav small { color: var(--muted); font-size: 13px; }
+.feedError { border: 1px solid var(--line); border-radius: var(--radius-card); }
+@keyframes reelEnter {
+  from { opacity: .65; transform: translateY(12px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (max-width: 760px) {
+  .theater { min-height: 0; padding: 12px; gap: 9px; border-radius: var(--radius-card); }
+  .immersive { height: min(680px, 74dvh); min-height: 450px; border-radius: var(--radius-control); }
+  .reelNav { width: 40px; gap: 12px; }
+  .reelNav button { width: 38px; height: 42px; }
+}
+@media (max-width: 390px) {
+  .pageHead { align-items: flex-start; flex-direction: column; }
+  .immersive { min-height: 430px; }
+  .immersive .clipBody { padding: 10px 12px; }
+  .immersive .actions button { font-size: 11px; padding: 8px 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theater .reel, .reelNav button { animation: none; transition: none; }
+  .reelNav button:hover:not(:disabled) { transform: none; }
 }
 .page .feed,
 .page .reel,

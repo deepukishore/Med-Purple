@@ -96,7 +96,14 @@ async function until(expression) {
     if (await evaluate(expression)) return;
     await new Promise((r) => setTimeout(r, 100));
   }
-  throw new Error(`Page did not become ready: ${expression}`);
+  throw new Error(
+    `Page did not become ready: ${expression}; ` +
+      JSON.stringify(
+        await evaluate(
+          `({href: location.href, text: document.body.innerText.slice(0, 500)})`,
+        ),
+      ),
+  );
 }
 async function viewport(width, height = 1000) {
   await send("Emulation.setDeviceMetricsOverride", {
@@ -111,8 +118,21 @@ async function viewport(width, height = 1000) {
 }
 async function visit(path, expected) {
   await send("Page.navigate", { url: origin + path });
+  if (path === "/") {
+    await until(
+      `document.body.innerText.includes("Continue as a guest") || document.body.innerText.includes(${JSON.stringify(expected)})`,
+    );
+    if (!(await evaluate(`document.body.innerText.includes(${JSON.stringify(expected)})`))) {
+      await evaluate(
+        `[...document.querySelectorAll('a')].find(a=>a.innerText.includes('Continue as a guest')).click()`,
+      );
+    }
+  }
   await until(`document.body.innerText.includes(${JSON.stringify(expected)})`);
   await evaluate("document.fonts.ready.then(() => true)");
+  await until(
+    "!document.body.innerText.includes('Warming up the anatomy studio') && !document.body.innerText.includes('Preparing your study space')",
+  );
 }
 async function screenshot(name) {
   await evaluate(
@@ -141,17 +161,97 @@ try {
   await send("Page.enable");
   await send("Runtime.enable");
   await send("Fetch.enable", { patterns: [{ urlPattern: "*/api/v1/*" }] });
+  await viewport(320, 800);
+  await visit("/", "See the body.");
+  await screenshot("study-desk-320");
+  await noOverflow("320px desk");
+  await viewport(390, 844);
+  await visit("/", "See the body.");
+  await screenshot("study-desk-mobile");
+  await noOverflow("390px desk");
+  await viewport(768, 1024);
+  await visit("/", "See the body.");
+  await screenshot("study-desk-768");
+  await noOverflow("768px desk");
   await viewport(1440, 1100);
-  await visit("/", "let's make it click.");
+  await visit("/", "See the body.");
   await screenshot("study-desk-desktop");
   await noOverflow("Desktop desk");
-  await viewport(390, 844);
-  await screenshot("study-desk-mobile");
-  await noOverflow("Mobile desk");
   console.log(
-    "PASS desktop and mobile study desk render without horizontal overflow",
+    "PASS 320, 390, 768, and 1440px study desk render without horizontal overflow",
   );
-  if (process.argv.includes("--screenshots-only")) process.exitCode = 0;
+  if (process.argv.includes("--screenshots-only")) {
+    await viewport(320, 800);
+    await visit("/", "See the body.");
+    if (!(await evaluate("document.documentElement.dataset.theme==='light'"))) {
+      await evaluate(
+        `document.querySelector('button[aria-label="Switch to light mode"]').click()`,
+      );
+      await until("document.documentElement.dataset.theme==='light'");
+    }
+    const reviewRoutes = [
+      ["mcqs", "/mcqs", "One question closer."],
+      ["medbytes", "/medbytes", "Big ideas. Small bytes."],
+      ["anatomy", "/anatomy", "Explore anatomy, layer by layer."],
+      ["community-stories", "/community", "Your medical community."],
+      ["doubts", "/doubts", "Every doubt deserves an answer."],
+    ];
+    for (const [name, path, ready] of reviewRoutes) {
+      for (const width of [320, 390, 768, 1440]) {
+        await viewport(width, width < 600 ? 900 : 1000);
+        await visit(path, ready);
+        await noOverflow(`${path} at ${width}px`);
+        if (width === 390 || width === 1440) await screenshot(`${name}-${width}`);
+      }
+      console.log(`PASS responsive ${path}: 320 / 390 / 768 / 1440px`);
+    }
+    for (const width of [390, 1440]) {
+      await viewport(width, width < 600 ? 900 : 1000);
+      await visit("/community", "Your medical community.");
+      await evaluate(
+        "document.querySelector('[aria-label=\"Study stories\"]').scrollIntoView({behavior:'instant',block:'start'})",
+      );
+      await screenshot(`stories-${width}`);
+      await noOverflow(`Stories at ${width}px`);
+    }
+    console.log("PASS responsive Stories shelf: 390 / 1440px");
+    await viewport(1440, 1000);
+    await visit("/", "See the body.");
+    if (!(await evaluate("document.documentElement.dataset.theme==='dark'")))
+      await evaluate(
+        `document.querySelector('button[aria-label="Switch to dark mode"]').click()`,
+      );
+    await until("document.documentElement.dataset.theme==='dark'");
+    assert.equal(await evaluate("localStorage.getItem('mp:theme')"), "dark");
+    const darkReviewRoutes = [
+      ["study-desk-dark", "/", "See the body."],
+      ["mcqs-dark", "/mcqs", "One question closer."],
+      ["medbytes-dark", "/medbytes", "Big ideas. Small bytes."],
+      ["anatomy-dark", "/anatomy", "Explore anatomy, layer by layer."],
+      ["community-dark", "/community", "Your medical community."],
+      ["doubts-dark", "/doubts", "Every doubt deserves an answer."],
+    ];
+    for (const [name, path, ready] of darkReviewRoutes) {
+      for (const width of [390, 1440]) {
+        await viewport(width, width < 600 ? 900 : 1000);
+        await visit(path, ready);
+        assert.equal(await evaluate("document.documentElement.dataset.theme"), "dark");
+        await noOverflow(`${path} dark at ${width}px`);
+        await screenshot(`${name}-${width}`);
+      }
+    }
+    for (const width of [390, 1440]) {
+      await viewport(width, width < 600 ? 900 : 1000);
+      await visit("/community", "Your medical community.");
+      await evaluate(
+        "document.querySelector('[aria-label=\"Study stories\"]').scrollIntoView({behavior:'instant',block:'start'})",
+      );
+      await screenshot(`stories-dark-${width}`);
+      await noOverflow(`Stories dark at ${width}px`);
+    }
+    console.log("PASS dark theme persistence and responsive route screenshots");
+    process.exitCode = 0;
+  }
   else {
     const correctIndex = fixtures.warmup_answers[0].answer.correct_index;
     await until(
@@ -175,7 +275,9 @@ try {
     await evaluate(
       `[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Lock in my answer')).click()`,
     );
-    await until("document.body.innerText.includes('Brain: 1. Self-doubt: 0.')");
+    await until(
+      "document.body.innerText.includes('Correct. Review the explanation to lock in the concept.')",
+    );
     assert.equal(submissions.length, 2);
     assert.equal(
       submissions[0].request_id,
@@ -193,23 +295,14 @@ try {
       `[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Another question')).click()`,
     );
     await until(
-      "!document.body.innerText.includes('Brain: 1. Self-doubt: 0.') && document.querySelectorAll('[aria-label=\"Warm-up answer options\"] button:disabled').length===0",
-    );
-    await evaluate(
-      `document.querySelector('[aria-label="Sprint size"] button').click()`,
+      "!document.body.innerText.includes('Correct. Review the explanation to lock in the concept.') && document.querySelectorAll('[aria-label=\"Warm-up answer options\"] button:disabled').length===0",
     );
     const subject = fixtures["/mcqs"].subjects[0];
-    await evaluate(
-      `(()=>{const input=document.querySelector('[aria-label="Choose a study session"] select'); input.value=${JSON.stringify(subject)};input.dispatchEvent(new Event('change',{bubbles:true}));})()`,
-    );
+    await send("Page.navigate", {
+      url: `${origin}/mcqs?set=3&subject=${encodeURIComponent(subject)}`,
+    });
     await until(
-      "document.querySelector('[aria-label=\"Choose a study session\"] a').href.includes('set=3')",
-    );
-    await evaluate(
-      `document.querySelector('[aria-label="Choose a study session"] a').click()`,
-    );
-    await until(
-      "document.querySelector('main').innerText.includes('Question 1')",
+      "document.querySelector('main')?.innerText.includes('Question 1')",
     );
     assert.ok(
       requests.some(
@@ -220,25 +313,14 @@ try {
           new URLSearchParams(p.split("?")[1]).get("subject") === subject,
       ),
     );
-    await visit("/", "let's make it click.");
-    const previousNudge = await evaluate(
-      `document.querySelector('[aria-live="polite"]').textContent`,
-    );
-    await evaluate(
-      `document.querySelector('[aria-label="Get a study pep talk"]').click()`,
-    );
-    assert.notEqual(
-      await evaluate(
-        `document.querySelector('[aria-live="polite"]').textContent`,
-      ),
-      previousNudge,
-    );
+    await visit("/", "See the body.");
+    await until("document.querySelector('[aria-label=\"Study stories\"]')");
     await viewport(1440, 1100);
     await evaluate(
       `document.querySelector('[aria-label="Matcha mood"]').click()`,
     );
     await until("document.documentElement.dataset.roomVibe==='matcha'");
-    await visit("/", "let's make it click.");
+    await visit("/", "See the body.");
     assert.equal(
       await evaluate("document.documentElement.dataset.roomVibe"),
       "matcha",
@@ -304,7 +386,7 @@ try {
     console.log(
       "PASS energy modes, tool search, mistake shortcut, toolkit filters, clinical note starter",
     );
-    await visit("/", "let's make it click.");
+    await visit("/", "See the body.");
     await evaluate(
       `[...document.querySelectorAll('button')].find(b=>b.textContent==='5 min').click()`,
     );
@@ -341,7 +423,7 @@ try {
     await until(
       "!document.querySelector('[aria-labelledby=\"focus-room-title\"]').open",
     );
-    await visit("/", "let's make it click.");
+    await visit("/", "See the body.");
     assert.equal(
       await evaluate("document.querySelector('#focus-intention').value"),
       "Cardiac recall",
@@ -363,7 +445,7 @@ try {
       "PASS focus-room controls, saved intention/duration, and direct viva review",
     );
     const routes = [
-      ["/", "let's make it click."],
+      ["/", "See the body."],
       ["/learn", "For the way your brain works."],
       ["/planner", "A little structure. More progress."],
       ["/progress", "Look how far you've come."],
@@ -388,7 +470,7 @@ try {
         await screenshot(path.slice(1) + "-desktop");
       console.log(`PASS responsive ${path}: 320 / 390 / 768 / 1440px`);
     }
-    await visit("/", "let's make it click.");
+    await visit("/", "See the body.");
     await viewport(320, 800);
     await evaluate("document.documentElement.dataset.largeText='true'");
     await noOverflow("Large text study desk at 320px");

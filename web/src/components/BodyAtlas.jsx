@@ -73,6 +73,10 @@ export default function BodyAtlas() {
     let renderer;
     let environmentTarget;
     let pmremGenerator;
+    if (lowEnd) {
+      setFailure("A static anatomy view is shown on this low-power device. The structure list remains available.");
+      return undefined;
+    }
     try {
       renderer = new THREE.WebGLRenderer({ antialias: !lowEnd, alpha: true });
     } catch {
@@ -609,6 +613,7 @@ export default function BodyAtlas() {
                 <input
                   type="checkbox"
                   checked={!!layers[system.id]}
+                  disabled={Boolean(failure)}
                   onChange={(event) => {
                     const enabled = event.target.checked;
                     setLayers((previous) => ({
@@ -647,6 +652,7 @@ export default function BodyAtlas() {
               max="1"
               step="0.05"
               value={opacity}
+              disabled={Boolean(failure)}
               onChange={(event) => setOpacity(Number(event.target.value))}
             />
           </label>
@@ -655,6 +661,7 @@ export default function BodyAtlas() {
             enable a layer.
           </p>
           <button
+            disabled={Boolean(failure)}
             onClick={() => {
               setHidden(new Set());
               setIsolated(false);
@@ -666,7 +673,7 @@ export default function BodyAtlas() {
         </aside>
         <section
           ref={stageRef}
-          className={`${s.stage} ${immersive ? s.immersive : ""}`}
+          className={`${s.stage} ${immersive ? s.immersive : ""} ${failure ? s.static : ""}`}
           aria-label="Whole-body anatomy viewer"
           role={immersive ? "dialog" : undefined}
           aria-modal={immersive || undefined}
@@ -676,8 +683,8 @@ export default function BodyAtlas() {
             ref={host}
             className={s.canvas}
             tabIndex={0}
-            role="application"
-            aria-label="Human body atlas. Drag to rotate, scroll or pinch to zoom, click a structure to select. Arrow keys rotate; plus and minus zoom."
+            role={failure ? "img" : "application"}
+            aria-label={failure ? "Static human body anatomy view. Use the structure list to study." : "Human body atlas. Drag to rotate, scroll or pinch to zoom, click a structure to select. Arrow keys rotate; plus and minus zoom."}
             onKeyDown={(event) => {
               const controls = engine.current?.controls;
               if (!controls) return;
@@ -696,7 +703,9 @@ export default function BodyAtlas() {
               controls.object.position.copy(controls.target).add(offset);
               controls.update();
             }}
-          />
+          >
+            {failure && <img className={s.staticFallback} src="/anatomy-previews/body-systems.webp" alt="" />}
+          </div>
           {failure && <p role="alert">{failure}</p>}
           {status.skeletal === "loading" && (
             <div className={s.loading} role="status">
@@ -706,23 +715,27 @@ export default function BodyAtlas() {
           <div className={s.toolbar}>
             <button
               aria-pressed={rotation}
+              disabled={Boolean(failure)}
               onClick={() => setRotation((value) => !value)}
             >
               {rotation ? "Pause rotation" : "Rotate 360°"}
             </button>
             <button
               aria-pressed={exploded}
+              disabled={Boolean(failure)}
               onClick={() => setExploded((value) => !value)}
             >
               {exploded ? "Restore layers" : "Exploded layers"}
             </button>
             <button
               aria-pressed={xray}
+              disabled={Boolean(failure)}
               onClick={() => setXray((value) => !value)}
             >
               {xray ? "Solid view" : "X-ray ghost"}
             </button>
             <button
+              disabled={Boolean(failure)}
               onClick={() => {
                 setRotation(false);
                 engine.current?.reset();
@@ -731,6 +744,7 @@ export default function BodyAtlas() {
               Reset view
             </button>
             <button
+              disabled={Boolean(failure)}
               onClick={() => {
                 setRotation(false);
                 engine.current?.view(0);
@@ -739,6 +753,7 @@ export default function BodyAtlas() {
               Front
             </button>
             <button
+              disabled={Boolean(failure)}
               onClick={() => {
                 setRotation(false);
                 engine.current?.view(Math.PI);
@@ -749,12 +764,13 @@ export default function BodyAtlas() {
             <button
               ref={immersiveToggle}
               aria-pressed={immersive}
+              disabled={Boolean(failure)}
               onClick={() => setImmersive((value) => !value)}
             >
               {immersive ? "Exit immersive view" : "Immersive view"}
             </button>
             {item && (
-              <button onClick={() => engine.current?.focus(selected)}>
+              <button disabled={Boolean(failure)} onClick={() => engine.current?.focus(selected)}>
                 Zoom to selection
               </button>
             )}

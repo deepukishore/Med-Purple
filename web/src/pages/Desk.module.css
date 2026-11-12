@@ -1,3 +1,5 @@
+/* Hallmark · checked: 2026-11-12 · genre: playful (inferred)
+ * floor: redesign in progress · built: the project · redesign: full · v2.0.0 */
 .desk {
   display: grid;
   gap: 28px;
@@ -1861,6 +1863,225 @@
 .homeWorld .actionPrimary,
 .homeWorld .actionSecondary,
 .homeWorld .continueNode { text-decoration: none; }
+
+/* Hallmark · Home: a purple field notebook around the live skeletal model */
+.homeWorld {
+  width: min(100%, 1320px);
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 0 32px;
+  color: var(--ink);
+  overflow: visible;
+}
+.homeWorld .opening {
+  min-height: 0;
+  margin: 0 0 32px;
+  padding: 18px 0 0;
+  overflow: visible;
+  color: var(--ink);
+  background: transparent;
+}
+.homeWorld .opening::before,
+.homeWorld .opening::after,
+.homeWorld .pathStop::before { content: none; }
+.homeWorld .openingLayout {
+  grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr);
+  gap: 24px;
+  width: 100%;
+  min-height: 490px;
+}
+.homeWorld .openingCopy { padding: 20px 0; }
+.homeWorld .openingKicker,
+.homeWorld .sectionKicker,
+.homeWorld .scrollCue,
+.homeWorld .stageIndex,
+.homeWorld .lessonNumber,
+.homeWorld .recordData span,
+.homeWorld .recordFocus > div span,
+.homeWorld .continueLead > span,
+.homeWorld .continueNode > small,
+.homeWorld .homeFooter > span:first-child,
+.homeWorld .pathStepNo {
+  color: var(--purple-700);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.homeWorld .openingKicker i { display: none; }
+.homeWorld .opening h1 {
+  max-width: 12ch;
+  margin: 16px 0;
+  color: var(--ink);
+  font-size: clamp(42px, 4.8vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -.035em;
+}
+.homeWorld .opening h1 em,
+.homeWorld .pathIntro h2 em,
+.homeWorld .practiceIntro h2 em,
+.homeWorld .recordHeading h2 em,
+.homeWorld .lessonCopy h2 em {
+  color: inherit;
+}
+.homeWorld .openingCopy > p { max-width: 42ch; color: var(--muted); font-size: 16px; }
+.homeWorld .openingActions { gap: 12px; margin-top: 24px; }
+.homeWorld .actionPrimary,
+.homeWorld .actionSecondary {
+  min-height: 50px;
+  border-radius: var(--radius-control);
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out), background-color var(--dur-micro) var(--ease-out);
+}
+.homeWorld .actionPrimary { color: #fffcf8; background: var(--purple-700); box-shadow: 0 5px 0 #35234e; }
+.homeWorld .actionPrimary:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #35234e; }
+.homeWorld .actionSecondary { border: 1px solid var(--line); color: var(--purple-700); background: var(--surface); }
+.homeWorld .heroProof { gap: 18px; margin-top: 24px; }
+.homeWorld .heroProof strong { color: var(--ink); font-size: 18px; }
+.homeWorld .heroProof small { color: var(--muted); font-size: 12px; }
+.homeWorld .heroProof > i { background: var(--line); }
+.homeWorld .heroProgress { border-color: var(--line); border-radius: var(--radius-card); color: var(--ink); background: var(--surface); box-shadow: var(--shadow-low); }
+.homeWorld .heroProgress strong { color: var(--ink); font-size: 14px; }
+.homeWorld .heroProgress small { color: var(--muted); font-size: 12px; }
+.homeWorld .progressGlyph { color: var(--purple-700); background: var(--accent); }
+.homeWorld .scrollCue { position: static; margin: 4px 0 0; }
+.homeWorld .openingStage { min-height: 0; height: 490px; }
+.homeWorld .ticker { display: none; }
+.homeWorld .studyPath { padding: 56px 0; background: transparent; }
+.homeWorld .pathIntro { grid-template-columns: minmax(0, 1fr) minmax(0, .7fr); margin-bottom: 24px; }
+.homeWorld .pathIntro h2,
+.homeWorld .practiceIntro h2,
+.homeWorld .recordHeading h2 { color: var(--ink); font-size: clamp(32px, 3vw, 44px); line-height: 1.08; letter-spacing: -.025em; }
+.homeWorld .pathIntro > p,
+.homeWorld .practiceIntro > p,
+.homeWorld .recordHeading > p { color: var(--muted); font-size: 15px; line-height: 1.6; }
+.homeWorld .pathRail { gap: 14px; perspective: none; }
+.homeWorld .pathStop {
+  min-height: 220px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 4px 0 rgba(71,47,91,.08);
+  transform: none;
+  transition: transform var(--dur-short) var(--ease-out), box-shadow var(--dur-short) var(--ease-out);
+}
+.homeWorld .pathStop:hover { border-color: var(--purple-400); box-shadow: 0 7px 0 rgba(71,47,91,.1); transform: translateY(-2px); }
+.homeWorld .pathSymbol { border: 0; border-radius: 12px; color: var(--purple-700); background: var(--accent); box-shadow: none; }
+.homeWorld .pathTitle { color: var(--ink); font-family: var(--font-display), Georgia, serif; }
+.homeWorld .pathCopy { color: var(--muted); font-size: 14px; }
+.homeWorld .pathLink { color: var(--purple-700); font-size: 14px; }
+.homeWorld .pathTest,
+.homeWorld .pathKeep { margin-top: 0; background: var(--surface); border-color: var(--line); }
+.homeWorld .pathTest .pathStepNo,
+.homeWorld .pathTest .pathTitle,
+.homeWorld .pathTest .pathCopy,
+.homeWorld .pathTest .pathLink { color: inherit; }
+.homeWorld .pathBaseline { display: none; }
+.homeWorld .practiceScene {
+  grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr);
+  gap: 30px;
+  margin-top: 0;
+  padding: 30px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-hero);
+  color: var(--ink);
+  background: #eee8f3;
+  box-shadow: none;
+}
+.homeWorld .practiceIntro .sectionKicker,
+.homeWorld .recordHeading .sectionKicker,
+.homeWorld .pathIntro .sectionKicker { color: var(--purple-700); }
+.homeWorld .textRoute,
+.homeWorld .recordHeading .textRoute { color: var(--purple-700); font-size: 14px; }
+.homeWorld .stageIndex { color: var(--muted); }
+.homeWorld .learningRecord { gap: 32px; padding: 64px 0; }
+.homeWorld .recordInstrument {
+  min-height: 225px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: 0 4px 0 rgba(71,47,91,.07);
+}
+.homeWorld .recordData { border-color: var(--line); }
+.homeWorld .recordData strong { color: var(--ink); }
+.homeWorld .recordFocusIcon { border: 0; border-radius: 11px; color: var(--purple-700); background: var(--accent); }
+.homeWorld .recordFocus > div strong { color: var(--ink); font-size: 14px; }
+.homeWorld .recordFocus > a { border-color: var(--line); color: var(--purple-700); }
+.homeWorld .goalDial svg { stroke: var(--line); }
+.homeWorld .goalDial svg .goalProgress { stroke: var(--purple-700); }
+.homeWorld .goalDialText strong { color: var(--ink); }
+.homeWorld .medbyteScene {
+  grid-template-columns: minmax(0, 1fr) minmax(0, .8fr);
+  min-height: 310px;
+  margin: 0 calc(-1 * max(0px, (1320px - 100vw + 248px) / 2));
+  padding: 38px max(32px, calc((100vw - 1320px + 248px) / 2));
+  color: var(--ink);
+  background: #e8e0ed;
+}
+.homeWorld .lessonCopy .sectionKicker,
+.homeWorld .lessonCopy h2,
+.homeWorld .lessonCopy h2 em,
+.homeWorld .lessonCopy > p,
+.homeWorld .lessonSubject,
+.homeWorld .lessonLink,
+.homeWorld .lessonNumber { color: var(--ink); }
+.homeWorld .continueSection { padding: 64px 0; }
+.homeWorld .continueHead h2 { color: var(--ink); }
+.homeWorld .continueHead > a { color: var(--purple-700); font-size: 14px; }
+.homeWorld .continueLine { border-color: var(--line); grid-template-columns: minmax(260px, 1.3fr) repeat(2, minmax(150px, .65fr)) 70px; }
+.homeWorld .continueLead > strong { color: var(--ink); }
+.homeWorld .continueLead > small { color: var(--muted); font-size: 13px; }
+.homeWorld .continueLead > b { color: var(--purple-700); font-size: 14px; }
+.homeWorld .continueNode { border-color: var(--line); color: var(--ink); }
+.homeWorld .continueNode > span { border: 0; color: var(--purple-700); background: var(--accent); }
+.homeWorld .continueNode > strong { font-size: 14px; }
+.homeWorld > :global(.homeStoryBar) { margin-top: 36px; }
+.homeWorld .homeFooter { color: var(--muted); font-size: 13px; border-color: var(--line); }
+.homeWorld .homeFooter > span:first-child { margin-right: auto; }
+.homeWorld .homeFooter a { color: var(--purple-700); }
+.homeWorld :is(a, button):focus-visible { outline: 3px solid var(--purple-600); outline-offset: 3px; }
+@media (max-width: 1100px) {
+  .homeWorld .openingLayout { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); min-height: 420px; }
+  .homeWorld .openingStage { height: 420px; }
+  .homeWorld .medbyteScene { margin: 0 -24px; padding-inline: 32px; }
+}
+@media (max-width: 760px) {
+  .homeWorld .opening { margin-bottom: 22px; }
+  .homeWorld .openingLayout { grid-template-columns: minmax(0, 1fr); gap: 18px; min-height: auto; }
+  .homeWorld .openingCopy { padding: 8px 0 0; }
+  .homeWorld .opening h1 { font-size: clamp(38px, 9vw, 52px); }
+  .homeWorld .openingStage { height: 350px; }
+  .homeWorld .openingActions { align-items: stretch; }
+  .homeWorld .actionPrimary, .homeWorld .actionSecondary { min-height: 48px; }
+  .homeWorld .studyPath { padding: 36px 0; }
+  .homeWorld .pathIntro { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .homeWorld .pathRail { grid-template-columns: minmax(0, 1fr); }
+  .homeWorld .pathStop { min-height: 190px; }
+  .homeWorld .practiceScene, .homeWorld .learningRecord { grid-template-columns: minmax(0, 1fr); }
+  .homeWorld .practiceScene { padding: 22px; }
+  .homeWorld .learningRecord { padding: 40px 0; }
+  .homeWorld .recordInstrument { min-height: 200px; }
+  .homeWorld .medbyteScene { margin: 0 -18px; padding: 30px 22px; grid-template-columns: minmax(0, 1fr); }
+  .homeWorld .lessonStage { min-height: 190px; }
+  .homeWorld .continueLine { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .homeWorld .continueLead { grid-column: 1 / -1; padding-right: 0; }
+  .homeWorld .continueNode { border-top: 1px solid var(--line); }
+  .homeWorld .goalDial { display: none; }
+}
+@media (max-width: 390px) {
+  .homeWorld .openingStage { height: 320px; }
+  .homeWorld .heroProof { gap: 9px; }
+  .homeWorld .heroProof strong { font-size: 16px; }
+  .homeWorld .heroProof small { font-size: 11px; }
+  .homeWorld .recordInstrument { padding: 18px 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .homeWorld .pathStop, .homeWorld .actionPrimary, .homeWorld .actionSecondary, .homeWorld .continueNode { transition: none; }
+  .homeWorld .pathStop:hover, .homeWorld .continueNode:hover, .homeWorld .actionPrimary:hover { transform: none; }
+}
 @media (max-width: 1120px) {
   .openingLayout { grid-template-columns: minmax(270px, .72fr) minmax(390px, 1.28fr); gap: 20px; }
   .opening h1 { font-size: clamp(44px, 5.5vw, 64px); }
@@ -1999,4 +2220,58 @@
   .welcome { grid-template-columns: minmax(0, 1fr); min-height: 0; padding: 22px; }
   .welcome h1 { font-size: 37px; }
   .heroAtlas { min-height: 250px; }
+}
+/* Hallmark · study moves use one route line, not a repeated feature-card grid */
+.homeWorld .pathRail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  perspective: none;
+}
+.homeWorld .pathStop {
+  min-height: 220px;
+  padding: 17px 4px 12px;
+  border: 0;
+  border-top: 2px solid var(--purple-200);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+.homeWorld .pathStop::before,
+.homeWorld .pathStop::after { content: none; }
+.homeWorld .pathStop:hover {
+  border-color: var(--purple-600);
+  background: transparent;
+  box-shadow: none;
+  transform: translateY(-3px);
+}
+.homeWorld .pathSymbol {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  color: var(--purple-800);
+  background: var(--purple-100);
+}
+.homeWorld .pathTitle { padding-top: 15px; }
+.homeWorld .pathBaseline { display: none; }
+@media (max-width: 760px) {
+  .homeWorld .pathRail { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .homeWorld .pathStop {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto;
+    align-items: start;
+    gap: 3px 12px;
+    min-height: 0;
+    padding: 17px 0;
+    border-top: 1px solid var(--line);
+    transform: none;
+  }
+  .homeWorld .pathStepNo { grid-column: 1 / -1; margin: 0 0 7px; }
+  .homeWorld .pathSymbol { grid-column: 1; grid-row: 2 / 5; }
+  .homeWorld .pathTitle { grid-column: 2; grid-row: 2; padding: 0; }
+  .homeWorld .pathCopy { grid-column: 2; grid-row: 3; max-width: 44ch; padding: 0; }
+  .homeWorld .pathLink { grid-column: 2; grid-row: 4; margin-top: 6px; }
+  .homeWorld .pathStop:hover { transform: none; }
 }
