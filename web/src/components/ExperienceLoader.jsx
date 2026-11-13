@@ -6,6 +6,15 @@ export default function ExperienceLoader() {
   const [phase, setPhase] = useState("show");
 
   useEffect(() => {
+    try {
+      if (sessionStorage.getItem("mp:loader-shown") === "true") {
+        setPhase("done");
+        return undefined;
+      }
+      sessionStorage.setItem("mp:loader-shown", "true");
+    } catch {
+      // Keep the short loader available when session storage is blocked.
+    }
     const copyTimer = window.setTimeout(() => setStage(1), 460);
     const fadeTimer = window.setTimeout(() => setPhase("fade"), 1040);
     const exitTimer = window.setTimeout(() => setPhase("done"), 1480);

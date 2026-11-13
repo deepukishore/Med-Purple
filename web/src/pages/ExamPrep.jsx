@@ -13,6 +13,7 @@ import usePageMeta from "../hooks/usePageMeta";
 import useData from "../hooks/useData";
 import { api } from "../context/AppContext";
 import Button from "../components/Button";
+import TiltCard from "../components/TiltCard";
 import s from "./FeatureHub.module.css";
 
 const tracks = {
@@ -96,24 +97,24 @@ export default function ExamPrep() {
       </div>
       <div className={s.layout}>
         <div className={s.stack}>
-          <section className={s.card}>
+          <TiltCard as="section" className={s.card}>
             <div className={s.cardHeader}><div><h2>Your weakest 5 topics</h2><p>Built from every answer you have missed.</p></div><span className={s.iconTile}><TrendUp size={22} /></span></div>
             <div className={s.weakList}>{weakAreas.map(([topic, area, accuracy]) => <div className={s.weakItem} key={topic}><div><strong>{topic}</strong><small>{area}</small><div className={s.progress}><span style={{ width: `${accuracy}%` }} /></div></div><span className={s.accuracy}>{accuracy}%</span><button className={s.compactButton} onClick={() => setPractice(topic)}>{practice === topic ? "Queued" : "Practice"}</button></div>)}</div>
-          </section>
-          <section className={s.card}>
+          </TiltCard>
+          <TiltCard as="section" className={s.card}>
             <div className={s.cardHeader}><div><h2>Previous year questions</h2><p>Do a timed set, then read the explanation.</p></div><span className={s.iconTile}><BookOpen size={22} /></span></div>
             <div className={s.filterRow}><label>Year<select value={year} onChange={(e) => setYear(e.target.value)}><option>All years</option>{["2025", "2024", "2023", "2022"].map((x) => <option key={x}>{x}</option>)}</select></label><label>Subject<select value={subject} onChange={(e) => setSubject(e.target.value)}><option>All subjects</option>{["Anatomy", "Medicine", "Pharmacology", "Pathology"].map((x) => <option key={x}>{x}</option>)}</select></label></div>
             <div className={s.questionList}>{visiblePyqs.map(([itemYear, itemSubject, title, time]) => <div className={s.questionItem} key={title}><span className={s.iconTile}><span style={{ fontWeight: 800 }}>{itemYear.slice(2)}</span></span><div><strong>{title}</strong><small>{itemSubject} · {time} read</small></div><button className={s.compactButton} onClick={() => setPractice(title)}>Start <ArrowRight size={14} /></button></div>)}</div>
-          </section>
-          <section className={s.card}>
+          </TiltCard>
+          <TiltCard as="section" className={s.card}>
             <div className={s.cardHeader}><div><h2>Mistake notebook</h2><p>Add the reason behind the miss so the next recall sticks.</p></div><span className={s.iconTile}><Brain size={22} /></span></div>
             <div className={s.questionList}>{mistakes.map(([question, area, answer], index) => <div className={s.questionItem} key={question}><div><strong>{question}</strong><small>{area} · Correct answer: {answer}</small><textarea className={s.noteInput} placeholder="Why did I get this wrong?" value={notes[index] || ""} onChange={(e) => updateNote(index, e.target.value)} /></div><CheckCircle size={20} color={notes[index] ? "var(--success)" : "var(--line)"} /></div>)}</div>
-          </section>
+          </TiltCard>
         </div>
         <aside className={s.stack}>
           <section className={s.highlight}><span className={s.eyebrow} style={{ color: "var(--purple-700)" }}>TODAY'S PLAN</span><h3>Keep the streak small and real.</h3><p>{current.done} of {current.goal} questions done. Ten more minutes on {current.focus} would complete your daily goal.</p><div className={s.progress} style={{ marginTop: 15 }}><span style={{ width: `${(current.done / current.goal) * 100}%` }} /></div><Button to="/mcqs?set=10" small style={{ marginTop: 18 }}>Continue questions <ArrowRight size={15} /></Button></section>
-          <section className={s.card}><div className={s.cardHeader}><div><h2>Rapid revision</h2><p>High-yield one-liners for the night before.</p></div><span className={s.iconTile}><Lightning size={22} /></span></div><div className={s.revisionList}>{revision.map(([title, copy], index) => <div className={s.revisionItem} key={title}><div><strong>{title}</strong>{revealed === index && <div className={s.revealed}>{copy}</div>}</div><button className={s.compactButton} onClick={() => setRevealed(revealed === index ? null : index)}>{revealed === index ? "Hide" : "Reveal"}</button></div>)}</div></section>
-          <section className={s.card}><div className={s.cardHeader}><div><h2>Track signal</h2><p>Accuracy is trending up this week.</p></div><span className={s.iconTile}><Target size={22} /></span></div><strong style={{ fontSize: "2rem" }}>+12%</strong><p className={s.muted}>Compared with your previous 50 answers</p><div className={s.progress} style={{ marginTop: 14 }}><span style={{ width: "72%" }} /></div></section>
+          <TiltCard as="section" className={s.card}><div className={s.cardHeader}><div><h2>Rapid revision</h2><p>High-yield one-liners for the night before.</p></div><span className={s.iconTile}><Lightning size={22} /></span></div><div className={s.revisionList}>{revision.map(([title, copy], index) => <div className={s.revisionItem} key={title}><div><strong>{title}</strong>{revealed === index && <div className={s.revealed}>{copy}</div>}</div><button className={s.compactButton} onClick={() => setRevealed(revealed === index ? null : index)}>{revealed === index ? "Hide" : "Reveal"}</button></div>)}</div></TiltCard>
+          <TiltCard as="section" className={s.card}><div className={s.cardHeader}><div><h2>Track signal</h2><p>Accuracy is trending up this week.</p></div><span className={s.iconTile}><Target size={22} /></span></div><strong style={{ fontSize: "2rem" }}>+12%</strong><p className={s.muted}>Compared with your previous 50 answers</p><div className={s.progress} style={{ marginTop: 14 }}><span style={{ width: "72%" }} /></div></TiltCard>
         </aside>
       </div>
     </div>

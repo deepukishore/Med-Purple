@@ -3,6 +3,7 @@ import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import AppShell from "../components/AppShell";
 import ExperienceLoader from "../components/ExperienceLoader";
 import { PageSkeleton } from "../components/States";
+import SmoothScroll from "../components/SmoothScroll";
 import policies from "../../../shared/legal.json";
 const Home = lazy(() => import("../pages/Home")),
   Learn = lazy(() => import("../pages/Learn")),
@@ -90,6 +91,7 @@ export default function AppRoutes() {
   return (
     <>
       <RouteEffects />
+      <SmoothScroll />
       <ExperienceLoader />
       <Suspense fallback={<PageSkeleton />}>
         <Routes>

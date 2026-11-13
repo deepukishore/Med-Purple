@@ -31,6 +31,13 @@
   --dur-micro: 140ms;
   --dur-short: 260ms;
   --dur-slow: 420ms;
+  --dur-route: 220ms;
+  --dur-reveal: 420ms;
+  --dur-stagger: 48ms;
+  --dur-loader: 1100ms;
+  --dur-count-up: 800ms;
+  --dur-progress: 900ms;
+  --ease-strong-out: cubic-bezier(0.23, 1, 0.32, 1);
   --dur-celebration: 1200ms;
   --color-paper: #f8f5f0;
   --color-paper-raised: #fffcf8;

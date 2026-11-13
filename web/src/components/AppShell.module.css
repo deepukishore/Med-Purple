@@ -650,14 +650,14 @@
 }
 .pageTransition [data-route-motion] {
   transition:
-    opacity 520ms var(--ease),
-    translate 520ms var(--ease);
+    opacity var(--dur-reveal) var(--ease-strong-out),
+    translate var(--dur-reveal) var(--ease-strong-out);
   transition-delay: var(--route-reveal-delay, 0ms);
 }
 .pageTransition[data-route-motion-ready="true"]
   [data-route-motion="waiting"] {
   opacity: 0;
-  translate: 0 14px;
+  translate: 0 var(--route-reveal-distance, 14px);
 }
 .pageTransition [data-route-motion="visible"] {
   opacity: 1;

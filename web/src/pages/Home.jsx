@@ -14,6 +14,8 @@ import {
 import useData from "../hooks/useData";
 import usePageMeta from "../hooks/usePageMeta";
 import HomeSpecimenStage from "../components/HomeSpecimenStage";
+import HeroStage from "../components/HeroStage";
+import TiltCard from "../components/TiltCard";
 import QuickRecall from "../components/QuickRecall";
 import StoryBar from "../components/StoryBar";
 import s from "./Desk.module.css";
@@ -44,6 +46,7 @@ export default function Home() {
   return (
     <main className={`${s.desk} ${s.homeWorld}`}>
       <header className={s.opening}>
+        <HeroStage variant="home" />
         <div className={s.openingLayout}>
           <div className={s.openingCopy}>
             <span className={s.openingKicker}><i /> Med Purple, anatomy in motion</span>
@@ -104,27 +107,27 @@ export default function Home() {
           <p>Move from an anatomical view to a real question, then save a prompt for the next time you sit down.</p>
         </div>
         <div className={s.pathRail}>
-          <Link to="/anatomy" className={`${s.pathStop} ${s.pathSee}`}>
+          <TiltCard as={Link} to="/anatomy" className={`${s.pathStop} ${s.pathSee}`}>
             <span className={s.pathStepNo}>01 / SEE</span>
             <span className={s.pathSymbol}><Cube size={23} weight="duotone" /></span>
             <span className={s.pathTitle}>Explore a structure</span>
             <span className={s.pathCopy}>Turn the reference model and select a named part.</span>
             <span className={s.pathLink}>Open the atlas <ArrowUpRight size={15} /></span>
-          </Link>
-          <Link to={nextPath} className={`${s.pathStop} ${s.pathTest}`}>
+          </TiltCard>
+          <TiltCard as={Link} to={nextPath} className={`${s.pathStop} ${s.pathTest}`}>
             <span className={s.pathStepNo}>02 / TEST</span>
             <span className={s.pathSymbol}><Brain size={23} weight="duotone" /></span>
             <span className={s.pathTitle}>{weakest ? `Revisit ${weakest.subject}` : "Try a question set"}</span>
             <span className={s.pathCopy}>{weakest ? `${weakest.accuracy}% recorded accuracy from ${weakest.answered} answers.` : "Start with five questions and source-linked explanations."}</span>
             <span className={s.pathLink}>Start practice <ArrowUpRight size={15} /></span>
-          </Link>
-          <Link to="/learn" className={`${s.pathStop} ${s.pathKeep}`}>
+          </TiltCard>
+          <TiltCard as={Link} to="/learn" className={`${s.pathStop} ${s.pathKeep}`}>
             <span className={s.pathStepNo}>03 / KEEP</span>
             <span className={s.pathSymbol}><Stack size={23} weight="duotone" /></span>
             <span className={s.pathTitle}>Make it yours</span>
             <span className={s.pathCopy}>Build a recall card, organise notes, or choose a small revision block.</span>
             <span className={s.pathLink}>Open the toolkit <ArrowUpRight size={15} /></span>
-          </Link>
+          </TiltCard>
         </div>
         <div className={s.pathBaseline} aria-hidden="true"><span /><span /><span /><span /></div>
       </section>

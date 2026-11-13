@@ -12,7 +12,7 @@
   z-index: 1;
   inset: 56px 0 64px;
   opacity: 0.78;
-  pointer-events: auto;
+  pointer-events: none;
 }
 .header,
 .layout,

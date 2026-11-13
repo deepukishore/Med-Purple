@@ -168,7 +168,7 @@ export default function AppShell() {
         target.dataset.routeMotion = "waiting";
         target.style.setProperty(
           "--route-reveal-delay",
-          `${(index % 4) * 38}ms`,
+          `calc(${index % 4} * var(--dur-stagger))`,
         );
         revealObserver.observe(target);
       });
